@@ -1,103 +1,206 @@
-import Image from "next/image";
+import Link from 'next/link';
+import Templates from "@/components/Templates";
+import Footer from "@/components/Footer";
+import LandingPageHeader from "@/components/LandingPageHeader";
+import {
+  CheckCircle,
+  FileText,
+  Zap,
+  Globe,
+  Download,
+  Target,
+  Star,
+} from "lucide-react";
 
-export default function Home() {
+
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-background">
+      <LandingPageHeader />
+      <section className="py-20 px-4">
+        <div className="container mx-auto text-center max-w-4xl">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary mb-4 hover:cursor-pointer">
+            <Zap className="h-4 w-4 mr-1" /> AI-Powered Resume Builder
+          </span>
+          <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+            Stand Out with a <span className="text-primary">Smart Resume</span>
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            Build your professional resume in minutes with AI-powered templates.
+            Choose from professional templates, customize instantly, and land
+            your dream job.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <button className="px-8 py-3 text-lg bg-primary text-white rounded-lg hover:opacity-90 transition hover:cursor-pointer">
+              <Link href={"/create-resume"}>Get Started for Free</Link>
+            </button>
+            <button className="px-8 py-3 text-lg border rounded-lg bg-transparent hover:bg-muted transition hover:cursor-pointer">
+              <Link href={"/templates"}>View Sample Resumes</Link>
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      <section id="templates" className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-foreground mb-4">
+              Pick from Professional Templates
+            </h3>
+            <p className="text-muted-foreground text-lg">
+              Choose from our collection of ATS-friendly, professionally
+              designed templates
+            </p>
+          </div>
+
+          <Templates />
+
+          <div className="text-center">
+            <button className="px-8 py-3 text-lg border rounded-lg hover:bg-muted transition hover:cursor-pointer">
+              <Link href={"/templates"}>View More Templates</Link>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="py-16 px-4">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-foreground mb-4">
+              Why Choose Smart Resume Builder?
+            </h3>
+            <p className="text-muted-foreground text-lg">
+              Powerful features to help you create the perfect resume
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Zap className="h-6 w-6" />,
+                title: "AI-Powered Suggestions",
+                description:
+                  "Get role-specific content recommendations tailored to your industry and experience level.",
+              },
+              {
+                icon: <CheckCircle className="h-6 w-6" />,
+                title: "ATS-Friendly Design",
+                description:
+                  "Ensures your resume passes applicant tracking systems and reaches human recruiters.",
+              },
+              {
+                icon: <Download className="h-6 w-6" />,
+                title: "One-Click Export",
+                description:
+                  "Download in PDF, DOCX, or share online with a professional link.",
+              },
+              {
+                icon: <FileText className="h-6 w-6" />,
+                title: "Real-time Editor",
+                description:
+                  "See live preview while editing with instant formatting and layout updates.",
+              },
+              {
+                icon: <Globe className="h-6 w-6" />,
+                title: "Multilingual Support",
+                description:
+                  "Create resumes in multiple languages to expand your job search globally.",
+              },
+              {
+                icon: <Target className="h-6 w-6" />,
+                title: "Job-tailored Resumes",
+                description:
+                  "Customize resumes for each job post with AI-powered optimization.",
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-6 hover:shadow-md transition"
+              >
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="bg-primary/10 p-2 rounded-lg text-primary">
+                    {feature.icon}
+                  </div>
+                  <h4 className="text-lg font-semibold">{feature.title}</h4>
+                </div>
+                <p className="text-muted-foreground text-sm">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials" className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-foreground mb-4">
+              Trusted by Job Seekers Worldwide
+            </h3>
+            <p className="text-muted-foreground text-lg">
+              See what our users say about their success stories
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Sarah Johnson",
+                role: "Software Engineer",
+                content:
+                  "Smart Resume Builder helped me land my dream job at a tech startup. The AI suggestions were spot-on!",
+                rating: 5,
+              },
+              {
+                name: "Michael Chen",
+                role: "Marketing Manager",
+                content:
+                  "The templates are professional and the ATS optimization really works. Got 3x more interview calls!",
+                rating: 5,
+              },
+              {
+                name: "Emily Rodriguez",
+                role: "Data Analyst",
+                content:
+                  "Love the real-time editor and multilingual support. Created resumes for different markets easily.",
+                rating: 5,
+              },
+            ].map((testimonial, index) => (
+              <div key={index} className="border rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-accent text-accent" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4 italic">
+                  "{testimonial.content}"
+                </p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-primary font-semibold text-sm">
+                      {testimonial.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground">
+                      {testimonial.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {testimonial.role}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <Footer />
     </div>
+
   );
 }
