@@ -6,10 +6,10 @@ import { ResumeFormProps } from "./ResumeForm";
 export default function PersonalDetails({
   data,
   onChange,
-  open = false,
+  openSections,
+  setOpenSections
 }: ResumeFormProps) {
   const personalDetailsRefs = useRef<Array<HTMLInputElement | null>>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(open);
 
   const handlePersonalDetailRefs = (e: React.KeyboardEvent, index: number) => {
     if (e.key === "Enter") {
@@ -24,17 +24,18 @@ export default function PersonalDetails({
 
   useEffect(() => {
     personalDetailsRefs.current[0]?.focus();
-  }, [isOpen]);
+  }, [openSections.personalDetail]);
 
   return (
     <div>
       <ResumeFormHeader
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        isOpen={openSections.personalDetail}
+        setIsOpen={setOpenSections}
         heading="Personal Details"
+        name="personalDetail"
       />
       <div className="pt-4 border-b">
-        <div className={`pt-1 space-y-4 pb-4 ${!isOpen && "hidden"}`}>
+        <div className={`pt-1 space-y-4 pb-4 ${!openSections.personalDetail && "hidden"}`}>
           <div className="grid grid-cols-2 gap-4 ">
             <div className="flex flex-col gap-2">
               <label className="font-semibold text-sm" htmlFor="name">

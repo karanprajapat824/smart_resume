@@ -7,9 +7,10 @@ import { ResumeFormProps } from "./ResumeForm";
 export default function WorkExperience({
   data,
   onChange,
-  open = false,
+  openSections,
+  setOpenSections
 }: ResumeFormProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+
 
   const workExperienceRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
@@ -61,23 +62,23 @@ export default function WorkExperience({
   }
 
   useEffect(() => {
-    if (data.workExperience.length === 0) addWorkExperience();
     setTimeout(() => {
       workExperienceRefs.current[0]?.focus();
     }, 0);
-  }, [isOpen]);
+  }, [openSections.work]);
 
   return (
     <div>
       <ResumeFormHeader
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        isOpen={openSections.work}
+        setIsOpen={setOpenSections}
+        name="work"
         heading="Work Experience"
       />
       <div className="border-b pt-4 pb-0">
         <div
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !isOpen && "hidden"
+            !openSections.work && "hidden"
           }`}
         >
           {data.workExperience.map((exp, index) => (

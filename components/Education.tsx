@@ -7,9 +7,10 @@ import { Plus, Trash2 } from "lucide-react";
 export default function Education({
   data,
   onChange,
-  open = false,
+  openSections,
+  setOpenSections
 }: ResumeFormProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const educationRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
@@ -23,11 +24,10 @@ export default function Education({
   }
 
   useEffect(() => {
-    if (data.education.length === 0) addEducation();
     setTimeout(() => {
       educationRefs.current[0]?.focus();
     }, 0);
-  }, [isOpen]);
+  }, [openSections.education]);
 
   function addEducation() {
     onChange({
@@ -39,6 +39,7 @@ export default function Education({
           institution: "",
           year: "",
           description: "",
+          grade : ""
         },
       ],
     });
@@ -67,13 +68,14 @@ export default function Education({
     <div>
       <ResumeFormHeader
         heading="Education"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        name="education"
+        isOpen={openSections.education}
+        setIsOpen={setOpenSections}
       />
       <div className="border-b pt-4 pb-0">
         <div
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !isOpen && "hidden"
+            !openSections.education && "hidden"
           }`}
         >
           {data.education.map((edu, index) => (

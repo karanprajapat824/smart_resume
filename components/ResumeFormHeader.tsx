@@ -5,18 +5,20 @@ import {
 
 interface ResumeFormHeaderType {
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: any;
   heading: string;
+  name : string;
 }
 
 export default function ResumeFormHeader({
   isOpen,
   setIsOpen,
   heading,
+  name
 }: ResumeFormHeaderType) {
   return (
     <button
-      onClick={() => setIsOpen(!isOpen)}
+      onClick={() => setIsOpen(name)}
       className="text-xl font-bold flex gap-2 items-center w-full hover:cursor-grab justify-between mt-4"
     >
       <div className="flex gap-2 items-center">

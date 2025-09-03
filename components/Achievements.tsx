@@ -6,19 +6,19 @@ import { ResumeFormProps } from "./ResumeForm";
 export default function Achievements({
   data,
   onChange,
-  open = false,
+  openSections,
+  setOpenSections
 }: ResumeFormProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const achievementsRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
 
   useEffect(() => {
-    if (data.achievements.length === 0) addAchievement();
     setTimeout(() => {
       achievementsRefs.current[0]?.focus();
     }, 0);
-  }, [isOpen]);
+  }, [openSections.achievement]);
 
   function handleAchievementsRefs(index: number) {
     const nextInput = achievementsRefs.current[index + 1];
@@ -70,13 +70,14 @@ export default function Achievements({
     <div>
       <ResumeFormHeader
         heading="Achievements / Certificates"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        name="achievement"
+        isOpen={openSections.achievement}
+        setIsOpen={setOpenSections}
       />
       <div className="border-b pt-4 pb-0">
         <div
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !isOpen && "hidden"
+            !openSections.achievement && "hidden"
           }`}
         >
           {data.achievements.map((achievement, index) => (

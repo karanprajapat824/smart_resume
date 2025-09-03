@@ -12,11 +12,37 @@ import Achievements from "./Achievements";
 export interface ResumeFormProps {
   data: ResumeData;
   onChange: (data: Partial<ResumeData>) => void;
-  open?: boolean;
-  next?: string;
+  openSections?: any;
+  setOpenSections?: any;
 }
 
 export function ResumeForm({ data, onChange }: ResumeFormProps) {
+  const [openSections, setOpenSections] = useState({
+    personalDetail: true,
+    summery: false,
+    work: false,
+    education: false,
+    skill: false,
+    project: false,
+    achievement: false,
+  });
+
+  const handleOpenSection = (name: keyof typeof openSections) => {
+    setOpenSections((prev) => {
+      const isCurrentlyOpen = prev[name];
+      return {
+        personalDetail: false,
+        summery: false,
+        work: false,
+        education: false,
+        skill: false,
+        project: false,
+        achievement: false,
+        [name]: !isCurrentlyOpen,
+      };
+    });
+  };
+
   const [currentOrder, setCurrentOrder] = useState<string[]>([
     "PersonalDetails",
     "Summery",
@@ -161,7 +187,12 @@ export function ResumeForm({ data, onChange }: ResumeFormProps) {
             role="group"
           >
             <div className="w-full cursor-grap">
-              <Section data={data} onChange={onChange} />
+              <Section
+                data={data}
+                onChange={onChange}
+                openSections={openSections}
+                setOpenSections={handleOpenSection}
+              />
             </div>
           </div>
         );

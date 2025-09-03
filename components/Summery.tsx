@@ -9,27 +9,28 @@ import {
 export default function Summery({
   data,
   onChange,
-  open = false,
+  openSections,
+  setOpenSections
 }: ResumeFormProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const summeryRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     summeryRef.current?.focus();
-  }, [isOpen]);
+  }, [openSections.summery]);
 
 
   return (
     <div>
       <ResumeFormHeader
         heading="Professional Summery"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        isOpen={openSections.summery}
+        setIsOpen={setOpenSections}
+        name="summery"
       />
       <div className="border-b pb-4">
         <div
           className={`h-40 mt-4 flex items-start flex-col ${
-            !isOpen && "hidden"
+            !openSections.summery && "hidden"
           }`}
         >
           <textarea

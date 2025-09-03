@@ -4,15 +4,20 @@ import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { ResumeFormProps } from "./ResumeForm";
 import { Plus, Trash2 } from "lucide-react";
 
-export default function Skills({ data, onChange }: ResumeFormProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export default function Skills({
+  data,
+  onChange,
+  openSections,
+  setOpenSections,
+}: ResumeFormProps) {
+  
   const skillRef = useRef<HTMLInputElement>(null);
   const [skill, setSkill] = useState<string>("");
   const [skillError, setSkillError] = useState<string>("");
 
   useEffect(() => {
     skillRef.current?.focus();
-  }, []);
+  }, [openSections.skill]);
 
   function handleSkillRef() {}
 
@@ -49,14 +54,15 @@ export default function Skills({ data, onChange }: ResumeFormProps) {
   return (
     <div>
       <ResumeFormHeader
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        isOpen={openSections.skill}
+        setIsOpen={setOpenSections}
         heading="Skills"
+        name="skill"
       />
       <div className="border-b pt-4 pb-0">
         <div
           className={`flex flex-col items-center justify-center gap-4 ${
-            !isOpen && "hidden"
+            !openSections.skill && "hidden"
           }`}
         >
           <div className="w-full flex flex-col gap-y-2">
@@ -98,7 +104,7 @@ export default function Skills({ data, onChange }: ResumeFormProps) {
                 <Plus className="h-4 w-4" /> Add
               </button>
             </div>
-            
+
             {/* Skills list */}
             <div className="flex gap-3 flex-wrap pb-4">
               {data.skills.map((skill, index) => (

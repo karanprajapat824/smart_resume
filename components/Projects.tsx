@@ -4,20 +4,23 @@ import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { ResumeFormProps } from "./ResumeForm";
 import { Plus, Trash2 } from "lucide-react";
 
-export default function Projects({ data, onChange }: ResumeFormProps) {
-  
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export default function Projects({
+  data,
+  onChange,
+  openSections,
+  setOpenSections,
+}: ResumeFormProps) {
+ 
 
   const projectsRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
 
   useEffect(() => {
-    if (data.projects.length === 0) addProject();
     setTimeout(() => {
       projectsRefs.current[0]?.focus();
     }, 0);
-  }, [isOpen]);
+  }, [openSections.project]);
 
   function handleProjectRefs(index: number) {
     const nextInput = projectsRefs.current[index + 1];
@@ -68,13 +71,14 @@ export default function Projects({ data, onChange }: ResumeFormProps) {
     <div>
       <ResumeFormHeader
         heading="Projects"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        isOpen={openSections.project}
+        setIsOpen={setOpenSections}
+        name="project"
       />
       <div className="border-b pt-4 pb-0">
         <div
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !isOpen && "hidden"
+            !openSections.project && "hidden"
           }`}
         >
           {data.projects.map((project, index) => (

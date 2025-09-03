@@ -1,10 +1,22 @@
-export default function LivePreview() {
+import { ResumeData } from "@/app/create-resume/page";
+import Template1 from "@/templates/Template1";
+
+interface LivePreviewType{
+  data : ResumeData;
+  template : string;
+  onChange: (data: Partial<ResumeData>) => void;
+}
+
+export interface TemplateType {
+  data : ResumeData
+}
+
+export default function LivePreview({data , template = "Template1" , onChange} : LivePreviewType) {
   return (
-    <div className="space-y-4 h-fit sticky top-[-25]">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-foreground">Live Preview</h2>
+    <div className="space-y-4 h-fit sticky flex top-0 w-160 overflow-auto">
+      <div className="bg-card  border p-0 a4-page">
+        <Template1 data={data} onChange={onChange}/>
       </div>
-      <div className="bg-card rounded-lg p-6 min-h-[100vh] min-w-150"></div>
     </div>
   );
 }
