@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, CirclePlus } from "lucide-react";
 import { ResumeFormProps } from "./ResumeForm";
 
 export default function WorkExperience({
@@ -11,6 +11,7 @@ export default function WorkExperience({
   setOpenSections
 }: ResumeFormProps) {
 
+  const [bullet, setBullet] = useState<string>("");
 
   const workExperienceRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
@@ -21,7 +22,7 @@ export default function WorkExperience({
     if (nextInput) {
       nextInput.focus();
     } else {
-      
+
     }
   }
 
@@ -36,7 +37,7 @@ export default function WorkExperience({
           duration: "",
           description: "",
           bulletPoints: [],
-          isBulltePoints: false,
+          isBulletPoints: false,
         },
       ],
     });
@@ -67,6 +68,40 @@ export default function WorkExperience({
     }, 0);
   }, [openSections.work]);
 
+  function updateIsBulletPoints(id: string, set: boolean) {
+    onChange({
+      workExperience: data.workExperience.map((exp) => exp.id === id ? { ...exp, isBulletPoints: set } : exp)
+    })
+  }
+
+  function addBulletPoints(id: string) {
+    const trimmed = bullet.trim();
+    if (trimmed.length == 0) return;
+
+    onChange({
+      workExperience: data.workExperience?.map((work) =>
+        work.id === id
+          ? { ...work, bulletPoints: [...work.bulletPoints, trimmed] }
+          : work
+      ),
+    });
+    setBullet("");
+  }
+
+  function deleteBulletPoint(id: string, index: number) {
+    onChange({
+      workExperience: data.workExperience?.map((work) =>
+        work.id === id
+          ? {
+            ...work,
+            bulletPoints: work.bulletPoints?.filter((_, i) => i !== index),
+          }
+          : work
+      ),
+    });
+  }
+
+
   return (
     <div>
       <ResumeFormHeader
@@ -77,11 +112,10 @@ export default function WorkExperience({
       />
       <div className="border-b pt-4 pb-0">
         <div
-          className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !openSections.work && "hidden"
-          }`}
+          className={`space-y-4 flex flex-col items-center justify-center mb-4 ${!openSections.work && "hidden"
+            }`}
         >
-          {data.workExperience.map((exp, index) => (
+          {data.workExperience?.map((exp, index) => (
             <div className="border p-4 w-[100%] rounded" key={exp.id}>
               <div className="flex flex-row items-center justify-between space-y-0 py-2">
                 <div className="text-lg font-semibold">Experience Entry</div>
@@ -155,17 +189,70 @@ export default function WorkExperience({
 
                 {/* Description */}
                 <div className="flex flex-col gap-2">
-                  <label className="font-semibold text-sm">Description</label>
-                  <textarea
-                    ref={(el) => {
-                      workExperienceRefs.current[index * 4 + 3] = el;
-                    }}
-                    className="border rounded resize-none py-2 px-4 h-20 text-sm"
-                    value={exp.description}
-                    placeholder="Describe your responsibilities and achievements..."
-                    name="description"
-                    onChange={(e) => updateWorkExperience(e, exp.id)}
-                  />
+                  <label className="font-semibold text-sm flex flex-row gap-2 mb-2 items-center">
+                    <button
+                      onClick={() => updateIsBulletPoints(exp.id, false)}
+                      className={`px-4 py-2 rounded-lg transition-all 
+                      ${!exp.isBulletPoints ? "border-b-2 border-blue-500 text-blue-600 bg-gray-100" : "border-b-2 border-transparent"} 
+                      ${(exp.bulletPoints.length > 0) ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
+                      disabled={exp.bulletPoints.length > 0}
+                    >
+                      Description
+                    </button>
+                    <button
+                      onClick={() => updateIsBulletPoints(exp.id, true)}
+                      className={`px-4 py-2 rounded-lg transition-all flex flex-row items-center gap-1
+                      ${exp.isBulletPoints ? "border-b-2 bg-gray-100 border-blue-500 text-blue-600" : "border-b-2 border-transparent"}
+                      ${exp.description.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}
+                      `}
+                      disabled={exp.description.length > 0}
+                    >
+                      <CirclePlus className="h-4" />
+                      Add Bullet Points
+                    </button>
+                  </label>
+                  {
+                    exp.isBulletPoints ?
+                      <div className="border rounded py-2 flex flex-row justify-between px-2 gap-5">
+                        <input
+                          value={bullet}
+                          onChange={(e) => setBullet(e.target.value)}
+                          className="text-sm px-2 w-full focus:outline-none"
+                          placeholder="Add bullet points"></input>
+                        <button
+                          onClick={() => addBulletPoints(exp.id)}
+                          className="bg-primary text-primary-foreground px-3 py-1 rounded hover:cursor-pointer"
+                        >Add</button>
+                      </div> : <textarea
+                        ref={(el) => {
+                          workExperienceRefs.current[index * 4 + 3] = el;
+                        }}
+                        className="border rounded resize-none py-2 px-4 h-20 text-sm"
+                        value={exp.description}
+                        placeholder="Describe your work experience...."
+                        name="description"
+                        onChange={(e) => updateWorkExperience(e, exp.id)}
+                      />
+                  }
+
+                  <div className="flex gap-3 flex-wrap">
+                    {
+                      exp.isBulletPoints &&
+                      exp.bulletPoints?.map((point, index) => (
+                        <div
+                          key={index}
+                          className="border rounded px-4 py-1 flex items-center justify-center text-sm"
+                        >
+                          {point}
+                          <button
+                            onClick={() => deleteBulletPoint(exp.id,index)}
+                            className="ml-2 text-red-500 hover:text-red-700 hover:cursor-pointer"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
             </div>

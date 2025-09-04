@@ -1,6 +1,7 @@
 import {
   ChevronDown,
   ChevronUp,
+  GripHorizontal
 } from "lucide-react";
 
 interface ResumeFormHeaderType {
@@ -19,10 +20,10 @@ export default function ResumeFormHeader({
   return (
     <button
       onClick={() => setIsOpen(name)}
-      className="text-xl font-bold flex gap-2 items-center w-full hover:cursor-grab justify-between mt-4"
+      className="text-xl font-bold flex gap-2 items-center w-full justify-between mt-4"
     >
       <div className="flex gap-2 items-center">
-        <div className="border h-3 w-3 rounded-full bg-primary"></div>
+        <div className="hover:cursor-grab"><GripHorizontal /></div>
         {heading}
       </div>
       <div className="px-2">

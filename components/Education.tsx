@@ -39,7 +39,8 @@ export default function Education({
           institution: "",
           year: "",
           description: "",
-          grade : ""
+          grade: "",
+          location: ""
         },
       ],
     });
@@ -74,9 +75,8 @@ export default function Education({
       />
       <div className="border-b pt-4 pb-0">
         <div
-          className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !openSections.education && "hidden"
-          }`}
+          className={`space-y-4 flex flex-col items-center justify-center mb-4 ${!openSections.education && "hidden"
+            }`}
         >
           {data.education.map((edu, index) => (
             <div className="border p-4 w-[100%] rounded" key={edu.id}>
@@ -149,12 +149,50 @@ export default function Education({
                   />
                 </div>
 
+                <div className="grid grid-cols-2">
+                  {/* Grade or marks */}
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold text-sm">Grade or Marks</label>
+                    <input
+                      ref={(el) => {
+                        educationRefs.current[index * 4 + 3] = el;
+                      }}
+                      className="border rounded py-1 px-4 w-60 text-sm"
+                      value={edu.grade}
+                      placeholder="8.00 CGPA or 80%"
+                      name="grade"
+                      onChange={(e) => updateEducation(e, edu.id)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleEducationRefs(index * 4 + 3)
+                      }
+                    />
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold text-sm">Location (optinal)</label>
+                    <input
+                      ref={(el) => {
+                        educationRefs.current[index * 4 + 4] = el;
+                      }}
+                      className="border rounded py-1 px-4 w-60 text-sm"
+                      value={edu.location}
+                      placeholder="Ujjain , M.P"
+                      name="location"
+                      onChange={(e) => updateEducation(e, edu.id)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleEducationRefs(index * 4 + 4)
+                      }
+                    />
+                  </div>
+                </div>
+
                 {/* Description */}
                 <div className="flex flex-col gap-2">
-                  <label className="font-semibold text-sm">Description</label>
+                  <label className="font-semibold text-sm">Description (Optinal)</label>
                   <textarea
                     ref={(el) => {
-                      educationRefs.current[index * 4 + 3] = el;
+                      educationRefs.current[index * 4 + 5] = el;
                     }}
                     className="border rounded resize-none py-2 px-4 h-20 text-sm"
                     value={edu.description}

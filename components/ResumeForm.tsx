@@ -14,9 +14,11 @@ export interface ResumeFormProps {
   onChange: (data: Partial<ResumeData>) => void;
   openSections?: any;
   setOpenSections?: any;
+  currentOrder : string[];
+  setCurrentOrder : React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export function ResumeForm({ data, onChange }: ResumeFormProps) {
+export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: ResumeFormProps) {
   const [openSections, setOpenSections] = useState({
     personalDetail: true,
     summery: false,
@@ -43,15 +45,7 @@ export function ResumeForm({ data, onChange }: ResumeFormProps) {
     });
   };
 
-  const [currentOrder, setCurrentOrder] = useState<string[]>([
-    "PersonalDetails",
-    "Summery",
-    "WorkExperience",
-    "Education",
-    "Skills",
-    "Projects",
-    "Achievements",
-  ]);
+  
 
   useEffect(() => {
     try {

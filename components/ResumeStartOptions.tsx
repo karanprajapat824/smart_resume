@@ -10,34 +10,35 @@ export default function ResumeStartOptions({
   onManual,
 }: ResumeStartOptionsProps) {
   return (
-    <main className="min-h-screen bg-background flex justify-center p-4 pt-10">
+    <main className="bg-background flex justify-center p-15">
       <section
         aria-label="Resume start options"
-        className="w-[80%] rounded-xl border-border bg-card text-primary-foreground shadow-sm p-6 h-130 md:p-8"
+        className="w-200 rounded-xl border-border bg-card text-primary-foreground shadow-sm p-6 h-100 md:p-8"
       >
         <header className="text-center">
-          <h1 className="text-2xl md:text-3xl font-semibold">
+          <h1 className="text-xl font-semibold">
             Welcome to Smart Resume Builder 🚀
           </h1>
-          <p className="mt-2 text-sm md:text-base text-muted">
+          <p className="text-sm md:text-base text-muted">
             How would you like to get started?
           </p>
         </header>
 
-        <div className="mt-6 grid gap-3 h-100">
-          <div className="flex flex-col items-center justify-around">
-            <div className="border border-dashed rounded-xl w-full h-75 flex flex-col overflow-hidden items-center justify-center">
+        <div className="mt-6 flex flex-col h-70 justify-between">
+          <div className="flex flex-col items-center justify-between h-full gap-8">
+            <div className="w-150 border border-dashed rounded-xl p-8 flex flex-col overflow-hidden items-center justify-center">
+                <div className="text-sm*2">Insert existing resume for auto fill</div>
                 <img src={"uploadImage.png"}
-                className="h-50"
+                className="h-20"
                 />
-                <div className="">Browse File to Upload</div>
-                <div>Supported format Pdf , Doc , Txt</div>
+                <div className="text-sm">Browse File to Upload</div>
+                <div className="text-sm">Supported format Pdf , Doc , Txt</div>
             </div>
             <button
               type="button"
               onClick={onManual}
               aria-label="Fill information manually"
-              className="w-[30%] inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-3 font-medium transition-colors hover:cursor-pointer mb-4"
+              className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-3 font-medium transition-colors hover:cursor-pointer mb-4 text-sm"
             >
               {"✍️ Fill Information Manually"}
             </button>

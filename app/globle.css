@@ -121,6 +121,7 @@
     min-height: 297mm;
     padding: 20mm;
     box-sizing: border-box;
+    color : red;
   }
   .a4-page:last-child {
     page-break-after: auto;

@@ -5,7 +5,8 @@ import Footer from "@/components/Footer";
 import { ResumeForm } from "@/components/ResumeForm";
 import LivePreview from "@/components/LivePreview";
 import ResumeStartOptions from "@/components/ResumeStartOptions";
-import { Upload } from "lucide-react";
+import { Upload, Eraser } from "lucide-react";
+import Modal from "@/components/Modal";
 
 export interface ResumeData {
   personalDetails: {
@@ -24,7 +25,7 @@ export interface ResumeData {
     duration: string;
     description: string;
     bulletPoints: Array<string>;
-    isBulltePoints: boolean;
+    isBulletPoints: boolean;
   }>;
   education: Array<{
     id: string;
@@ -33,6 +34,7 @@ export interface ResumeData {
     year: string;
     description: string;
     grade: string;
+    location: string;
   }>;
   skills: Array<{
     id: string;
@@ -44,7 +46,7 @@ export interface ResumeData {
     link: string;
     description: string;
     bulletPoints: Array<string>;
-    isBulltePoints: boolean;
+    isBulletPoints: boolean;
   }>;
   achievements: Array<{
     id: string;
@@ -52,7 +54,7 @@ export interface ResumeData {
     year: string;
     description: string;
     bulletPoints: Array<string>;
-    isBulltePoints: boolean;
+    isBulletPoints: boolean;
   }>;
 }
 
@@ -95,11 +97,21 @@ export default function CreateResumePage() {
     achievements: [],
   };
   const [resumeData, setResumeData] = useState<ResumeData>(() => initialLoad(defaultResumeData));
-
+  const [clearFormModel, setClearFormModel] = useState<boolean>(false);
   const [startOption, setStartOption] = useState<startOptionsType>({
     model: true,
     option: "m",
   });
+
+  const [currentOrder, setCurrentOrder] = useState<string[]>([
+    "PersonalDetails",
+    "Summery",
+    "WorkExperience",
+    "Education",
+    "Skills",
+    "Projects",
+    "Achievements",
+  ]);
 
   const handleDataChange = (newData: Partial<ResumeData>) => {
     setResumeData((prev) => ({ ...prev, ...newData }));
@@ -124,11 +136,11 @@ export default function CreateResumePage() {
     sessionStorage.setItem("option", "m");
   }
 
-  function clearForm()
-  {
-     setResumeData(defaultResumeData);
-     localStorage.removeItem("data");
-     sessionStorage.removeItem("option");
+  function clearForm() {
+    setResumeData(defaultResumeData);
+    localStorage.removeItem("data");
+    sessionStorage.removeItem("option");
+    setClearFormModel(false);
   }
 
   useEffect(() => {
@@ -141,6 +153,15 @@ export default function CreateResumePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <Modal
+        isOpen={clearFormModel}
+        message="Clear All Data?"
+        description="This action will delete all the information you’ve entered in the form. This cannot be undone. Are you sure you want to proceed?"
+        primaryButtonText="Yes,Clear Form"
+        secondaryButtonText="Cancel"
+        onPrimaryClick={clearForm}
+        onSecondaryClick={() => setClearFormModel(false)}
+      />
       {startOption.model ? (
         <ResumeStartOptions onUpload={onUpload} onManual={onManual} />
       ) : (
@@ -151,23 +172,25 @@ export default function CreateResumePage() {
                 <div className="pb-4 flex items-center gap-3">
                   <div>
                     <label
-                    htmlFor="file"
-                    className="border w-50 rounded bg-primary text-primary-foreground text-sm py-2 px-4 font-semibold hover:cursor-pointer flex items-center justify-center gap-2">
-                    <Upload className="h-4" />
-                    Upload Resume
-                  </label>
-                  <input
-                    type="file"
-                    accept=".pdf,.docx,.txt"
-                    id="file"
-                    className="sr-only"
-                  ></input>
+                      htmlFor="file"
+                      className="border w-50 rounded bg-primary text-primary-foreground text-sm py-2 px-4 font-semibold hover:cursor-pointer flex items-center justify-center gap-2">
+                      <Upload className="h-4" />
+                      Upload Resume
+                    </label>
+                    <input
+                      type="file"
+                      accept=".pdf,.docx,.txt"
+                      id="file"
+                      className="sr-only"
+                    ></input>
                   </div>
                   <button
-                  onClick={clearForm}
-                  className="border w-50 rounded bg-primary text-primary-foreground text-sm py-2 px-4 font-semibold hover:cursor-pointer flex items-center justify-center gap-2"
+                    onClick={() => setClearFormModel(true)}
+                    className="border w-50 rounded bg-primary text-primary-foreground text-sm py-2 px-4 font-semibold hover:cursor-pointer flex items-center justify-center gap-2"
                   >
-                  Clear Form</button>
+                    <Eraser className="h-4" />
+                    Clear Form
+                  </button>
                 </div>
                 <h1 className="text-2xl font-bold text-foreground flex items-center justify-between">
                   Enter Your Information
@@ -176,9 +199,9 @@ export default function CreateResumePage() {
                   Fill out the sections below to build your professional resume
                 </div>
               </div>
-              <ResumeForm data={resumeData} onChange={handleDataChange} />
+              <ResumeForm data={resumeData} onChange={handleDataChange} currentOrder={currentOrder} setCurrentOrder={setCurrentOrder} />
             </div>
-            <LivePreview data={resumeData} template="Templete1" onChange={handleDataChange} />
+            <LivePreview data={resumeData} template="Templete1" order={currentOrder} />
           </div>
         </main>
       )}
