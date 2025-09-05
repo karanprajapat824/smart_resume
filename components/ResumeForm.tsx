@@ -2,12 +2,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import type { ResumeData } from "@/app/create-resume/page";
 import PersonalDetails from "./PersonalDetails";
-import Summery from "./Summery";
+import Summary from "./Summary";
 import WorkExperience from "./WorkExperience";
 import Education from "./Education";
 import Skills from "./Skills";
 import Projects from "./Projects";
 import Achievements from "./Achievements";
+import Languages from "./Languages";
 
 export interface ResumeFormProps {
   data: ResumeData;
@@ -21,12 +22,13 @@ export interface ResumeFormProps {
 export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: ResumeFormProps) {
   const [openSections, setOpenSections] = useState({
     personalDetail: true,
-    summery: false,
+    summary: false,
     work: false,
     education: false,
     skill: false,
     project: false,
     achievement: false,
+    language : false
   });
 
   const handleOpenSection = (name: keyof typeof openSections) => {
@@ -34,12 +36,13 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
       const isCurrentlyOpen = prev[name];
       return {
         personalDetail: false,
-        summery: false,
+        summary: false,
         work: false,
         education: false,
         skill: false,
         project: false,
         achievement: false,
+        language : false,
         [name]: !isCurrentlyOpen,
       };
     });
@@ -55,12 +58,13 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
         if (Array.isArray(parsed) && parsed.length > 0) {
           const validKeys = [
             "PersonalDetails",
-            "Summery",
+            "Summary",
             "WorkExperience",
             "Education",
             "Skills",
             "Projects",
             "Achievements",
+            "Languages"
           ];
 
           const filtered = parsed.filter(
@@ -93,12 +97,13 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
 
   const componentsMap: Record<string, React.ComponentType<any>> = {
     PersonalDetails,
-    Summery,
+    Summary,
     WorkExperience,
     Education,
     Skills,
     Projects,
     Achievements,
+    Languages
   };
 
   function handleDragStart(e: React.DragEvent, index: number) {

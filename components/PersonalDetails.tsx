@@ -159,7 +159,7 @@ export default function PersonalDetails({
             </div>
             <div className="flex flex-col gap-2">
               <label className="font-semibold text-sm" htmlFor="address">
-                Address
+                location
               </label>
               <input
                 ref={(el) => {
@@ -167,17 +167,42 @@ export default function PersonalDetails({
                 }}
                 className="border rounded py-1 px-4 w-60 text-sm"
                 id="address"
-                value={data.personalDetails.address}
+                value={data.personalDetails.location}
                 onChange={(e) =>
                   onChange({
                     personalDetails: {
                       ...data.personalDetails,
-                      address: e.target.value,
+                      location: e.target.value,
                     },
                   })
                 }
                 placeholder="Ujjain M.P"
                 onKeyDown={(e) => handlePersonalDetailRefs(e, 5)}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-2">
+              <label className="font-semibold text-sm" htmlFor="github">
+                Country
+              </label>
+              <input
+                ref={(el) => {
+                  personalDetailsRefs.current[6] = el;
+                }}
+                className="border rounded py-1 px-4 w-60 text-sm"
+                id="country"
+                value={data.personalDetails.country}
+                onChange={(e) =>
+                  onChange({
+                    personalDetails: {
+                      ...data.personalDetails,
+                      country : e.target.value,
+                    },
+                  })
+                }
+                placeholder="India"
+                onKeyDown={(e) => handlePersonalDetailRefs(e, 6)}
               />
             </div>
           </div>

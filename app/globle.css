@@ -121,14 +121,48 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+
+  .shadow-sm,
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+
+  .print-remove-padding {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 }
 
 .a4-page {
   width: 210mm;
   min-height: 297mm;
   margin: 0 auto;
+  padding: 0;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  overflow: hidden;
 }
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: white;
+}
+
+.page-break {
+  page-break-after: always;
+  break-after: page;
+}
+
+.avoid-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
 
 @page {
   size: A4;

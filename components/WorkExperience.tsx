@@ -218,7 +218,10 @@ export default function WorkExperience({
                           value={bullet}
                           onChange={(e) => setBullet(e.target.value)}
                           className="text-sm px-2 w-full focus:outline-none"
-                          placeholder="Add bullet points"></input>
+                          placeholder="Add bullet points"
+                          onKeyDown={(e)=>e.key === "Enter" && addBulletPoints(exp.id)}
+                          ></input>
+                          
                         <button
                           onClick={() => addBulletPoints(exp.id)}
                           className="bg-primary text-primary-foreground px-3 py-1 rounded hover:cursor-pointer"

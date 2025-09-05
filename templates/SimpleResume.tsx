@@ -6,7 +6,7 @@ interface TemplateType {
   order: string[];
 }
 
-const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
+const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
   ({ data, order }, ref) => {
     const renderMap: Record<string, React.ReactNode> = {
       PersonalDetails: (
@@ -20,7 +20,10 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
             {data.personalDetails.phone &&
               (data.personalDetails.email ||
                 data.personalDetails.github ||
-                data.personalDetails.linkedin) && (
+                data.personalDetails.linkedin ||
+                data.personalDetails.location ||
+                data.personalDetails.country
+              ) && (
                 <span className="text-neutral-400">|</span>
               )}
 
@@ -31,7 +34,11 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
               {data.personalDetails.email}
             </a>
             {data.personalDetails.email &&
-              (data.personalDetails.github || data.personalDetails.linkedin) && (
+              (data.personalDetails.github ||
+                data.personalDetails.linkedin ||
+                data.personalDetails.location ||
+                data.personalDetails.country
+              ) && (
                 <span className="text-neutral-400">|</span>
               )}
 
@@ -48,9 +55,14 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
               </a>
             )}
 
-            {data.personalDetails.github && data.personalDetails.linkedin && (
-              <span className="text-neutral-400">|</span>
-            )}
+            {data.personalDetails.github &&
+              (
+                data.personalDetails.linkedin ||
+                data.personalDetails.location ||
+                data.personalDetails.country
+              ) && (
+                <span className="text-neutral-400">|</span>
+              )}
 
             {data.personalDetails.linkedin && (
               <a
@@ -64,13 +76,22 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
                 LinkedIn
               </a>
             )}
+
+            {
+              data.personalDetails.location && <span className="text-neutral-400">|</span>
+            }
+            {
+              data.personalDetails.location && <div>
+                {data.personalDetails.location} {data.personalDetails.country}
+              </div>
+            }
           </div>
         </header>
       ),
 
-      Summery: data.summary ? (
-        <ResumeSection title="Professional Summary" key="Summery">
-          <p className="text-[13px] leading-6">{data.summary}</p>
+      Summary: data.summary ? (
+        <ResumeSection title="Professional Summary" key="Summary">
+          <p className="text-[13px] leading-6 text-justify whitespace-pre-line">{data.summary}</p>
         </ResumeSection>
       ) : null,
 
@@ -91,7 +112,7 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
                         <div>{edu.location && "|"}</div>
                         <div className="capitalize">{edu.location}</div>
                       </div>
-                      <div className="text-[13px] text-neutral-700">
+                      <div className="text-[13px] text-neutral-700 text-justify whitespace-pre-line">
                         {edu.description}
                       </div>
                     </div>
@@ -115,7 +136,7 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
                       <p className="font-medium">
                         {we.company} — {we.role}
                       </p>
-                      <p className="text-[13px] text-neutral-700 mt-1">
+                      <p className="text-[13px] text-neutral-700 mt-1 text-justify whitespace-pre-line">
                         {we.description}
                       </p>
                       {we.isBulletPoints && (
@@ -140,8 +161,9 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
             <div className="flex flex-wrap gap-2">
               {data.skills.map((s) => (
                 <span
+                  style={{ backgroundColor: "#f5f5f5" }}
                   key={s.id}
-                  className="text-[13px] px-2 py-1 rounded-md bg-neutral-100"
+                  className="text-[13px] px-2 py-1 rounded-md "
                 >
                   {s.name}
                 </span>
@@ -172,7 +194,7 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
                             </a>
                           )}
                         </p>
-                        <div className="text-[13px] text-neutral-700 mt-1 leading-tight whitespace-pre-line">
+                        <div className="text-[13px] text-neutral-700 mt-1 leading-tight whitespace-pre-line text-justify">
                           {p.description}
                         </div>
                         {p.isBulletPoints && (
@@ -201,7 +223,7 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
                   left={
                     <div>
                       <p className="font-medium">{a.title}</p>
-                      <p className="text-[13px] text-neutral-700 mt-1">
+                      <p className="text-[13px] text-neutral-700 mt-1 text-justify whitespace-pre-line">
                         {a.description}
                       </p>
                       {a.isBulletPoints && (
@@ -219,11 +241,34 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
             </div>
           </ResumeSection>
         ) : null,
+
+      Languages:
+        data.languages && data.languages.length > 0 ? (
+          <section key="Languages">
+            <ResumeSection title="LANGUAGES">
+              <div className="grid grid-cols-2 gap-4">
+                {chunkArray(data.languages, Math.ceil(data.languages.length / 2)).map(
+                  (col, idx) => (
+                    <div key={idx}>
+                      <ul className="text-sm space-y-1 text-gray-700">
+                        {col.map((s) => (
+                          <li key={s.id}>
+                            {s.language} – <span className="italic">{s.level}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )
+                )}
+              </div>
+            </ResumeSection>
+          </section>
+        ) : null,
     };
 
     return (
-      <main ref={ref} className="flex justify-center bg-neutral-50 px-0 py-0 print:m-0 print:bg-white print:text-black">
-        <article  className="w-full max-w-3xl bg-white p-4 md:p-8 shadow-sm">
+      <main ref={ref} className="bg-neutral-50 px-0 py-0 print:m-0 print:w-full">
+        <article className="bg-white p-4 md:p-8 shadow-sm">
           {order.map((section) => renderMap[section])}
         </article>
       </main>
@@ -231,14 +276,14 @@ const ResumePreview = React.forwardRef<HTMLDivElement, TemplateType>(
   }
 );
 
-ResumePreview.displayName = "ResumePreview";
-export default ResumePreview;
+SimpleResume.displayName = "SimpleResume";
+export default SimpleResume;
 
 function Bullets({ items }: { items: React.ReactNode[] }) {
   return (
-    <ul className="list-disc pl-5 space-y-1.5 mt-2">
+    <ul className="list-disc pl-5  mt-2 w-145">
       {items.map((it, i) => (
-        <li key={i} className="text-[13px] leading-6 text-neutral-900">
+        <li key={i} className="text-[13px] leading-6 text-neutral-900 text-justify">
           {it}
         </li>
       ))}
@@ -285,7 +330,7 @@ function ResumeSection({
       <h2 className="text-lg font-semibold tracking-wide uppercase text-neutral-800">
         {title}
       </h2>
-      <div className="h-px bg-neutral-300" />
+      <div style={{ backgroundColor: "#d4d4d4" }} className="h-px" />
       <div className="text-sm leading-6 text-neutral-900">{children}</div>
     </section>
   );
@@ -300,4 +345,13 @@ function cleanUsername(s: string) {
     .replace(/github.com\//, "")
     .replace(/\/.+$/, "")
     .trim();
+}
+
+function chunkArray<T>(arr: T[], n: number) {
+  const out: T[][] = [];
+  const per = Math.ceil(arr.length / n);
+  for (let i = 0; i < n; i++) {
+    out.push(arr.slice(i * per, i * per + per));
+  }
+  return out;
 }

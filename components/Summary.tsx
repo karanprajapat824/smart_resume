@@ -6,35 +6,35 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export default function Summery({
+export default function Summary({
   data,
   onChange,
   openSections,
   setOpenSections
 }: ResumeFormProps) {
-  const summeryRef = useRef<HTMLTextAreaElement>(null);
+  const summaryRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    summeryRef.current?.focus();
+    summaryRef.current?.focus();
   }, [openSections.summery]);
 
 
   return (
     <div>
       <ResumeFormHeader
-        heading="Professional Summery"
-        isOpen={openSections.summery}
+        heading="Professional Summary"
+        isOpen={openSections.summary}
         setIsOpen={setOpenSections}
-        name="summery"
+        name="summary"
       />
       <div className="border-b pb-4">
         <div
           className={`h-40 mt-4 flex items-start flex-col ${
-            !openSections.summery && "hidden"
+            !openSections.summary && "hidden"
           }`}
         >
           <textarea
-            ref={summeryRef}
+            ref={summaryRef}
             id="summary"
             value={data.summary}
             onChange={(e) => onChange({ summary: e.target.value})}

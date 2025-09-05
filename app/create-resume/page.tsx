@@ -15,7 +15,8 @@ export interface ResumeData {
     phone: string;
     linkedin: string;
     github: string;
-    address: string;
+    location : string;
+    country : string;
   };
   summary: string;
   workExperience: Array<{
@@ -56,6 +57,11 @@ export interface ResumeData {
     bulletPoints: Array<string>;
     isBulletPoints: boolean;
   }>;
+  languages : Array<{
+    id : string;
+    language : string;
+    level : string;
+  }>
 }
 
 interface startOptionsType {
@@ -87,7 +93,8 @@ export default function CreateResumePage() {
       phone: "",
       linkedin: "",
       github: "",
-      address: "",
+      location: "",
+      country : ""
     },
     summary: "",
     workExperience: [],
@@ -95,7 +102,9 @@ export default function CreateResumePage() {
     skills: [],
     projects: [],
     achievements: [],
+    languages : []
   };
+
   const [resumeData, setResumeData] = useState<ResumeData>(() => initialLoad(defaultResumeData));
   const [clearFormModel, setClearFormModel] = useState<boolean>(false);
   const [startOption, setStartOption] = useState<startOptionsType>({
@@ -105,12 +114,13 @@ export default function CreateResumePage() {
 
   const [currentOrder, setCurrentOrder] = useState<string[]>([
     "PersonalDetails",
-    "Summery",
+    "Summary",
     "WorkExperience",
     "Education",
     "Skills",
     "Projects",
     "Achievements",
+    "Languages"
   ]);
 
   const handleDataChange = (newData: Partial<ResumeData>) => {
@@ -201,7 +211,7 @@ export default function CreateResumePage() {
               </div>
               <ResumeForm data={resumeData} onChange={handleDataChange} currentOrder={currentOrder} setCurrentOrder={setCurrentOrder} />
             </div>
-            <LivePreview data={resumeData} template="Templete1" order={currentOrder} />
+            <LivePreview data={resumeData} template="SimpleResume" order={currentOrder} />
           </div>
         </main>
       )}
