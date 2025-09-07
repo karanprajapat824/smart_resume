@@ -7,6 +7,7 @@ import LivePreview from "@/components/LivePreview";
 import ResumeStartOptions from "@/components/ResumeStartOptions";
 import { Upload, Eraser } from "lucide-react";
 import Modal from "@/components/Modal";
+import { URL } from "@/app/page";
 
 export interface ResumeData {
   personalDetails: {
@@ -15,8 +16,8 @@ export interface ResumeData {
     phone: string;
     linkedin: string;
     github: string;
-    location : string;
-    country : string;
+    location: string;
+    country: string;
   };
   summary: string;
   workExperience: Array<{
@@ -40,6 +41,9 @@ export interface ResumeData {
   skills: Array<{
     id: string;
     name: string;
+    level: string;
+    key: string;
+    value: string;
   }>;
   projects: Array<{
     id: string;
@@ -57,10 +61,10 @@ export interface ResumeData {
     bulletPoints: Array<string>;
     isBulletPoints: boolean;
   }>;
-  languages : Array<{
-    id : string;
-    language : string;
-    level : string;
+  languages: Array<{
+    id: string;
+    language: string;
+    level: string;
   }>
 }
 
@@ -94,7 +98,7 @@ export default function CreateResumePage() {
       linkedin: "",
       github: "",
       location: "",
-      country : ""
+      country: ""
     },
     summary: "",
     workExperience: [],
@@ -102,7 +106,7 @@ export default function CreateResumePage() {
     skills: [],
     projects: [],
     achievements: [],
-    languages : []
+    languages: []
   };
 
   const [resumeData, setResumeData] = useState<ResumeData>(() => initialLoad(defaultResumeData));
@@ -136,7 +140,41 @@ export default function CreateResumePage() {
     }
   }, [resumeData]);
 
-  function onUpload() { }
+  function autoFill(data: ResumeData) {
+    setResumeData(data);
+    setStartOption({
+      model: false,
+      option: "u"
+    });
+  }
+
+  async function onUpload(file: File) {
+    if (!file) {
+      alert("Please select a PDF first");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(URL + "/upload-file", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        autoFill(data.response)
+      } else {
+        alert(data.message || "Upload failed");
+      }
+    } catch (err) {
+      console.error("Error uploading PDF:", err);
+      alert("Something went wrong");
+    }
+
+  }
 
   function onManual() {
     setStartOption({
@@ -151,12 +189,13 @@ export default function CreateResumePage() {
     localStorage.removeItem("data");
     sessionStorage.removeItem("option");
     setClearFormModel(false);
+    setStartOption((prev) => ({ ...prev, model: true }));
   }
 
   useEffect(() => {
     const opt = sessionStorage.getItem("option");
     if (opt) {
-      if (opt === "m") onManual();
+      // if (opt === "m") onManual();
     }
   }, []);
 
@@ -173,7 +212,10 @@ export default function CreateResumePage() {
         onSecondaryClick={() => setClearFormModel(false)}
       />
       {startOption.model ? (
-        <ResumeStartOptions onUpload={onUpload} onManual={onManual} />
+        <ResumeStartOptions
+          onUpload={onUpload}
+          onManual={onManual}
+        />
       ) : (
         <main className="container mx-auto px-4 py-8">
           <div className="grid lg:grid-cols-2 gap-8">

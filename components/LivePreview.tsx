@@ -23,7 +23,7 @@ const makeTemplateMap = () => {
 
 export default function LivePreview({ data, template = "T1", order }: LivePreviewType) {
   const resumeRef = useRef<HTMLDivElement>(null);
-  const [exportLoading,setExportLoading] = useState<boolean>(false);
+  const [exportLoading, setExportLoading] = useState<boolean>(false);
   // const handlePrint = useReactToPrint({
   //   contentRef: resumeRef,
   //   documentTitle: "resume",
@@ -107,7 +107,7 @@ export default function LivePreview({ data, template = "T1", order }: LivePrevie
           disabled={exportLoading}
           className="border rounded bg-primary text-primary-foreground text-sm py-2 px-4 font-semibold hover:cursor-pointer flex items-center gap-2"
         >
-          <ArrowDownToLine className="h-4" /> 
+          <ArrowDownToLine className="h-4" />
           {exportLoading ? "Exporting Document, Please Wait..." : "PDF"}
         </button>
         <button
@@ -116,23 +116,19 @@ export default function LivePreview({ data, template = "T1", order }: LivePrevie
         >
           <FileImage className="h-4" /> PNG
         </button>
+        <button
+          onClick={()=>window.location.href = "/templates"}
+          className="border rounded bg-primary text-primary-foreground text-sm py-2 px-4 font-semibold hover:cursor-pointer flex items-center gap-2"
+        >
+          Try another template
+        </button>
       </div>
 
       <div className="bg-card border p-0 a4-page">
         <SelectedTemplate
           data={data}
           ref={resumeRef}
-          order={
-            order || [
-              "PersonalDetails",
-              "Summery",
-              "Education",
-              "WorkExperience",
-              "Skills",
-              "Projects",
-              "Achievements",
-            ]
-          }
+          order={order}
         />
       </div>
     </div>

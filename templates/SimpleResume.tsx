@@ -10,7 +10,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
   ({ data, order }, ref) => {
     const renderMap: Record<string, React.ReactNode> = {
       PersonalDetails: (
-        <header className="mb-4" key="PersonalDetails">
+        <header className="mb-0" key="PersonalDetails">
           <h1 className="text-2xl font-semibold text-neutral-900 capitalize">
             {data.personalDetails.name || "Your Name"}
           </h1>
@@ -35,9 +35,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
             </a>
             {data.personalDetails.email &&
               (data.personalDetails.github ||
-                data.personalDetails.linkedin ||
-                data.personalDetails.location ||
-                data.personalDetails.country
+                data.personalDetails.linkedin
               ) && (
                 <span className="text-neutral-400">|</span>
               )}
@@ -57,9 +55,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
 
             {data.personalDetails.github &&
               (
-                data.personalDetails.linkedin ||
-                data.personalDetails.location ||
-                data.personalDetails.country
+                data.personalDetails.linkedin
               ) && (
                 <span className="text-neutral-400">|</span>
               )}
@@ -91,14 +87,14 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
 
       Summary: data.summary ? (
         <ResumeSection title="Professional Summary" key="Summary">
-          <p className="text-[13px] leading-6 text-justify whitespace-pre-line">{data.summary}</p>
+          <p className="text-[13px] leading-5 text-justify whitespace-pre-line">{data.summary}</p>
         </ResumeSection>
       ) : null,
 
       Education:
         data.education.length > 0 ? (
           <ResumeSection title="Education" key="Education">
-            <div className="space-y-3">
+            <div className="space-y-1">
               {data.education.map((edu) => (
                 <ItemRow
                   key={edu.id}
@@ -112,7 +108,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                         <div>{edu.location && "|"}</div>
                         <div className="capitalize">{edu.location}</div>
                       </div>
-                      <div className="text-[13px] text-neutral-700 text-justify whitespace-pre-line">
+                      <div className="text-[13px] text-neutral-700 text-justify leading-5 whitespace-pre-line">
                         {edu.description}
                       </div>
                     </div>
@@ -136,7 +132,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                       <p className="font-medium">
                         {we.company} — {we.role}
                       </p>
-                      <p className="text-[13px] text-neutral-700 mt-1 text-justify whitespace-pre-line">
+                      <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line">
                         {we.description}
                       </p>
                       {we.isBulletPoints && (
@@ -194,7 +190,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                             </a>
                           )}
                         </p>
-                        <div className="text-[13px] text-neutral-700 mt-1 leading-tight whitespace-pre-line text-justify">
+                        <div className="text-[13px] text-neutral-700 mt-1 leading-5 whitespace-pre-line text-justify">
                           {p.description}
                         </div>
                         {p.isBulletPoints && (
@@ -223,7 +219,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                   left={
                     <div>
                       <p className="font-medium">{a.title}</p>
-                      <p className="text-[13px] text-neutral-700 mt-1 text-justify whitespace-pre-line">
+                      <p className="text-[13px] text-neutral-700 mt-1 text-justify leading-5 whitespace-pre-line">
                         {a.description}
                       </p>
                       {a.isBulletPoints && (
@@ -325,7 +321,7 @@ function ResumeSection({
 }) {
   return (
     <section
-      className={["space-y-2 mt-4", className].filter(Boolean).join(" ")}
+      className={["space-y-2 mt-2", className].filter(Boolean).join(" ")}
     >
       <h2 className="text-lg font-semibold tracking-wide uppercase text-neutral-800">
         {title}

@@ -38,6 +38,9 @@ export default function Skills({
           {
             id: Date.now().toString(),
             name: trimmed,
+            level : "",
+            key : "",
+            value : ""
           },
         ],
       });
