@@ -8,6 +8,9 @@ const cors = require("cors");
 const multer = require("multer");
 const pdfParse = require("pdf-parse");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const mammoth = require("mammoth");
+const textract = require("textract");
+
 
 
 const app = express();
@@ -27,10 +30,24 @@ const userSchema = new mongoose.Schema({
 });
 
 const resumeSchema = new mongoose.Schema({
-    email: String,
+    email: { type: String },
     template: String,
+    id: { type: String, unique: true },
+    order: {
+        type: [String],
+        default: [
+            "PersonalDetails",
+            "Summary",
+            "WorkExperience",
+            "Education",
+            "Skills",
+            "Projects",
+            "Achievements",
+            "Languages"
+        ]
+    },
     personalDetails: {
-        name: { type: String, required: true },
+        name: { type: String },
         email: { type: String },
         phone: { type: String },
         linkedin: { type: String },
@@ -43,21 +60,21 @@ const resumeSchema = new mongoose.Schema({
 
     workExperience: [
         {
-            id: { type: String, required: true },
-            company: { type: String, required: true },
-            role: { type: String, required: true },
+            id: { type: String },
+            company: { type: String },
+            role: { type: String },
             duration: { type: String },
             description: { type: String },
             bulletPoints: [{ type: String }],
-            isBulletPoints: { type: Boolean, default: true },
+            isBulletPoints: { type: Boolean, default: false },
         },
     ],
 
     education: [
         {
-            id: { type: String, required: true },
-            degree: { type: String, required: true },
-            institution: { type: String, required: true },
+            id: { type: String },
+            degree: { type: String },
+            institution: { type: String },
             year: { type: String },
             description: { type: String },
             grade: { type: String },
@@ -67,8 +84,8 @@ const resumeSchema = new mongoose.Schema({
 
     skills: [
         {
-            id: { type: String, required: true },
-            name: { type: String, required: true },
+            id: { type: String },
+            name: { type: String },
             level: { type: String },
             key: { type: String },
             value: { type: String },
@@ -77,30 +94,30 @@ const resumeSchema = new mongoose.Schema({
 
     projects: [
         {
-            id: { type: String, required: true },
-            title: { type: String, required: true },
+            id: { type: String },
+            title: { type: String },
             link: { type: String },
             description: { type: String },
             bulletPoints: [{ type: String }],
-            isBulletPoints: { type: Boolean, default: true },
+            isBulletPoints: { type: Boolean, default: false },
         },
     ],
 
     achievements: [
         {
-            id: { type: String, required: true },
-            title: { type: String, required: true },
+            id: { type: String },
+            title: { type: String },
             year: { type: String },
             description: { type: String },
             bulletPoints: [{ type: String }],
-            isBulletPoints: { type: Boolean, default: true },
+            isBulletPoints: { type: Boolean, default: false },
         },
     ],
 
     languages: [
         {
-            id: { type: String, required: true },
-            language: { type: String, required: true },
+            id: { type: String },
+            language: { type: String },
             level: { type: String },
         },
     ],
@@ -139,7 +156,7 @@ app.post("/signup", async (req, res) => {
         const newUser = new User({ email, password: hashedPassword });
         await newUser.save();
 
-        const token = jwt.sign({ email: newUser.email }, process.env.SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ email: newUser.email }, process.env.SECRET_KEY);
 
         res.json({ message: "User registered successfully", token });
     } catch (err) {
@@ -157,7 +174,7 @@ app.post("/login", async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
 
-        const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY);
 
         res.json({ message: "Login successful", token });
     } catch (err) {
@@ -178,18 +195,47 @@ app.get("/resumes", authenticateToken, async (req, res) => {
         res.json({
             message: "Resumes fetched successfully",
             count: resumes.length,
-            data: resumes,
+            resumes: resumes,
         });
     } catch (err) {
         res.status(500).json({ message: "Error fetching resumes", error: err.message });
     }
 });
 
+app.post("/save-resume", authenticateToken, async (req, res) => {
+    try {
+        let resumeData = req.body;
+        resumeData.email = req.user.email;
+
+        let updatedResume;
+
+        if (resumeData.id) {
+            updatedResume = await Resume.findOneAndUpdate(
+                { id: resumeData.id },
+                resumeData
+            );
+        } else {
+            const newResume = new Resume(resumeData);
+            newResume.id = newResume._id.toString();
+            updatedResume = await newResume.save();
+        }
+
+        res.status(200).json({
+            message: "Resume saved successfully",
+            resume: updatedResume,
+        });
+    } catch (error) {
+        console.error("Error saving resume:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 app.post("/upload-file", upload.single("file"), async (req, res) => {
     try {
         const file = req.file;
+        const template = req.body.template;
         if (!file) return res.status(400).json({ message: "No file uploaded" });
+
 
         const mime = file.mimetype;
         let text = "";
@@ -221,11 +267,24 @@ You are a helpful assistant that extracts structured resume data.
 I will give you the raw text of a resume.  
 Your task: Fill the following JSON object with data extracted from the resume.
 
-If some information is unavailable, keep the field as an empty string "" or empty array [].
+If some information is unavailable, keep the field as an empty string "" or empty array [] or same data.
 Do not add extra fields, explanations, or text. Return only valid JSON.
 
 Here is the JSON object schema you must follow:
 {
+"id" : "",
+"email" : "",
+"template" : "",
+"order" : [
+    "PersonalDetails",
+      "Summary",
+      "WorkExperience",
+      "Education",
+      "Skills",
+      "Projects",
+      "Achievements",
+      "Languages"
+],
   "personalDetails": {
     "name": "",
     "email": "",
@@ -299,7 +358,6 @@ Here is the JSON object schema you must follow:
 Resume text:
 ${text}
     `;
-
         const result = await model.generateContent(prompt);
         let responseText = result.response.text();
         responseText = responseText.replace(/```json|```/g, "").trim();
@@ -310,6 +368,7 @@ ${text}
         } catch (err) {
             console.warn("Model did not return valid JSON, sending raw text");
             parsed = responseText;
+            return res.status(500).json({ message: "Internal server error" });
         }
 
         res.json({ response: parsed });
@@ -319,5 +378,30 @@ ${text}
     }
 });
 
+app.delete("/deleteResume", authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ message: "Resume ID is required" });
+        }
+
+        const deletedResume = await Resume.findByIdAndDelete(id);
+
+        if (!deletedResume) {
+            return res.status(404).json({ message: "Resume not found" });
+        }
+
+        res.status(200).json({ message: "Resume deleted successfully", deletedResume });
+    } catch (error) {
+        console.error("Error deleting resume:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+app.get("/temp", async (req, res) => {
+    const data = await Resume.find({});
+    res.send(data);
+})
 
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));

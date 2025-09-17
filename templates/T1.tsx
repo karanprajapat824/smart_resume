@@ -3,11 +3,10 @@ import { ResumeData } from "@/app/create-resume/page";
 
 interface TemplateType {
   data: ResumeData;
-  order: string[];
 }
 
 const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
-  ({ data, order }, ref) => {
+  ({ data }, ref) => {
     const renderMap: Record<string, React.ReactNode> = {
       PersonalDetails: (
         <header
@@ -194,8 +193,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
     return (
       <main ref={ref} className="print:text-black print:m-0 print:p-0 print">
         <article className="w-full max-w-4xl mx-auto shadow-sm">
-          {/* Render sections in user-specified order */}
-          {order.map((section) => renderMap[section])}
+          {data.order?.map((section) => renderMap[section])}
         </article>
       </main>
     );

@@ -12,7 +12,7 @@ import {
   Target,
   Star,
 } from "lucide-react";
-import { useEffect, useState } from 'react';
+
 export const URL = "http://localhost:5000";
 
 export async function verifyToken(token: string): Promise<boolean> {
@@ -32,13 +32,13 @@ export async function verifyToken(token: string): Promise<boolean> {
     }
 
     if (!response.ok) {
-      console.warn("Token verification failed:", result?.message);
+      console.log("Token verification failed:", result?.message);
       localStorage.removeItem("token");
       return false;
     }
     return true;
   } catch (error) {
-    console.error("Token verification error:", error);
+    console.log("Token verification error:", error);
     localStorage.removeItem("token");
     return false;
   }

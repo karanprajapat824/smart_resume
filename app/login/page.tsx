@@ -56,7 +56,7 @@ export default function AuthPage() {
 
       if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/my-resumes";
+        window.location.href = "/create-resume";
       } else {
         setError(data.message || "Invalid email or password");
       }
@@ -99,7 +99,7 @@ export default function AuthPage() {
 
       if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/my-resumes";
+        window.location.href = "/create-resume";
       } else {
         setError(data.message || "Signup failed. Please try again.");
       }

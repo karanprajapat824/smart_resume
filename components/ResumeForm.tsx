@@ -13,13 +13,9 @@ import Languages from "./Languages";
 export interface ResumeFormProps {
   data: ResumeData;
   onChange: (data: Partial<ResumeData>) => void;
-  openSections?: any;
-  setOpenSections?: any;
-  currentOrder : string[];
-  setCurrentOrder : React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: ResumeFormProps) {
+export function ResumeForm({ data, onChange}: ResumeFormProps) {
   const [openSections, setOpenSections] = useState({
     personalDetail: true,
     summary: false,
@@ -47,49 +43,6 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
       };
     });
   };
-
-  
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("resume_sections_order");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const validKeys = [
-            "PersonalDetails",
-            "Summary",
-            "WorkExperience",
-            "Education",
-            "Skills",
-            "Projects",
-            "Achievements",
-            "Languages"
-          ];
-
-          const filtered = parsed.filter(
-            (k: unknown) =>
-              typeof k === "string" && validKeys.includes(k as string)
-          );
-          const missing = validKeys.filter((k) => !filtered.includes(k));
-          setCurrentOrder([...filtered, ...missing]);
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to load saved resume order:", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        "resume_sections_order",
-        JSON.stringify(currentOrder)
-      );
-    } catch (err) {
-      console.warn("Failed to save resume order:", err);
-    }
-  }, [currentOrder]);
 
   const dragIndexRef = useRef<number | null>(null);
   const hoverIndexRef = useRef<number | null>(null);
@@ -141,11 +94,12 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
       return;
     }
 
-    setCurrentOrder((prev) => {
-      const next = [...prev];
-      const [moved] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, moved);
-      return next;
+    const next = data.order;
+    const [moved] = next.splice(fromIndex,1);
+    next.splice(toIndex,0,moved);
+    
+    onChange({
+      order : next
     });
 
     dragIndexRef.current = null;
@@ -155,7 +109,7 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
 
   function handleContainerDragOver(e: React.DragEvent) {
     e.preventDefault();
-    hoverIndexRef.current = currentOrder.length;
+    hoverIndexRef.current = data.order.length;
   }
 
   function handleDragEnd() {
@@ -170,7 +124,7 @@ export function ResumeForm({ data, onChange , currentOrder , setCurrentOrder }: 
       className="w-full"
       aria-label="Resume sections draggable list"
     >
-      {currentOrder.map((key, index) => {
+      {data.order?.map((key, index) => {
         const Section = componentsMap[key];
         const isDragging = draggingIndex === index;
 

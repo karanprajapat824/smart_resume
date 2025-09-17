@@ -63,7 +63,7 @@ export default function LandingPageHeader() {
             }
           </button>
           <button className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:opacity-90 transition hover:cursor-pointer">
-            <Link href="/create-resume">Create My Resume</Link>
+            <Link href="/templates">Create My Resume</Link>
           </button>
           <ThemeToggle />
         </div>

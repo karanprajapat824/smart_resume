@@ -3,11 +3,10 @@ import React from "react";
 
 interface TemplateType {
   data: ResumeData;
-  order: string[];
 }
 
 const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
-  ({ data, order }, ref) => {
+  ({ data }, ref) => {
     const renderMap: Record<string, React.ReactNode> = {
       PersonalDetails: (
         <header className="mb-0" key="PersonalDetails">
@@ -132,7 +131,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                       <p className="font-medium">
                         {we.company} — {we.role}
                       </p>
-                      <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line">
+                      <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line w-145">
                         {we.description}
                       </p>
                       {we.isBulletPoints && (
@@ -265,7 +264,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
     return (
       <main ref={ref} className="bg-neutral-50 px-0 py-0 print:m-0 print:w-full">
         <article className="bg-white p-4 md:p-8 shadow-sm">
-          {order.map((section) => renderMap[section])}
+          {data.order.map((section) => renderMap[section])}
         </article>
       </main>
     );
