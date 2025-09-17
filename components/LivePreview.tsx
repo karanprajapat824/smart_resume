@@ -2,13 +2,14 @@
 import { ResumeData } from "@/app/create-resume/page";
 import SimpleResume from "@/templates/SimpleResume";
 import T1 from "@/templates/T1";
-import { ArrowDownToLine, FileImage,Download } from "lucide-react";
+import { ArrowDownToLine, FileImage, Download } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import Button from "./ui/Button";
 
 interface LivePreviewType {
   data: ResumeData;
+  temp?: string;
 }
 
 const makeTemplateMap = () => {
@@ -19,7 +20,7 @@ const makeTemplateMap = () => {
   return map;
 };
 
-export default function LivePreview({ data }: LivePreviewType) {
+export default function LivePreview({ data, temp }: LivePreviewType) {
   const resumeRef = useRef<HTMLDivElement>(null);
   const [exportLoading, setExportLoading] = useState<boolean>(false);
   const [template, setTemplate] = useState<string>("SimpleResume");
@@ -80,17 +81,17 @@ export default function LivePreview({ data }: LivePreviewType) {
   }, []);
 
   const rawMap = makeTemplateMap();
-  const SelectedTemplate = rawMap[template] || SimpleResume
+  const SelectedTemplate = rawMap[temp || template] || SimpleResume
 
   return (
     <div className="space-y-4 h-fit sticky flex flex-col top-0 relative">
       <div className="top-10 left-10 flex gap-2">
         <Button
-        icon={<Download className="h-4"/>}
-        size="sm"
-        variant="primaryPlus"
+          icon={<Download className="h-4" />}
+          size="sm"
+          variant="primaryPlus"
         >
-            Export as
+          Export as
         </Button>
       </div>
 

@@ -40,7 +40,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
       Summary: data.summary ? (
         <section key="Summary" className="max-w-6xl mx-auto px-8 mb-6">
           <ResumeSection title="SUMMARY">
-            <p className="text-sm leading-relaxed text-gray-700">{data.summary}</p>
+            <p className="text-sm leading-5 text-justify whitespace-pre-line text-gray-700">{data.summary}</p>
           </ResumeSection>
         </section>
       ) : null,
@@ -49,8 +49,8 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
         data.skills && data.skills.length > 0 ? (
           <section key="Skills" className="max-w-6xl mx-auto px-8 mb-6">
             <ResumeSection title="SKILLS">
-              <div className="grid grid-cols-2 gap-4">
-                {chunkArray(data.skills, Math.ceil(data.skills.length / 2)).map(
+              <div className="grid grid-cols-4 gap-2">
+                {chunkArray(data.skills, 4).map(
                   (col, idx) => (
                     <div key={idx}>
                       <ul className="text-sm space-y-1 text-gray-700">
@@ -78,7 +78,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
                       <div>
                         <p className="font-medium text-gray-800">{we.role}</p>
                         {/* <p className="text-sm text-gray-600">{we.company} {we.location ? `- ${we.location}` : ""}</p> */}
-                        <p className="text-sm text-gray-700 mt-2 whitespace-pre-line">{we.description}</p>
+                        <p className="text-sm text-gray-700 mt-2 whitespace-pre-line  leading-5 text-justify">{we.description}</p>
                         {we.isBulletPoints && we.bulletPoints && (
                           <Bullets items={we.bulletPoints.map((b, i) => <span key={i}>{b}</span>)} />
                         )}
@@ -207,7 +207,7 @@ export default T1;
 /* ---------------- helper components ---------------- */
 function Bullets({ items }: { items: React.ReactNode[] }) {
   return (
-    <ul className="list-disc pl-5 space-y-1.5 mt-2">
+    <ul className="list-disc pl-5 mt-2">
       {items.map((it, i) => (
         <li key={i} className="text-sm leading-6 text-gray-900">{it}</li>
       ))}
@@ -244,10 +244,10 @@ function initialsFromName(name?: string) {
     .toUpperCase();
 }
 
-function chunkArray<T>(arr: T[], n: number) {
+function chunkArray<T>(arr: T[], columns: number): T[][] {
   const out: T[][] = [];
-  const per = Math.ceil(arr.length / n);
-  for (let i = 0; i < n; i++) {
+  const per = Math.ceil(arr.length / columns);
+  for (let i = 0; i < columns; i++) {
     out.push(arr.slice(i * per, i * per + per));
   }
   return out;

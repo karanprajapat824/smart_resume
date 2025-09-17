@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { verifyToken } from "@/app/page";
+import Button from "./ui/Button";
 
 export default function LandingPageHeader() {
 
@@ -57,14 +58,22 @@ export default function LandingPageHeader() {
           </a>
         </nav>
         <div className="flex items-center space-x-3">
-          <button className="px-4 py-2 text-sm border rounded-md hover:bg-muted transition hover:cursor-pointer">
+          <Button
+            variant="ghost"
+            size="md"
+            href={isLogin ? "/my-resumes" : "/login"}
+          >
             {
-              isLogin ? <Link href="/my-resumes">My Resumes</Link> : <Link href="/login">Login / Sign up</Link>
+              isLogin ? "My Resumes" : "Login / Sign up"
             }
-          </button>
-          <button className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:opacity-90 transition hover:cursor-pointer">
-            <Link href="/templates">Create My Resume</Link>
-          </button>
+          </Button>
+          <Button 
+            variant="primary" 
+            size="md"
+            href={"/templates"}
+            >          
+            Create My Resume
+          </Button>
           <ThemeToggle />
         </div>
       </div>

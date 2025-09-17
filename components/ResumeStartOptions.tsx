@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Loader from "./Loader";
+import Loader from "./ui/Loader";
 
 function extractPersonalDetails(lines: string[]) {
   const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
@@ -26,7 +26,7 @@ function extractPersonalDetails(lines: string[]) {
 export interface ResumeStartOptionsProps {
   onUpload: (file: File) => void;
   onManual: () => void;
-  loading : boolean
+  loading: boolean
 }
 
 export default function ResumeStartOptions({

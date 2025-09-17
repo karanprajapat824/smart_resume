@@ -12,6 +12,7 @@ import {
   Target,
   Star,
 } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 export const URL = "http://localhost:5000";
 
@@ -51,7 +52,7 @@ export default function HomePage() {
       <LandingPageHeader />
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary mb-4 hover:cursor-pointer">
+          <span className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium border mb-4 hover:cursor-pointer">
             <Zap className="h-4 w-4 mr-1" /> AI-Powered Resume Builder
           </span>
           <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
@@ -63,18 +64,28 @@ export default function HomePage() {
             your dream job.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <button className="px-8 py-3 text-lg bg-primary text-white rounded-lg hover:opacity-90 transition hover:cursor-pointer">
-              <Link href={"/create-resume"}>Get Started for Free</Link>
-            </button>
-            <button className="px-8 py-3 text-lg border rounded-lg bg-transparent hover:bg-muted transition hover:cursor-pointer">
-              <Link href={"/templates"}>View Sample Resumes</Link>
-            </button>
+            <Button
+              variant='primaryPlus'
+              size='lg'
+              href='/templates'
+              icon={<Zap className="h-5 w-5" />}
+            >
+              Get Started for Free
+            </Button>
+            <Button
+              variant='ghost'
+              size='lg'
+              href='#templates'
+              icon={<FileText className="h-5 w-5" />}
+            >
+              View Sample Resumes
+            </Button>
           </div>
         </div>
       </section>
 
-      <section id="templates" className="py-16 px-4 bg-muted/30">
-        <div className="container mx-auto">
+      <section id="templates" className="py-16 px-4 bg-muted/80">
+        <div className="mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-foreground mb-4">
               Pick from Professional Templates
@@ -85,12 +96,24 @@ export default function HomePage() {
             </p>
           </div>
 
-          <Templates />
+          <Templates
+            templates={[
+              "SampleResume",
+              "T1",
+              "SampleResume",
+              "T1"
+            ]}
+          />
 
-          <div className="text-center">
-            <button className="px-8 py-3 text-lg border rounded-lg hover:bg-muted transition hover:cursor-pointer">
-              <Link href={"/templates"}>View More Templates</Link>
-            </button>
+          <div className="text-center mt-10 ">
+            <Button
+              variant='ghost'
+              size="lg"
+              icon={<FileText className="h-5 w-5" />}
+              href="/templates"
+            >
+              View All Templates
+            </Button>
           </div>
         </div>
       </section>

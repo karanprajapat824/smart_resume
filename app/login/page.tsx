@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FileText } from "lucide-react";
 import { URL } from "@/app/page";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/Loader";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);

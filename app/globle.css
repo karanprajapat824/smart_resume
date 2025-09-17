@@ -4,13 +4,13 @@
   --background: #ffffff;
   --foreground: #1e293b;
   --card: #252525;
-  --primary: #3B82F6;
+  --primary: #3b82f6;
   --primary-foreground: #ffffff;
-  --secondary : #09090B;
+  --secondary: #09090b;
   --secondary-foreground: #ffffff;
   --muted: #f1f5f9;
   --muted-foreground: #475569;
-  --accent: green; /* Purple */
+  --accent: green;
   --accent-foreground: #ffffff; /* White */
   --destructive: red; /* Orange */
   --destructive-foreground: #ffffff; /* White */
@@ -37,7 +37,7 @@
   --background: #171717;
   --foreground: #f8fafc;
   --card: #252525;
-  --primary:  #3B82F6;
+  --primary: #3b82f6;
   --primary-foreground: #ffffff;
   --secondary: #454545;
   --secondary-foreground: #ffffff;
@@ -197,20 +197,36 @@
 .a4-page {
   position: relative !important;
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   background: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   transform: scale(75%);
   margin: 0;
   padding: 0;
+  overflow-y: auto;
   transform-origin: top left;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .small-page {
-  width: 215mm;
+  width: 210mm;
   height: 297mm;
   background: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  transform: scale(0.35);
+  transform: scale(35%);
   transform-origin: top left;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.small-page-wrapper {
+  height: calc(297mm * 0.35);
+  /* overflow-y: auto; */
+  width: calc(210mm * 0.35);
 }

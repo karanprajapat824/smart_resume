@@ -30,7 +30,7 @@ export default function Button({
       "group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-primary backdrop-blur-lg px-6 py-2 cursor-pointer font-semibold text-primary-foreground transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-sm hover:shadow-blue-2xl border border-white/20",
     secondary:
       "bg-secondary text-secondary-foreground border border-zinc-600 shadow-md hover:shadow-xl cursor-pointer",
-    ghost: "bg-primary text-white hover:opacity-90",
+    ghost: "text-muted-foreground hover:opacity-90 cursor-pointer border hover:bg-muted hover:text-primary",
   };
 
   const sizes: Record<Size, string> = {

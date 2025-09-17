@@ -1,14 +1,14 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import type { ResumeData } from "@/app/create-resume/page";
-import PersonalDetails from "./PersonalDetails";
-import Summary from "./Summary";
-import WorkExperience from "./WorkExperience";
-import Education from "./Education";
-import Skills from "./Skills";
-import Projects from "./Projects";
-import Achievements from "./Achievements";
-import Languages from "./Languages";
+import PersonalDetails from "./resumeForm/PersonalDetails";
+import Summary from "./resumeForm/Summary";
+import WorkExperience from "./resumeForm/WorkExperience";
+import Education from "./resumeForm/Education";
+import Skills from "./resumeForm/Skills";
+import Projects from "./resumeForm/Projects";
+import Achievements from "./resumeForm/Achievements";
+import Languages from "./resumeForm/Languages";
 
 export interface ResumeFormProps {
   data: ResumeData;

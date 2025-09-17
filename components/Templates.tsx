@@ -1,73 +1,171 @@
-import resumeTemplate1 from "@/public/resume-template-1.webp";
-import resumeTemplate2 from "@/public/resume-template-2.webp";
-import resumeTemplate3 from "@/public/resume-template-3.jpg";
-import resumeTemplate4 from "@/public/resume-template-4.webp";
-import Image from "next/image";
+import Button from "./ui/Button";
+import SmallPreview from "./Preview";
+import { ResumeData } from "@/app/create-resume/page";
+import { ZoomIn } from "lucide-react";
 
-const templates = [
-  {
-    id: 1,
-    name: "Professional Classic",
-    description: "Clean and ATS-friendly design",
-    image: resumeTemplate1,
-    category: "Professional"
-  },
-  {
-    id: 2,
-    name: "Creative Sidebar",
-    description: "Modern layout with color accents",
-    image: resumeTemplate2,
-    category: "Creative"
-  },
-  {
-    id: 3,
-    name: "Executive Minimal",
-    description: "Sophisticated and elegant style",
-    image: resumeTemplate3,
-    category: "Executive"
-  },
-  {
-    id: 4,
-    name: "Tech Developer",
-    description: "Perfect for technical roles",
-    image: resumeTemplate4,
-    category: "Technical"
-  }
-];
+interface TemplateType  {
+  templates: string[];
+}
 
-const Templates = () => {
+const Templates = ({templates} : TemplateType) => {
+  
+  const defaultResumeData: ResumeData = {
+    id: "",
+    template: "",
+    order: [
+      "PersonalDetails",
+      "Summary",
+      "WorkExperience",
+      "Education",
+      "Skills",
+      "Projects",
+      "Achievements",
+      "Languages"
+    ],
+    personalDetails: {
+      name: "Karan Prajapat",
+      email: "Karanprajapat824@gmail.com",
+      phone: "+918770738268",
+      linkedin: "karanprajapat824",
+      github: "karanprajapat824",
+      location: "Ujjain M.P,",
+      country: "India"
+    },
+    summary:
+      "Full Stack Web Developer skilled in MERN stack and Next.js, with expertise in Java, JavaScript, and TypeScript. Strong\nfoundation in DSA and passionate about building practical products for developers. Created projects like ElementX\nand Smart Resume, emphasizing usability.",
+    workExperience: [
+      {
+        id: "1",
+        company: "IndusAI Solutions",
+        role: "Web Development Intern",
+        duration: "Jun 2024 - Oct 2024",
+        description: "",
+        isBulletPoints: true,
+        bulletPoints: [
+          "Developed and tested web pages using HTML, CSS, and JavaScript.",
+          "Implemented responsive layouts and fixed bugs with the team.",
+          "Followed best coding practices and used Git for version control."
+        ]
+      }
+    ],
+    education: [
+      {
+        id: "1",
+        degree: "Bachelor Of Technology",
+        institution: "Mahakal Intitute of Technology and Management",
+        location: "Ujjain, M.P.",
+        year: "2025",
+        grade: "7.65 CGPA",
+        description: ""
+      },
+      {
+        id: "2",
+        degree: "12th MP Board",
+        institution: "Jai Bharti Higher Secondry School",
+        location: "Ujjain, M.P.",
+        year: "2021",
+        grade: "80%",
+        description: ""
+      },
+      {
+        id: "3",
+        degree: "10th MP Board",
+        institution: "Jai Bharti Higher Secondry School",
+        location: "Ujjain, M.P.",
+        year: "2019",
+        grade: "80%",
+        description: ""
+      }
+    ],
+    skills: [
+      { id: "1", name: "C++", level: "", key: "", value: "" },
+      { id: "2", name: "Java", level: "", key: "", value: "" },
+      { id: "3", name: "JavaScript", level: "", key: "", value: "" },
+      { id: "4", name: "TypeScript", level: "", key: "", value: "" },
+      { id: "5", name: "MongoDB", level: "", key: "", value: "" },
+      { id: "6", name: "MySql", level: "", key: "", value: "" },
+      { id: "7", name: "PostreSql", level: "", key: "", value: "" },
+      { id: "8", name: "HTML5", level: "", key: "", value: "" },
+      { id: "9", name: "CSS", level: "", key: "", value: "" },
+      { id: "10", name: "ReactJs", level: "", key: "", value: "" },
+      { id: "11", name: "NextJs", level: "", key: "", value: "" },
+      { id: "12", name: "Tailwind Css", level: "", key: "", value: "" },
+      { id: "13", name: "Git / Github", level: "", key: "", value: "" }
+    ],
+    projects: [
+      {
+        id: "1",
+        title: "Elementx",
+        link: "",
+        description: "",
+        isBulletPoints: true,
+        bulletPoints: [
+          "8000+ reusable UI components — buttons, cards, forms, switches, etc.",
+          "Real-time in-browser editor with live preview on every keystroke.",
+          "Code conversion utilities to convert HTML/CSS to React, Vue, Angular.",
+          "Authentication: Google OAuth, GitHub OAuth, and JWT support."
+        ]
+      },
+      {
+        id: "2",
+        title: "Smart Resume",
+        link: "",
+        description: "",
+        isBulletPoints: true,
+        bulletPoints: [
+          "Built a dynamic resume builder allowing users to create, edit, and export resumes.",
+          "Integrated real-time preview and customization features for personalized resume layouts.",
+          "Implemented user authentication and secure data storage for seamless access to resumes."
+        ]
+      }
+    ],
+    achievements: [],
+    languages: [
+      { id: "1", language: "Hindi", level: "Intermediate" },
+      { id: "2", language: "English", level: "Intermediate" }
+    ]
+  };
+
+
+
   return (
-    <section id="templates" className="py-20 bg-background">
+    <section id="templates" className="pt-10">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {templates.map((template) => (
-            <div
-              key={template.id}
-              className="group cursor-pointer"
-            >
-              <div className="border bg-gradient-card rounded-xl p-6 shadow-brand-card hover:shadow-brand-lg transition-all duration-300 transform hover:-translate-y-2">
-                <div className="aspect-[3/4] mb-4 overflow-hidden rounded-lg">
-                  <Image
-                    src={template.image}
-                    alt={`${template.name} resume template`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-full">
-                      {template.category}
-                    </span>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {templates.map((template,index) => {
+            return (
+              <div
+                key={index}
+                className="overflow-hidden border-2 small-page-wrapper relative group
+             motion-safe:transform-gpu will-change-transform
+             transition-[transform,box-shadow] duration-1000 ease-out hover:-translate-y-1 hover:shadow-xl shadow-lg
+             motion-reduce:transition-none cursor-pointer"
+              >
+                <div
+                  className="absolute inset-0 z-20 flex flex-col items-center justify-between
+               pointer-events-none opacity-0 -translate-y-2
+               group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
+               transition-[opacity,transform] duration-500 ease-out p-4"
+                >
+                  <div />
+                  <div className="border p-4 rounded-full bg-muted/80 hover:scale-105 z-30 transition-transform cursor-pointer">
+                    <ZoomIn />
                   </div>
-                  <h3 className="font-semibold text-lg">{template.name}</h3>
-                  <p className="text-sm text-muted-foreground">{template.description}</p>
+                  <Button variant="primary" size="md" className="w-[90%]">
+                    Use This Template
+                  </Button>
+                </div>
+
+                <div className="relative z-10">
+                  <SmallPreview data={defaultResumeData} template={template} />
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
+
   );
 };
 

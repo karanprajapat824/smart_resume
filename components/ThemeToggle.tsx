@@ -1,20 +1,49 @@
 "use client";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 dark:text-white hover:cursor-pointer"
+      className="relative flex items-center justify-center py-1.5 cursor-pointer px-4 rounded 
+                 bg-gradient-to-br from-blue-500 to-purple-500
+                 shadow-lg hover:shadow-xl transition-all duration-300"
     >
-      {theme == "dark" ? (
-        <Sun />
-      ) : (
-        <Moon  />
-      )}
+      <AnimatePresence mode="wait" initial={false}>
+        {theme === "dark" ? (
+          <motion.div
+            key="sun"
+            initial={{ rotate: -90, opacity: 0, scale: 0.6 }}
+            animate={{ rotate: 0, opacity: 1, scale: 1 }}
+            exit={{ rotate: 90, opacity: 0, scale: 0.6 }}
+            transition={{ duration: 0.1 }}
+          >
+            <Sun className="w-6 h-6 text-yellow-300" />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="moon"
+            initial={{ rotate: 90, opacity: 0, scale: 0.6 }}
+            animate={{ rotate: 0, opacity: 1, scale: 1 }}
+            exit={{ rotate: -90, opacity: 0, scale: 0.6 }}
+            transition={{ duration: 0.1 }}
+          >
+            <Moon className="w-6 h-6 text-indigo-100" />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </button>
   );
 }
