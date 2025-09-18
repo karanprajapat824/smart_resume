@@ -50,15 +50,16 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <LandingPageHeader />
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center max-w-4xl">
+      
+      <section className="py-20 px-4 overflow-hidden">
+        <div className="mx-auto text-center max-w-6xl">
           <span className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium border mb-4 hover:cursor-pointer">
             <Zap className="h-4 w-4 mr-1" /> AI-Powered Resume Builder
           </span>
-          <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h2 className="text-3xl md:text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
             Stand Out with a <span className="text-primary">Smart Resume</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
             Build your professional resume in minutes with AI-powered templates.
             Choose from professional templates, customize instantly, and land
             your dream job.
@@ -73,7 +74,7 @@ export default function HomePage() {
               Get Started for Free
             </Button>
             <Button
-              variant='ghost'
+              variant='outline'
               size='lg'
               href='#templates'
               icon={<FileText className="h-5 w-5" />}
@@ -84,13 +85,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="templates" className="py-16 px-4 bg-muted/80">
+      <section id="templates" className="py-10 overflow-hidden md:py-16 px-4 bg-muted/80">
         <div className="mx-auto">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">
+            <h3 className="text-xl md:text-3xl font-bold text-foreground mb-4">
               Pick from Professional Templates
             </h3>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-base text-muted-foreground md:text-lg">
               Choose from our collection of ATS-friendly, professionally
               designed templates
             </p>
@@ -101,13 +102,15 @@ export default function HomePage() {
               "SampleResume",
               "T1",
               "SampleResume",
-              "T1"
+              "SampleResume",
+              "T1",
+              "SampleResume"
             ]}
           />
 
           <div className="text-center mt-10 ">
             <Button
-              variant='ghost'
+              variant='outline'
               size="lg"
               icon={<FileText className="h-5 w-5" />}
               href="/templates"
@@ -118,7 +121,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="features" className="py-16 px-4">
+      {/* <section id="features" className="py-16 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-foreground mb-4">
@@ -185,9 +188,9 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section id="testimonials" className="py-16 px-4 bg-muted/30">
+      {/* <section id="testimonials" className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-foreground mb-4">
@@ -253,8 +256,9 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
-      <Footer />
+      </section> */}
+
+      {/* <Footer /> */}
     </div>
 
   );

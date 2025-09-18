@@ -263,7 +263,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
 
     return (
       <main ref={ref} className="bg-neutral-50 px-0 py-0 print:m-0 print:w-full">
-        <article className="bg-white p-4 md:p-8 shadow-sm">
+        <article className="bg-white p-4 box-border">
           {data.order.map((section) => renderMap[section])}
         </article>
       </main>
@@ -276,7 +276,7 @@ export default SimpleResume;
 
 function Bullets({ items }: { items: React.ReactNode[] }) {
   return (
-    <ul className="list-disc pl-5  mt-2 w-145">
+    <ul style={{width : "200mm"}} className="list-disc pl-5 mt-2">
       {items.map((it, i) => (
         <li key={i} className="text-[13px] leading-6 text-neutral-900 text-justify">
           {it}
@@ -301,7 +301,7 @@ function ItemRow({
     >
       <div className="min-w-0">{left}</div>
       {right ? (
-        <div className="shrink-0 text-right text-[13px] leading-5 text-neutral-700">
+        <div className="shrink-0 text-right text-[13px] leading-5 text-neutral-700 pr-2">
           {right}
         </div>
       ) : null}
@@ -325,7 +325,7 @@ function ResumeSection({
       <h2 className="text-lg font-semibold tracking-wide uppercase text-neutral-800">
         {title}
       </h2>
-      <div style={{ backgroundColor: "#d4d4d4" }} className="h-px" />
+      <div style={{ backgroundColor: "#d4d4d4",width : "200mm" }} className="h-px" />
       <div className="text-sm leading-6 text-neutral-900">{children}</div>
     </section>
   );

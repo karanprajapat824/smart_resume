@@ -1,22 +1,22 @@
 "use client"
 import { useState, useRef, useEffect } from "react";
-import { ResumeFormProps } from "./ResumeForm";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import {
   Sparkles,
 } from "lucide-react";
+import { ResumeSectionProps } from "../ResumeForm";
 
 export default function Summary({
   data,
   onChange,
   openSections,
   setOpenSections
-}: ResumeFormProps) {
+}: ResumeSectionProps) {
   const summaryRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     summaryRef.current?.focus();
-  }, [openSections.summery]);
+  }, [openSections.summary]);
 
 
   return (

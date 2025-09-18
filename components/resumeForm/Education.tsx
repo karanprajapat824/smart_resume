@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { ResumeFormProps } from "./ResumeForm";
 import { Plus, Trash2 } from "lucide-react";
+import { ResumeSectionProps } from "../ResumeForm";
 
 export default function Education({
   data,
   onChange,
   openSections,
   setOpenSections
-}: ResumeFormProps) {
+}: ResumeSectionProps) {
 
   const educationRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>

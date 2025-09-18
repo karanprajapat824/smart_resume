@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-type Variant = "primary" | "primaryPlus" | "secondary" | "ghost";
+type Variant = "primary" | "primaryPlus" | "secondary" | "ghost" | "outline";
 type Size = "sm" | "md" | "lg";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -30,7 +30,8 @@ export default function Button({
       "group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-primary backdrop-blur-lg px-6 py-2 cursor-pointer font-semibold text-primary-foreground transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-sm hover:shadow-blue-2xl border border-white/20",
     secondary:
       "bg-secondary text-secondary-foreground border border-zinc-600 shadow-md hover:shadow-xl cursor-pointer",
-    ghost: "text-muted-foreground hover:opacity-90 cursor-pointer border hover:bg-muted hover:text-primary",
+    outline: "text-muted-foreground hover:opacity-90 cursor-pointer border hover:bg-muted hover:text-primary",
+    ghost: "text-muted-foreground hover:text-foreground transition-colors cursor-pointer",
   };
 
   const sizes: Record<Size, string> = {

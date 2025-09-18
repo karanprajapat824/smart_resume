@@ -15,6 +15,20 @@ export interface ResumeFormProps {
   onChange: (data: Partial<ResumeData>) => void;
 }
 
+export interface ResumeSectionProps extends ResumeFormProps {
+  openSections: {
+    personalDetail: boolean;
+    summary: boolean;
+    work: boolean;
+    education: boolean;
+    skill: boolean;
+    project: boolean;
+    achievement: boolean;
+    language: boolean;
+  };
+  setOpenSections: (name: keyof ResumeSectionProps["openSections"]) => void;
+}
+
 export function ResumeForm({ data, onChange}: ResumeFormProps) {
   const [openSections, setOpenSections] = useState({
     personalDetail: true,

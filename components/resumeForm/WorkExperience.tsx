@@ -2,14 +2,14 @@
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
-import { ResumeFormProps } from "./ResumeForm";
+import { ResumeSectionProps } from "../ResumeForm";
 
 export default function WorkExperience({
   data,
   onChange,
   openSections,
   setOpenSections
-}: ResumeFormProps) {
+}: ResumeSectionProps) {
 
   const [bullet, setBullet] = useState<string>("");
 

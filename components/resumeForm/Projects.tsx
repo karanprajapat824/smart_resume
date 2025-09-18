@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { ResumeFormProps } from "./ResumeForm";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
+import { ResumeSectionProps } from "../ResumeForm";
 
 export default function Projects({
   data,
   onChange,
   openSections,
   setOpenSections,
-}: ResumeFormProps) {
+}: ResumeSectionProps) {
   const [bullet, setBullet] = useState<string>("");
 
   const projectsRefs = useRef<

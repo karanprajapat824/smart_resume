@@ -1,15 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { ResumeFormProps } from "./ResumeForm";
 import { Plus, Trash2,ChevronDown } from "lucide-react";
+import { ResumeSectionProps } from "../ResumeForm";
 
 export default function Languages({
     data,
     onChange,
     openSections,
     setOpenSections,
-}: ResumeFormProps) {
+}: ResumeSectionProps) {
     const langRef = useRef<HTMLInputElement>(null);
     const [language, setLanguage] = useState<string>("");
     const [level, setLevel] = useState<string>("");

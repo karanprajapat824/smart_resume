@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { ResumeFormProps } from "./ResumeForm";
+import { ResumeSectionProps } from "../ResumeForm";
 
 export default function PersonalDetails({
   data,
   onChange,
   openSections,
   setOpenSections
-}: ResumeFormProps) {
+}: ResumeSectionProps) {
   const personalDetailsRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const handlePersonalDetailRefs = (e: React.KeyboardEvent, index: number) => {
