@@ -121,7 +121,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* <section id="features" className="py-16 px-4">
+      <section id="features" className="py-16 px-4 overflow-hidden">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-foreground mb-4">
@@ -188,7 +188,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* <section id="testimonials" className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto">
@@ -258,7 +258,7 @@ export default function HomePage() {
         </div>
       </section> */}
 
-      {/* <Footer /> */}
+      <Footer />
     </div>
 
   );
