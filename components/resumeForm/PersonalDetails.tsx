@@ -36,7 +36,7 @@ export default function PersonalDetails({
       />
       <div className="pt-4 border-b">
         <div className={`pt-1 space-y-4 pb-4 ${!openSections.personalDetail && "hidden"}`}>
-          <div className="grid grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
             <div className="flex flex-col gap-2">
               <label className="font-semibold text-sm" htmlFor="name">
                 Full Name
@@ -45,7 +45,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[0] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="name"
                 value={data.personalDetails.name}
                 onChange={(e) =>
@@ -57,7 +57,7 @@ export default function PersonalDetails({
                   })
                 }
                 onKeyDown={(e) => handlePersonalDetailRefs(e, 0)}
-                placeholder="John Doe"
+                placeholder="Karan Prajapat"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -68,7 +68,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[1] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="email"
                 type="email"
                 value={data.personalDetails.email}
@@ -80,12 +80,12 @@ export default function PersonalDetails({
                     },
                   })
                 }
-                placeholder="john@example.com"
+                placeholder="karanprajapat824@gmail.com"
                 onKeyDown={(e) => handlePersonalDetailRefs(e, 1)}
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
             <div className="flex flex-col gap-2">
               <label className="font-semibold text-sm" htmlFor="phone">
                 Phone
@@ -94,7 +94,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[2] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="phone"
                 value={data.personalDetails.phone}
                 onChange={(e) =>
@@ -105,7 +105,7 @@ export default function PersonalDetails({
                     },
                   })
                 }
-                placeholder="+91 7387483083"
+                placeholder="+91 8770738268"
                 onKeyDown={(e) => handlePersonalDetailRefs(e, 2)}
               />
             </div>
@@ -117,7 +117,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[3] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="linkedin"
                 value={data.personalDetails.linkedin}
                 onChange={(e) =>
@@ -128,12 +128,12 @@ export default function PersonalDetails({
                     },
                   })
                 }
-                placeholder="johndoe"
+                placeholder="karanprajapat824"
                 onKeyDown={(e) => handlePersonalDetailRefs(e, 3)}
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
             <div className="flex flex-col gap-2">
               <label className="font-semibold text-sm" htmlFor="github">
                 GitHub Username
@@ -142,7 +142,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[4] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="github"
                 value={data.personalDetails.github}
                 onChange={(e) =>
@@ -153,7 +153,7 @@ export default function PersonalDetails({
                     },
                   })
                 }
-                placeholder="johndoe"
+                placeholder="karanprajapat824"
                 onKeyDown={(e) => handlePersonalDetailRefs(e, 4)}
               />
             </div>
@@ -165,7 +165,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[5] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="address"
                 value={data.personalDetails.location}
                 onChange={(e) =>
@@ -181,7 +181,7 @@ export default function PersonalDetails({
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
             <div className="flex flex-col gap-2">
               <label className="font-semibold text-sm" htmlFor="github">
                 Country
@@ -190,7 +190,7 @@ export default function PersonalDetails({
                 ref={(el) => {
                   personalDetailsRefs.current[6] = el;
                 }}
-                className="border rounded py-1 px-4 w-60 text-sm"
+                className="border rounded py-1 px-4 text-sm"
                 id="country"
                 value={data.personalDetails.country}
                 onChange={(e) =>

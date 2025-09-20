@@ -109,7 +109,7 @@ export default function Skills({
             </div>
 
             {/* Skills list */}
-            <div className="flex gap-3 flex-wrap pb-4">
+            <div className="flex gap-3 flex-wrap py-4">
               {data.skills.map((skill, index) => (
                 <div
                   key={index}

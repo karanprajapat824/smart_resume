@@ -36,11 +36,11 @@ export default function Template() {
             <header className="sticky top-0 z-50 left-0 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                        <FileText className="h-6 w-6  text-primary" />
+                        <FileText className="h-8 w-8  text-primary" />
                         <span onClick={() => window.location.href = "/"} className="text-sm md:text-xl font-bold text-foreground cursor-pointer">Smart Resume</span>
                     </div>
 
-                    <nav className="hidden md:flex items-center justify-between  space-x-6">
+                    <nav className="hidden md:flex items-center justify-between">
                         <Button
                             href="/"
                             variant="ghost"
@@ -73,11 +73,11 @@ export default function Template() {
 
                 {isMenuOpen && (
                     <div className="md:hidden">
-                        <nav className="fixed right-0 top-16 bg-background border px-4 py-4 flex flex-col items-start space-y-4">
+                        <nav className="fixed right-5 top-20 rounded-lg bg-background border p-4 flex flex-col">
                             <Button
                                 href="/"
                                 variant="ghost"
-                                size="lg"
+                                size="md"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Home
@@ -86,7 +86,7 @@ export default function Template() {
                                 href="/my-resumes"
                                 onClick={() => setIsMenuOpen(false)}
                                 variant="ghost"
-                                size="lg"
+                                size="md"
                             >
                                 My Resumes
                             </Button>

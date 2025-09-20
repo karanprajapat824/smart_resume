@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
+import Button from "../ui/Button";
 
 export default function Education({
   data,
@@ -79,7 +80,7 @@ export default function Education({
             }`}
         >
           {data.education.map((edu, index) => (
-            <div className="border p-4 w-[100%] rounded" key={edu.id}>
+            <div className="border w-full p-4 rounded" key={edu.id}>
               <div className="flex flex-row items-center justify-between space-y-0 py-2">
                 <div className="text-lg font-semibold">Education Entry</div>
                 <button
@@ -91,7 +92,7 @@ export default function Education({
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="grid grid-cols-2">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-3">
                   {/* Degree */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Degree</label>
@@ -99,7 +100,7 @@ export default function Education({
                       ref={(el) => {
                         educationRefs.current[index * 4 + 0] = el;
                       }}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={edu.degree}
                       placeholder="Bachelor of Science"
                       name="degree"
@@ -117,7 +118,7 @@ export default function Education({
                       ref={(el) => {
                         educationRefs.current[index * 4 + 1] = el;
                       }}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={edu.year}
                       placeholder="2025"
                       name="year"
@@ -138,7 +139,7 @@ export default function Education({
                     ref={(el) => {
                       educationRefs.current[index * 4 + 2] = el;
                     }}
-                    className="border rounded py-1 px-4 w-[93%] text-sm"
+                    className="border rounded py-1 px-4 text-sm"
                     value={edu.institution}
                     placeholder="Indian Institute of Technology"
                     name="institution"
@@ -149,7 +150,7 @@ export default function Education({
                   />
                 </div>
 
-                <div className="grid grid-cols-2">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-3">
                   {/* Grade or marks */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Grade or Marks</label>
@@ -157,7 +158,7 @@ export default function Education({
                       ref={(el) => {
                         educationRefs.current[index * 4 + 3] = el;
                       }}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={edu.grade}
                       placeholder="8.00 CGPA or 80%"
                       name="grade"
@@ -175,7 +176,7 @@ export default function Education({
                       ref={(el) => {
                         educationRefs.current[index * 4 + 4] = el;
                       }}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={edu.location}
                       placeholder="Ujjain , M.P"
                       name="location"
@@ -205,13 +206,15 @@ export default function Education({
             </div>
           ))}
 
-          <button
-            className="w-full bg-primary hover:cursor-pointer text-primary-foreground flex items-center border h-10 justify-center rounded transition duration-500"
+          <Button
+            variant="primary"
+            className="w-full"
+            size="sm"
             onClick={addEducation}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Education
-          </button>
+          </Button>
         </div>
       </div>
     </div>

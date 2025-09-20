@@ -47,35 +47,8 @@ export default function LandingPageHeader() {
         </div>
         {
           smallScreenMenuOpen && (
-            <div className="absolute top-17 right-0 bg-background border-l border-b border-t border-bl-lg flex flex-col items-start space-y-4 py-4 px-10 md:hidden z-50 justify-start">
-              <Button
-                href="#features"
-                variant="ghost"
-                size="lg"
-              >
-                Features
-              </Button>
-              <Button
-                href="#templates"
-                variant="ghost"
-                size="lg"
-              >
-                Templates
-              </Button>
-              <Button
-                href="#testimonials"
-                variant="ghost"
-                size="lg"
-              >
-                Reviews
-              </Button>
-              <Button
-                href="#contact"
-                variant="ghost"
-                size="lg"
-              >
-                Contact
-              </Button>
+            <div 
+            className="absolute top-20 right-5 bg-background border rounded-lg border-bl-lg flex flex-col p-5  space-y-4 md:hidden z-50 justify-start">
               <Button
                 variant="outline"
                 size="md"
@@ -109,13 +82,6 @@ export default function LandingPageHeader() {
             size="lg"
           >
             Templates
-          </Button>
-          <Button
-            href="#testimonials"
-            variant="ghost"
-            size="lg"
-          >
-            Reviews
           </Button>
           <Button
             href="#contact"

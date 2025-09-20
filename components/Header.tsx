@@ -1,6 +1,5 @@
 "use client"
-import Link from "next/link"
-import { Cloud, FileText, Menu, X, Save } from "lucide-react"
+import { Cloud, FileText, Menu, X, Save, RefreshCw } from "lucide-react"
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { useEffect, useState } from "react";
 import Button from "./ui/Button";
@@ -13,18 +12,12 @@ interface HeaderType {
 
 export function Header({ isLogin = false, isSave = false, saveResume }: HeaderType) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [spin, setSpin] = useState(false);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+    if (!isSave) return;
+    setTimeout(() => setSpin(false), 5000);
+  }, [spin]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -32,28 +25,38 @@ export function Header({ isLogin = false, isSave = false, saveResume }: HeaderTy
 
   return (
     <header className="sticky top-0 z-50 left-0 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <FileText className="h-6 w-6  text-primary" />
+      <div className="px-2 md:px-8 h-16 flex items-center justify-between">
+        <div className="flex items-center space-x-1">
+          <FileText className="md:h-8 md:w-8 h-6 w-6 text-primary" />
           <span onClick={() => window.location.href = "/"} className="text-sm md:text-xl font-bold text-foreground cursor-pointer">Smart Resume</span>
           {
             isLogin ?
-              <button
-                onClick={saveResume}
-                disabled={isSave}
-                className={`ml-4 flex items-center gap-1 font-semibold cursor-pointer
-                ${isSave ? "text-green-500 animate-fade-in-up" : "text-gray-500 animate-fade-out-down"}
-                `}
-              >
-                <Cloud className="h-8" />
-                {isSave ? "Saved to cloud" : "Save to cloud"}
-              </button>
+              (
+                !isSave ?
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-4"
+                    icon={<Cloud className="h-8" />}
+                    onClick={() => { saveResume(); setSpin(true) }}
+                  >
+                    <div>Save to cloud</div>
+                    <RefreshCw className={`h-4 ${spin && "animate-spin"}`} />
+                  </Button> :
+                  <Button
+                    variant="outline"
+                    className="ml-4 border-success-foreground"
+                    size="sm"
+                  >
+                    <div className="flex items-center gap-2 text-success-foreground"><Cloud className="h-8" /> Saved to cloud</div>
+                  </Button>
+              )
               :
               <Button
                 href="/login"
                 icon={<Save className="h-4" />}
                 size={"sm"}
-                variant="primaryPlus"
+                variant="outline"
                 className="ml-4"
               >
                 Login to Save
@@ -61,19 +64,21 @@ export function Header({ isLogin = false, isSave = false, saveResume }: HeaderTy
           }
         </div>
 
-        <nav className="hidden md:flex items-center justify-between  space-x-6">
-          <Button 
-          href="/" 
-          variant="ghost"
-          size="sm"
+        <nav className="hidden md:flex items-center justify-between space-x-2">
+          <Button
+            href="/templates"
+            variant="ghost"
+            size="lg"
           >
-          </Button>
-          <Link href="/templates" className="text-muted-foreground hover:text-foreground transition-colors">
             Templates
-          </Link>
-          <Link href="/my-resumes" className="text-muted-foreground hover:text-foreground transition-colors">
+          </Button>
+          <Button
+            href="/my-resumes"
+            variant="ghost"
+            size="lg"
+          >
             My Resumes
-          </Link>
+          </Button>
           <ThemeToggle />
         </nav>
 
@@ -88,29 +93,32 @@ export function Header({ isLogin = false, isSave = false, saveResume }: HeaderTy
 
       {isMenuOpen && (
         <div className="md:hidden">
-          <nav className="fixed inset-x-0 top-16 bg-background border-t border-border px-4 py-4 flex flex-col space-y-4">
-            <Link
+          <nav className="fixed top-20 right-5 bg-background border p-4 flex flex-col space-y-2 rounded-lg items-start">
+            <Button
               href="/"
-              className="text-muted-foreground hover:text-foreground transition-colors py-2"
+              variant="ghost"
+              size="sm"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
-            </Link>
-            <Link
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               href="/templates"
-              className="text-muted-foreground hover:text-foreground transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Templates
-            </Link>
-            <Link
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               href="/my-resumes"
-              className="text-muted-foreground hover:text-foreground transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               My Resumes
-            </Link>
-            <div className="py-2">
+            </Button>
+            <div className="pl-2">
               <ThemeToggle />
             </div>
           </nav>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
+import Button from "../ui/Button";
 
 export default function Projects({
   data,
@@ -98,9 +99,8 @@ export default function Projects({
       />
       <div className="border-b pt-4 pb-0">
         <div
-          className={`space-y-4 flex flex-col items-center justify-center mb-4 ${
-            !openSections.project && "hidden"
-          }`}
+          className={`space-y-4 flex flex-col items-center justify-center mb-4 ${!openSections.project && "hidden"
+            }`}
         >
           {data.projects.map((project, index) => (
             <div className="border p-4 w-[100%] rounded" key={project.id}>
@@ -115,13 +115,13 @@ export default function Projects({
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="grid grid-cols-2">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-4">
                   {/* Title */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Project Title</label>
                     <input
-                      ref={(el) => {(projectsRefs.current[index * 3 + 0] = el)}}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      ref={(el) => { (projectsRefs.current[index * 3 + 0] = el) }}
+                      className="border rounded py-1 px-4 text-sm"
                       value={project.title}
                       placeholder="My Awesome Project"
                       name="title"
@@ -136,8 +136,8 @@ export default function Projects({
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Link</label>
                     <input
-                      ref={(el) => {(projectsRefs.current[index * 3 + 1] = el)}}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      ref={(el) => { (projectsRefs.current[index * 3 + 1] = el) }}
+                      className="border rounded py-1 px-4 text-sm"
                       value={project.link}
                       placeholder="https://github.com/username/project"
                       name="link"
@@ -154,22 +154,20 @@ export default function Projects({
                   <label className="font-semibold text-sm flex flex-row gap-2 mb-2 items-center">
                     <button
                       onClick={() => updateIsBulletPoints(project.id, false)}
-                      className={`px-4 py-2 rounded-lg transition-all ${
-                        !project.isBulletPoints
+                      className={`px-3 py-2 rounded-lg transition-all ${!project.isBulletPoints
                           ? "border-b-2 border-blue-500 text-blue-600 bg-gray-100"
                           : "border-b-2 border-transparent"
-                      } ${project.bulletPoints.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
+                        } ${project.bulletPoints.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
                       disabled={project.bulletPoints.length > 0}
                     >
                       Description
                     </button>
                     <button
                       onClick={() => updateIsBulletPoints(project.id, true)}
-                      className={`px-4 py-2 rounded-lg transition-all flex flex-row items-center gap-1 ${
-                        project.isBulletPoints
+                      className={`px-3 py-2 rounded-lg transition-all flex flex-row items-center gap-1 ${project.isBulletPoints
                           ? "border-b-2 bg-gray-100 border-blue-500 text-blue-600"
                           : "border-b-2 border-transparent"
-                      } ${project.description.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
+                        } ${project.description.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
                       disabled={project.description.length > 0}
                     >
                       <CirclePlus className="h-4" />
@@ -184,7 +182,7 @@ export default function Projects({
                         onChange={(e) => setBullet(e.target.value)}
                         className="text-sm px-2 w-full focus:outline-none"
                         placeholder="Add bullet points"
-                        onKeyDown={(e)=>e.key === "Enter" && addBulletPoints(project.id)}
+                        onKeyDown={(e) => e.key === "Enter" && addBulletPoints(project.id)}
                       />
                       <button
                         onClick={() => addBulletPoints(project.id)}
@@ -195,8 +193,8 @@ export default function Projects({
                     </div>
                   ) : (
                     <textarea
-                      ref={(el) => {(projectsRefs.current[index * 3 + 2] = el)}}
-                      className="border rounded resize-none py-2 px-4 h-20 text-sm"
+                      ref={(el) => { (projectsRefs.current[index * 3 + 2] = el) }}
+                      className="border rounded w-full resize-none py-2 px-4 h-20 text-sm"
                       value={project.description}
                       placeholder="Describe your project..."
                       name="description"
@@ -226,13 +224,15 @@ export default function Projects({
             </div>
           ))}
 
-          <button
-            className="w-full bg-primary hover:cursor-pointer text-primary-foreground flex items-center border h-10 justify-center rounded transition duration-500"
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-full"
             onClick={addProject}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Project
-          </button>
+          </Button>
         </div>
       </div>
     </div>

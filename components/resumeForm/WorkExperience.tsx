@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
+import Button from "../ui/Button";
 
 export default function WorkExperience({
   data,
@@ -116,7 +117,7 @@ export default function WorkExperience({
             }`}
         >
           {data.workExperience?.map((exp, index) => (
-            <div className="border p-4 w-[100%] rounded" key={exp.id}>
+            <div className="border w-[100%] p-4 rounded" key={exp.id}>
               <div className="flex flex-row items-center justify-between space-y-0 py-2">
                 <div className="text-lg font-semibold">Experience Entry</div>
                 <button
@@ -128,7 +129,7 @@ export default function WorkExperience({
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="grid grid-cols-2">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-3">
                   {/* Company */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Company</label>
@@ -136,7 +137,7 @@ export default function WorkExperience({
                       ref={(el) => {
                         workExperienceRefs.current[index * 4 + 0] = el;
                       }}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={exp.company}
                       placeholder="Company Name"
                       onChange={(e) => updateWorkExperience(e, exp.id)}
@@ -155,7 +156,7 @@ export default function WorkExperience({
                       ref={(el) => {
                         workExperienceRefs.current[index * 4 + 1] = el;
                       }}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={exp.role}
                       placeholder="Job Title"
                       name="role"
@@ -175,7 +176,7 @@ export default function WorkExperience({
                     ref={(el) => {
                       workExperienceRefs.current[index * 4 + 2] = el;
                     }}
-                    className="border rounded py-1 px-4 w-[93%] text-sm"
+                    className="border rounded py-1 px-4 text-sm"
                     value={exp.duration}
                     placeholder="Jan 2020 - Present"
                     name="duration"
@@ -192,7 +193,7 @@ export default function WorkExperience({
                   <label className="font-semibold text-sm flex flex-row gap-2 mb-2 items-center">
                     <button
                       onClick={() => updateIsBulletPoints(exp.id, false)}
-                      className={`px-4 py-2 rounded-lg transition-all 
+                      className={`px-3 py-2 rounded-lg transition-all 
                       ${!exp.isBulletPoints ? "border-b-2 border-blue-500 text-blue-600 bg-gray-100" : "border-b-2 border-transparent"} 
                       ${(exp.bulletPoints.length > 0) ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
                       disabled={exp.bulletPoints.length > 0}
@@ -201,7 +202,7 @@ export default function WorkExperience({
                     </button>
                     <button
                       onClick={() => updateIsBulletPoints(exp.id, true)}
-                      className={`px-4 py-2 rounded-lg transition-all flex flex-row items-center gap-1
+                      className={`px-3 py-2 rounded-lg transition-all flex flex-row items-center gap-1
                       ${exp.isBulletPoints ? "border-b-2 bg-gray-100 border-blue-500 text-blue-600" : "border-b-2 border-transparent"}
                       ${exp.description.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}
                       `}
@@ -230,7 +231,7 @@ export default function WorkExperience({
                         ref={(el) => {
                           workExperienceRefs.current[index * 4 + 3] = el;
                         }}
-                        className="border rounded resize-none py-2 px-4 h-20 text-sm"
+                        className="border rounded w-full resize-none py-2 px-4 h-20 text-sm"
                         value={exp.description}
                         placeholder="Describe your work experience...."
                         name="description"
@@ -261,13 +262,15 @@ export default function WorkExperience({
             </div>
           ))}
 
-          <button
-            className="w-full bg-primary  hover:cursor-pointer text-primary-foreground flex items-center border h-10 justify-center rounded transition duration-500"
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-full"
             onClick={addWorkExperience}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Work Experience
-          </button>
+          </Button>
         </div>
       </div>
     </div>

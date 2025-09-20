@@ -169,7 +169,6 @@ export default function CreateResumePage() {
     return true;
   }
 
-
   useEffect(() => {
     try {
       localStorage.setItem("data", JSON.stringify(resumeData));
@@ -188,8 +187,7 @@ export default function CreateResumePage() {
         console.warn("Invalid resume data received, ignoring:", data);
         return;
       }
-
-      setResumeData(data);
+      // setResumeData(data);
       setIsDirty(false);
     } catch (err) {
       console.error("Failed to parse resume data:", err);
@@ -323,7 +321,7 @@ export default function CreateResumePage() {
       }, 5000);
       return () => clearTimeout(timerId);
     }
-  }, [resumeData, isLogin]);
+  }, [resumeData]);
 
 
   return (
@@ -354,8 +352,8 @@ export default function CreateResumePage() {
           loading={loading}
         />
       ) : (
-        <main className="container mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-2 gap-8">
+        <main className="mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-0 overflow-y-auto pr-4">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-3 justify-start pb-4 overflow-y-visible">

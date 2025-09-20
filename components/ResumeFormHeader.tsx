@@ -20,7 +20,7 @@ export default function ResumeFormHeader({
   return (
     <button
       onClick={() => setIsOpen(name)}
-      className="text-xl font-bold flex gap-2 items-center w-full justify-between mt-4"
+      className="text-base md:text-lg font-bold flex gap-2 items-center w-full justify-between mt-4"
     >
       <div className="flex gap-2 items-center">
         <div className="hover:cursor-grab"><GripHorizontal /></div>

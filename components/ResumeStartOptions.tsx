@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import Button from "@/components/ui/Button";
 import Loader from "./ui/Loader";
 
 function extractPersonalDetails(lines: string[]) {
@@ -93,14 +92,13 @@ export default function ResumeStartOptions({
               id="file"
             />
 
-            <button
-              type="button"
+            <Button
               onClick={onManual}
-              aria-label="Fill information manually"
-              className="w-full sm:w-auto inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-4 py-3 font-medium transition-colors hover:cursor-pointer mb-4 text-sm"
+              variant="primaryPlus"
+              size="md"
             >
               {"✍️ Fill Information Manually"}
-            </button>
+            </Button>
           </div>
         </div>
       </section>
