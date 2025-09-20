@@ -25,7 +25,7 @@ export default function LivePreview({ data, temp }: LivePreviewType) {
   const [exportLoading, setExportLoading] = useState<boolean>(false);
   const [template, setTemplate] = useState<string>("SimpleResume");
   const [loadingDone, setLoadingDone] = useState<boolean>(false);
-
+  
   const handlePDFDownload = async () => {
     if (!resumeRef.current) return;
     setExportLoading(true);
@@ -84,25 +84,13 @@ export default function LivePreview({ data, temp }: LivePreviewType) {
   const SelectedTemplate = rawMap[temp || template] || SimpleResume
 
   return (
-    <div className="space-y-4 h-fit sticky flex flex-col top-0 relative">
-      <div className="top-10 left-10 flex gap-2">
-        <Button
-          icon={<Download className="h-4" />}
-          size="sm"
-          variant="primaryPlus"
-        >
-          Export as
-        </Button>
-      </div>
-
-      <div className="bg-card border p-0 a4-page">
-        {
-          loadingDone && <SelectedTemplate
-            data={data}
-            ref={resumeRef}
-          />
-        }
-      </div>
+    <div className="a4-page">
+      {
+        loadingDone && <SelectedTemplate
+          data={data}
+          ref={resumeRef}
+        />
+      }
     </div>
   );
 }

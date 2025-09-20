@@ -3,10 +3,16 @@ import { ResumeData } from "@/app/create-resume/page";
 
 interface TemplateType {
   data: ResumeData;
+  visibleSections?: string[];
 }
 
 const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
-  ({ data }, ref) => {
+  ({ data, visibleSections }, ref) => {
+
+    const orderToRender = visibleSections && visibleSections.length > 0
+      ? visibleSections
+      : data.order || [];
+
     const renderMap: Record<string, React.ReactNode> = {
       PersonalDetails: (
         <header
@@ -191,9 +197,9 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
     };
 
     return (
-      <main ref={ref} className="print:text-black print:m-0 print:p-0 print">
-        <article className="w-full max-w-4xl mx-auto shadow-sm">
-          {data.order?.map((section) => renderMap[section])}
+      <main ref={ref} className="print:text-black print:m-0 print:p-0 print:w-full">
+        <article className="w-full max-w-4xl">
+          {orderToRender?.map((section) => renderMap[section])}
         </article>
       </main>
     );
@@ -226,7 +232,7 @@ function ItemRow({ left, right, className }: { left: React.ReactNode; right?: Re
 
 function ResumeSection({ title, children, className }: { title: string; children: React.ReactNode; className?: string; }) {
   return (
-    <section className={["space-y-2 mt-4", className].filter(Boolean).join(" ")}>
+    <section data-section-name={title} className={["space-y-2 mt-4", className].filter(Boolean).join(" ")}>
       <h2 className="text-lg font-bold text-blue-600 mb-3 border-b border-gray-300 pb-1 uppercase">{title}</h2>
       <div className="text-sm leading-6 text-gray-900">{children}</div>
     </section>

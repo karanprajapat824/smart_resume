@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { ResumeForm } from "@/components/ResumeForm";
 import LivePreview from "@/components/LivePreview";
 import ResumeStartOptions from "@/components/ResumeStartOptions";
-import { Upload, Eraser } from "lucide-react";
+import { Upload, Eraser,Download } from "lucide-react";
 import Modal from "@/components/Modal";
 import { URL } from "@/app/page";
 import { verifyToken } from "@/app/page";
@@ -365,7 +365,7 @@ export default function CreateResumePage() {
                     size="sm"
                     variant="primary"
                   >
-                      Upload Resume
+                    Upload Resume
                   </Button>
 
                   <Button
@@ -388,7 +388,15 @@ export default function CreateResumePage() {
               </div>
               <ResumeForm data={resumeData} onChange={handleDataChange} />
             </div>
-            <LivePreview data={resumeData} />
+            <div className="flex flex-col gap-4 items-start">
+              <Button
+                variant="primaryPlus"
+                size="sm"
+                icon={<Download className="h-4 w-4" />}
+              >Export As</Button>
+              <LivePreview data={resumeData} />
+            </div>
+
           </div>
         </main>
       )}

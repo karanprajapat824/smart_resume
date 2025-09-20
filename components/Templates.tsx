@@ -3,6 +3,7 @@ import SmallPreview from "./Preview";
 import { ResumeData } from "@/app/create-resume/page";
 import { ZoomIn } from "lucide-react";
 import { useEffect, useState } from "react";
+import Zoom from "./Zoom";
 
 interface TemplateType {
   templates: string[];
@@ -10,6 +11,7 @@ interface TemplateType {
 
 const Templates = ({ templates }: TemplateType) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [isZoom, setIsZoom] = useState(false);
 
   useEffect(() => {
     const checkIsMobile = () => {
@@ -24,7 +26,7 @@ const Templates = ({ templates }: TemplateType) => {
     };
   }, []);
 
-  const defaultResumeData: ResumeData = {
+  let defaultResumeData: ResumeData = {
     id: "",
     template: "",
     order: [
@@ -141,15 +143,40 @@ const Templates = ({ templates }: TemplateType) => {
     ],
   };
 
+
+
+  const handleSelectedTemplate = (template: string) => {
+    const dataToStore = { ...defaultResumeData, template };
+    localStorage.setItem("data", JSON.stringify(dataToStore));
+    localStorage.setItem("template", template);
+    window.location.href = "/create-resume";
+  }
+
+  const handleZoomTemplate = (template: string) => {
+    defaultResumeData = { ...defaultResumeData, template };
+    localStorage.setItem("data", JSON.stringify(defaultResumeData));
+    localStorage.setItem("template", template);
+    setIsZoom(true);
+  }
+
   return (
-    <section id="templates" className="pt-0 md:pt-10">
+    <section id="templates" className="pt-0 md:pt-10 bg-muted/80">
       <div className="mx-auto px-4">
-        <div className="grid place-items-center md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+        <div className="text-center py-12">
+          <h3 className="text-xl md:text-3xl font-bold text-foreground mb-4">
+            Pick from Professional Templates
+          </h3>
+          <p className="text-base text-muted-foreground md:text-lg">
+            Choose from our collection of ATS-friendly, professionally
+            designed templates
+          </p>
+        </div>
+        <div className="grid place-items-center md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8 pb-10">
           {templates.map((template, index) => {
             return (
               <div
                 key={index}
-                className={`overflow-hidden border-2 small-page-wrapper relative group
+                className={`overflow-hidden rounded-lg small-page-wrapper relative group
                   motion-safe:transform-gpu will-change-transform
                   transition-[transform,box-shadow] duration-1000 ease-out
                   ${!isMobile ? "hover:-translate-y-1 hover:shadow-xl" : ""}
@@ -157,20 +184,23 @@ const Templates = ({ templates }: TemplateType) => {
               >
                 <div
                   className={`absolute inset-0 z-20 flex flex-col items-center justify-between p-4
-                    transition-[opacity,transform] duration-500 ease-out
+                    transition-[opacity,transform] duration-500 ease-out hover:bg-black/30 drop-shadow-lg
                     ${isMobile
                       ? "opacity-100 pointer-events-auto"
                       : "opacity-0 group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto -translate-y-2"
                     }`}
                 >
                   <div></div>
-                  {!isMobile && (
-                    <div className="border p-4 rounded-full bg-muted/80 hover:scale-105 z-30 transition-transform cursor-pointer">
-                      <ZoomIn />
-                    </div>
-                  )}
 
-                  <Button variant="primary" size="md" className="w-[90%]">
+                  <div className="border p-4 rounded-full bg-muted/80 hover:scale-105 z-30 transition-transform cursor-pointer">
+                    <ZoomIn
+                      onClick={() => handleZoomTemplate(template)}
+                    />
+                  </div>
+
+                  <Button
+                    onClick={() => handleSelectedTemplate(template)}
+                    variant="primary" size="md" className="w-[100%]">
                     Use This Template
                   </Button>
                 </div>
@@ -181,6 +211,7 @@ const Templates = ({ templates }: TemplateType) => {
               </div>
             );
           })}
+          <Zoom isOpen={isZoom} setIsOpen={setIsZoom} data={defaultResumeData} handleSelectedTemplate={handleSelectedTemplate} />
         </div>
       </div>
     </section>

@@ -87,15 +87,7 @@ export default function HomePage() {
 
       <section id="templates" className="py-10 overflow-hidden md:py-16 px-4 bg-muted/80">
         <div className="mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-xl md:text-3xl font-bold text-foreground mb-4">
-              Pick from Professional Templates
-            </h3>
-            <p className="text-base text-muted-foreground md:text-lg">
-              Choose from our collection of ATS-friendly, professionally
-              designed templates
-            </p>
-          </div>
+
 
           <Templates
             templates={[
@@ -189,74 +181,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* <section id="testimonials" className="py-16 px-4 bg-muted/30">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground mb-4">
-              Trusted by Job Seekers Worldwide
-            </h3>
-            <p className="text-muted-foreground text-lg">
-              See what our users say about their success stories
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Sarah Johnson",
-                role: "Software Engineer",
-                content:
-                  "Smart Resume Builder helped me land my dream job at a tech startup. The AI suggestions were spot-on!",
-                rating: 5,
-              },
-              {
-                name: "Michael Chen",
-                role: "Marketing Manager",
-                content:
-                  "The templates are professional and the ATS optimization really works. Got 3x more interview calls!",
-                rating: 5,
-              },
-              {
-                name: "Emily Rodriguez",
-                role: "Data Analyst",
-                content:
-                  "Love the real-time editor and multilingual support. Created resumes for different markets easily.",
-                rating: 5,
-              },
-            ].map((testimonial, index) => (
-              <div key={index} className="border rounded-lg p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-accent text-accent" />
-                  ))}
-                </div>
-                <p className="text-muted-foreground mb-4 italic">
-                  "{testimonial.content}"
-                </p>
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <span className="text-primary font-semibold text-sm">
-                      {testimonial.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">
-                      {testimonial.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {testimonial.role}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
 
       <Footer />
     </div>

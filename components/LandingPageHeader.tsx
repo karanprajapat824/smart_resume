@@ -47,7 +47,7 @@ export default function LandingPageHeader() {
         </div>
         {
           smallScreenMenuOpen && (
-            <div className="absolute top-17 right-0 bg-background border-2 border-border flex flex-col items-start space-y-4 py-4 px-10  rounded-lg md:hidden z-50 justify-start">
+            <div className="absolute top-17 right-0 bg-background border-l border-b border-t border-bl-lg flex flex-col items-start space-y-4 py-4 px-10 md:hidden z-50 justify-start">
               <Button
                 href="#features"
                 variant="ghost"
