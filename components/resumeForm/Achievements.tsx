@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
 import { ResumeSectionProps } from "@/components/ResumeForm";
+import Button from "../ui/Button";
 
 export default function Achievements({
   data,
@@ -11,7 +12,7 @@ export default function Achievements({
   setOpenSections
 }: ResumeSectionProps) {
   const [bullet, setBullet] = useState<string>("");
-
+  const [currentTab,setCurrentTab] = useState(false); 
   const achievementsRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
@@ -37,7 +38,7 @@ export default function Achievements({
           year: "",
           description: "",
           bulletPoints: [],
-          isBulletPoints: false,
+          isBulletPoints : false
         },
       ],
     });
@@ -62,12 +63,8 @@ export default function Achievements({
     });
   }
 
-  function updateIsBulletPoints(id: string, set: boolean) {
-    onChange({
-      achievements: data.achievements.map((achievement) =>
-        achievement.id === id ? { ...achievement, isBulletPoints: set } : achievement
-      ),
-    });
+  function CurrentTab() {
+    setCurrentTab(!currentTab);
   }
 
   function addBulletPoints(id: string) {
@@ -125,13 +122,13 @@ export default function Achievements({
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="grid grid-cols-2">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-4 space-x-4">
                   {/* Title */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Title</label>
                     <input
                       ref={(el) => {(achievementsRefs.current[index * 3 + 0] = el)}}
-                      className="border rounded py-1 px-4 w-60 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={achievement.title}
                       placeholder="AWS Certified Developer"
                       name="title"
@@ -147,7 +144,7 @@ export default function Achievements({
                     <label className="font-semibold text-sm">Year</label>
                     <input
                       ref={(el) => {(achievementsRefs.current[index * 3 + 1] = el)}}
-                      className="border rounded py-1 px-4 w-32 text-sm"
+                      className="border rounded py-1 px-4 text-sm"
                       value={achievement.year}
                       placeholder="2023"
                       name="year"
@@ -163,31 +160,29 @@ export default function Achievements({
                 <div className="flex flex-col gap-2">
                   <label className="font-semibold text-sm flex flex-row gap-2 mb-2 items-center">
                     <button
-                      onClick={() => updateIsBulletPoints(achievement.id, false)}
+                      onClick={() => CurrentTab()}
                       className={`px-4 py-2 rounded-lg transition-all ${
-                        !achievement.isBulletPoints
+                        currentTab
                           ? "border-b-2 border-blue-500 text-blue-600 bg-gray-100"
                           : "border-b-2 border-transparent"
-                      } ${achievement.bulletPoints.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
-                      disabled={achievement.bulletPoints.length > 0}
+                      } bg-gray-100 cursor-pointer`}
                     >
                       Description
                     </button>
                     <button
-                      onClick={() => updateIsBulletPoints(achievement.id, true)}
+                      onClick={() => CurrentTab()}
                       className={`px-4 py-2 rounded-lg transition-all flex flex-row items-center gap-1 ${
-                        achievement.isBulletPoints
+                        !currentTab
                           ? "border-b-2 bg-gray-100 border-blue-500 text-blue-600"
                           : "border-b-2 border-transparent"
-                      } ${achievement.description.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
-                      disabled={achievement.description.length > 0}
+                      } bg-gray-100 cursor-pointer`}
                     >
                       <CirclePlus className="h-4" />
                       Add Bullet Points
                     </button>
                   </label>
 
-                  {achievement.isBulletPoints ? (
+                  {!currentTab ? (
                     <div className="border rounded py-2 flex flex-row justify-between px-2 gap-5">
                       <input
                         value={bullet}
@@ -215,7 +210,7 @@ export default function Achievements({
                   )}
 
                   <div className="flex gap-3 flex-wrap">
-                    {achievement.isBulletPoints &&
+                    {achievement.bulletPoints.length > 0 && !currentTab &&
                       achievement.bulletPoints.map((point, idx) => (
                         <div
                           key={idx}
@@ -236,13 +231,15 @@ export default function Achievements({
             </div>
           ))}
 
-          <button
-            className="w-full bg-primary hover:cursor-pointer text-primary-foreground flex items-center border h-10 justify-center rounded transition duration-500"
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-full"
             onClick={addAchievement}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Achievement
-          </button>
+          </Button>
         </div>
       </div>
     </div>

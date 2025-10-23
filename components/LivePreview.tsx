@@ -84,7 +84,7 @@ export default function LivePreview({ data, temp }: LivePreviewType) {
   const SelectedTemplate = rawMap[temp || template] || SimpleResume
 
   return (
-    <div className="a4-page">
+    <div className="a4-page scrollbar-hidden">
       {
         loadingDone && <SelectedTemplate
           data={data}

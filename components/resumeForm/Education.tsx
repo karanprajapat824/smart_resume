@@ -4,6 +4,7 @@ import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
 import Button from "../ui/Button";
+import ToggleMode from "../ui/ToggleMode";
 
 export default function Education({
   data,
@@ -41,14 +42,14 @@ export default function Education({
           year: "",
           description: "",
           grade: "",
-          location: ""
+          location: "",
         },
       ],
     });
   }
 
   function deleteEducation(id: string) {
-    const remainingEducation = data.education.filter((edu) => edu.id !== id);
+    const remainingEducation = data?.education?.filter((edu) => edu?.id !== id);
     onChange({
       education: remainingEducation,
     });
@@ -60,11 +61,12 @@ export default function Education({
   ) {
     const { value, name } = e.target;
     onChange({
-      education: data.education.map((edu) =>
-        edu.id === id ? { ...edu, [name]: value } : edu
+      education: data?.education?.map((edu) =>
+        edu?.id === id ? { ...edu, [name]: value } : edu
       ),
     });
   }
+
 
   return (
     <div>
@@ -92,7 +94,7 @@ export default function Education({
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-3">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-4 space-x-4">
                   {/* Degree */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Degree</label>
@@ -131,7 +133,7 @@ export default function Education({
                 </div>
 
                 {/* Institute */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 pb-4">
                   <label className="font-semibold text-sm">
                     Institute Name
                   </label>
@@ -150,7 +152,7 @@ export default function Education({
                   />
                 </div>
 
-                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-3">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-0 space-x-4">
                   {/* Grade or marks */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Grade or Marks</label>
@@ -186,21 +188,6 @@ export default function Education({
                       }
                     />
                   </div>
-                </div>
-
-                {/* Description */}
-                <div className="flex flex-col gap-2">
-                  <label className="font-semibold text-sm">Description (Optinal)</label>
-                  <textarea
-                    ref={(el) => {
-                      educationRefs.current[index * 4 + 5] = el;
-                    }}
-                    className="border rounded resize-none py-2 px-4 h-20 text-sm"
-                    value={edu.description}
-                    placeholder="Relevant coursework, achievements..."
-                    name="description"
-                    onChange={(e) => updateEducation(e, edu.id)}
-                  />
                 </div>
               </div>
             </div>

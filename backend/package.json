@@ -15,11 +15,17 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "form-data": "^4.0.4",
+    "fs-extra": "^11.3.2",
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.10.0",
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",
+    "os": "^0.1.2",
     "pdf-parse": "^1.1.1",
-    "textract": "^2.5.0"
+    "pdf2pic": "^3.2.0",
+    "tesseract.js": "^6.0.1",
+    "textract": "^2.5.0",
+    "uuid": "^13.0.0"
   }
 }

@@ -20,7 +20,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
           className="bg-[#475569] text-white px-8 py-6 mb-6" key="PersonalDetails">
           <div className="flex items-center gap-4 max-w-6xl mx-auto">
             <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-lg font-bold">
-              {data.personalDetails.name ? initialsFromName(data.personalDetails.name) : "DA"}
+              {(data.personalDetails.name && initialsFromName(data.personalDetails.name)) || "YN"}
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-wide">
@@ -83,9 +83,8 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
                     left={
                       <div>
                         <p className="font-medium text-gray-800">{we.role}</p>
-                        {/* <p className="text-sm text-gray-600">{we.company} {we.location ? `- ${we.location}` : ""}</p> */}
                         <p className="text-sm text-gray-700 mt-2 whitespace-pre-line  leading-5 text-justify">{we.description}</p>
-                        {we.isBulletPoints && we.bulletPoints && (
+                        {we.bulletPoints && (
                           <Bullets items={we.bulletPoints.map((b, i) => <span key={i}>{b}</span>)} />
                         )}
                       </div>
@@ -112,7 +111,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
                             {p.title} {p.link && (<a href={p.link} target="_blank" rel="noreferrer" className="text-sm text-blue-700 hover:underline">(view)</a>)}
                           </p>
                           <div className="text-sm text-gray-700 mt-1 whitespace-pre-line">{p.description}</div>
-                          {p.isBulletPoints && p.bulletPoints && (
+                          {p.bulletPoints && (
                             <Bullets items={p.bulletPoints.map((b, i) => <span key={i}>{b}</span>)} />
                           )}
                         </div>
@@ -180,7 +179,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
                         <p className="text-sm text-gray-700 mt-1 whitespace-pre-line">
                           {a.description}
                         </p>
-                        {a.isBulletPoints && a.bulletPoints && (
+                        {a.bulletPoints && (
                           <Bullets items={a.bulletPoints.map((a, i) => <span key={i}>{a}</span>)} />
                         )}
                       </div>

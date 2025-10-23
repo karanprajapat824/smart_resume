@@ -14,71 +14,46 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
             {data.personalDetails.name || "Your Name"}
           </h1>
 
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-neutral-800">
-            <span>{data.personalDetails.phone}</span>
-            {data.personalDetails.phone &&
-              (data.personalDetails.email ||
-                data.personalDetails.github ||
-                data.personalDetails.linkedin ||
-                data.personalDetails.location ||
-                data.personalDetails.country
-              ) && (
-                <span className="text-neutral-400">|</span>
-              )}
-
-            <a
-              href={`mailto:${data.personalDetails.email}`}
-              className="text-blue-700 hover:underline"
-            >
-              {data.personalDetails.email}
-            </a>
-            {data.personalDetails.email &&
-              (data.personalDetails.github ||
-                data.personalDetails.linkedin
-              ) && (
-                <span className="text-neutral-400">|</span>
-              )}
-
-            {data.personalDetails.github && (
-              <a
-                target="_blank"
-                rel="noreferrer"
-                href={`https://github.com/${cleanUsername(
-                  data.personalDetails.github
-                )}`}
-                className="text-blue-700 hover:underline"
-              >
-                GitHub
-              </a>
-            )}
-
-            {data.personalDetails.github &&
-              (
-                data.personalDetails.linkedin
-              ) && (
-                <span className="text-neutral-400">|</span>
-              )}
-
-            {data.personalDetails.linkedin && (
-              <a
-                target="_blank"
-                rel="noreferrer"
-                href={`https://linkedin.com/in/${cleanUsername(
-                  data.personalDetails.linkedin
-                )}`}
-                className="text-blue-700 hover:underline"
-              >
-                LinkedIn
-              </a>
-            )}
-
+          <div className="mt-1 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] text-neutral-800">
             {
-              data.personalDetails.location && <span className="text-neutral-400">|</span>
-            }
-            {
-              data.personalDetails.location && <div>
-                {data.personalDetails.location} {data.personalDetails.country}
-              </div>
+              (Object.keys(data.personalDetails) as (keyof ResumeData['personalDetails'])[])
+                ?.filter((key) => key !== "name" && data.personalDetails[key] !== "")
+                ?.map((key, index, arr) => (
+                  <React.Fragment key={key}>
+                    {index > 0 && <div className="text-neutral-400">|</div>}
+                    <div className="flex items-center gap-x-1">
+                      {key === "phone" && <div>{data.personalDetails[key]}</div>}
+                      {key === "email" && (
+                        <a target="_blank" href={`mailto:${data.personalDetails[key]}`}>
+                          {data.personalDetails[key]}
+                        </a>
+                      )}
+                      {key === "linkedin" && (
+                        <a
+                          target="_blank"
+                          href={`https://linkedin.com/in/${cleanUsername(
+                            data.personalDetails[key]
+                          )}`}
+                        >
+                          LinkedIn
+                        </a>
+                      )}
+                      {key === "github" && (
+                        <a
+                          target="_blank"
+                          href={`https://github.com/${cleanUsername(
+                            data.personalDetails[key]
+                          )}`}
+                        >
+                          Github
+                        </a>
+                      )}
+                      {!["phone", "email", "linkedin", "github"].includes(key) && (
+                        <div>{data.personalDetails[key]}</div>
+                      )}
+                    </div>
+                  </React.Fragment>
+                ))
             }
           </div>
         </header>
@@ -107,9 +82,9 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                         <div>{edu.location && "|"}</div>
                         <div className="capitalize">{edu.location}</div>
                       </div>
-                      <div className="text-[13px] text-neutral-700 text-justify leading-5 whitespace-pre-line">
+                      <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line w-145">
                         {edu.description}
-                      </div>
+                      </p>
                     </div>
                   }
                   right={<p>Graduation Date: {edu.year}</p>}
@@ -124,27 +99,32 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
           <ResumeSection title="Work Experience" key="WorkExperience">
             <div className="space-y-4">
               {data.workExperience.map((we) => (
-                <ItemRow
-                  key={we.id}
-                  left={
-                    <div>
+                <div key={we.id}>
+                  <ItemRow
+                    left={
                       <p className="font-medium">
                         {we.company} — {we.role}
                       </p>
-                      <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line w-145">
-                        {we.description}
-                      </p>
-                      {we.isBulletPoints && (
-                        <Bullets
-                          items={we.bulletPoints.map((b, i) => (
-                            <span key={i}>{b}</span>
-                          ))}
-                        />
-                      )}
-                    </div>
-                  }
-                  right={<p>{we.duration}</p>}
-                />
+                    }
+                    right={<p>{we.duration}</p>}
+                  />
+                  <ItemRow
+                    left={
+                      <div>
+                        <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line">
+                          {we.description}
+                        </p>
+                        {we?.bulletPoints?.length > 0 && (
+                          <Bullets
+                            items={we.bulletPoints?.map((b, i) => (
+                              <span key={i}>{b}</span>
+                            ))}
+                          />
+                        )}
+                      </div>
+                    }
+                  />
+                </div>
               ))}
             </div>
           </ResumeSection>
@@ -175,10 +155,10 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                 <div key={p.id}>
                   <ItemRow
                     left={
-                      <div>
-                        <p className="font-medium">
-                          {p.title}{" "}
-                          {p.link && (
+                      <p className="font-medium">
+                        {p.title}
+                        {p.link && (
+                          <> —{" "}
                             <a
                               href={p.link}
                               target="_blank"
@@ -187,14 +167,21 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                             >
                               (view)
                             </a>
-                          )}
-                        </p>
-                        <div className="text-[13px] text-neutral-700 mt-1 leading-5 whitespace-pre-line text-justify">
+                          </>
+                        )}
+                      </p>
+                    }
+                    // right={<p>{p.duration}</p>}
+                  />
+                  <ItemRow
+                    left={
+                      <div>
+                        <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line">
                           {p.description}
-                        </div>
-                        {p.isBulletPoints && (
+                        </p>
+                        {p?.bulletPoints?.length > 0 && (
                           <Bullets
-                            items={p.bulletPoints.map((b, i) => (
+                            items={p.bulletPoints?.map((b, i) => (
                               <span key={i}>{b}</span>
                             ))}
                           />
@@ -207,6 +194,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
             </div>
           </ResumeSection>
         ) : null,
+
 
       Achievements:
         data.achievements.length > 0 ? (
@@ -276,7 +264,7 @@ export default SimpleResume;
 
 function Bullets({ items }: { items: React.ReactNode[] }) {
   return (
-    <ul style={{width : "192mm"}} className="list-disc pl-5 mt-2">
+    <ul style={{ width: "192mm" }} className="list-disc pl-5 mt-2">
       {items.map((it, i) => (
         <li key={i} className="text-[13px] leading-6 text-neutral-900 text-justify">
           {it}
@@ -299,7 +287,7 @@ function ItemRow({
     <div
       className={"flex items-start justify-between gap-4 " + (className || "")}
     >
-      <div className="min-w-0">{left}</div>
+      <div style={{ width: '192mm' }}>{left}</div>
       {right ? (
         <div className="shrink-0 text-right text-[13px] leading-5 text-neutral-700 pr-2">
           {right}
@@ -325,7 +313,7 @@ function ResumeSection({
       <h2 className="text-lg font-semibold tracking-wide uppercase text-neutral-800">
         {title}
       </h2>
-      <div style={{ backgroundColor: "#d4d4d4",width : "192mm" }} className="h-px" />
+      <div style={{ backgroundColor: "#d4d4d4", width: "192mm" }} className="h-px" />
       <div className="text-sm leading-6 text-neutral-900 text-justify">{children}</div>
     </section>
   );

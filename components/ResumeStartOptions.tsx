@@ -87,7 +87,7 @@ export default function ResumeStartOptions({
             <input
               className="hidden"
               type="file"
-              accept=".pdf,.doc,.docx,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+              accept=".pdf,.doc,.docx,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,.png,.jpg,.jpeg"
               onChange={handleFileChange}
               id="file"
             />

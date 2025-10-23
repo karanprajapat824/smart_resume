@@ -5,15 +5,15 @@ import Footer from "@/components/Footer";
 import { ResumeForm } from "@/components/ResumeForm";
 import LivePreview from "@/components/LivePreview";
 import ResumeStartOptions from "@/components/ResumeStartOptions";
-import { Upload, Eraser,Download } from "lucide-react";
+import { Upload, Eraser, Download } from "lucide-react";
 import Modal from "@/components/Modal";
 import { URL } from "@/app/page";
 import { verifyToken } from "@/app/page";
 import Button from "@/components/ui/Button";
 
 export interface ResumeData {
-  id: string;
-  template: string;
+  id: string | null;
+  template: string | null;
   order: Array<string>;
   personalDetails: {
     name: string;
@@ -32,7 +32,6 @@ export interface ResumeData {
     duration: string;
     description: string;
     bulletPoints: Array<string>;
-    isBulletPoints: boolean;
   }>;
   education: Array<{
     id: string;
@@ -56,7 +55,6 @@ export interface ResumeData {
     link: string;
     description: string;
     bulletPoints: Array<string>;
-    isBulletPoints: boolean;
   }>;
   achievements: Array<{
     id: string;
@@ -136,16 +134,6 @@ export default function CreateResumePage() {
   const [uploadError, setUploadError] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState<string[]>([
-    "PersonalDetails",
-    "Summary",
-    "WorkExperience",
-    "Education",
-    "Skills",
-    "Projects",
-    "Achievements",
-    "Languages"
-  ]);
   const [isSave, setIsSave] = useState(false);
   const [isDirty, setIsDirty] = useState(true);
 
@@ -153,21 +141,6 @@ export default function CreateResumePage() {
     setResumeData((prev) => ({ ...prev, ...newData }));
     setIsDirty(true);
   };
-
-  function isValidResumeData(data: any): data is ResumeData {
-    if (!data || typeof data !== "object") return false;
-    if (typeof data.id !== "string") return false;
-    if (typeof data.template !== "string") return false;
-    if (!data.personalDetails || typeof data.personalDetails !== "object") return false;
-    if (!Array.isArray(data.workExperience)) return false;
-    if (!Array.isArray(data.education)) return false;
-    if (!Array.isArray(data.skills)) return false;
-    if (!Array.isArray(data.projects)) return false;
-    if (!Array.isArray(data.achievements)) return false;
-    if (!Array.isArray(data.languages)) return false;
-
-    return true;
-  }
 
   useEffect(() => {
     try {
@@ -177,23 +150,185 @@ export default function CreateResumePage() {
     }
   }, [resumeData]);
 
-  function autoFill(data: any) {
+  function autoFill(data: any): ResumeData | null {
     try {
       if (typeof data === "string") {
         data = JSON.parse(data);
       }
-
-      if (!isValidResumeData(data)) {
-        console.warn("Invalid resume data received, ignoring:", data);
-        return;
-      }
-      // setResumeData(data);
-      setIsDirty(false);
     } catch (err) {
       console.error("Failed to parse resume data:", err);
+      return null;
     }
-  }
 
+    if (!data || typeof data !== "object") {
+      console.warn("Input not an object — creating blank resume object.");
+      data = {};
+    }
+
+    data.id = typeof data.id === "string" ? data.id : null;
+    data.template = typeof data.template === "string" ? data.template : "";
+
+    const defaultOrder = [
+      "PersonalDetails",
+      "Summary",
+      "WorkExperience",
+      "Education",
+      "Skills",
+      "Projects",
+      "Achievements",
+      "Languages",
+    ];
+    data.order = Array.isArray(data.order) ? data.order.map(String) : defaultOrder;
+
+    data.personalDetails = data.personalDetails && typeof data.personalDetails === "object"
+      ? data.personalDetails
+      : {};
+    const pdFields = [
+      "name",
+      "email",
+      "phone",
+      "linkedin",
+      "github",
+      "location",
+      "country",
+    ];
+    pdFields.forEach((f) => {
+      data.personalDetails[f] =
+        typeof data.personalDetails[f] === "string"
+          ? data.personalDetails[f]
+          : "";
+    });
+
+    data.summary = typeof data.summary === "string" ? data.summary : "";
+
+    const ensureArray = (v: any) => (Array.isArray(v) ? v : []);
+
+    const sanitizeItems = (arr: any[], template: { [k: string]: any }) => {
+      if (!Array.isArray(arr)) return [];
+      if (arr.length === 0) return [];
+      return arr.map((it) => {
+        const item = it && typeof it === "object" ? { ...it } : {};
+        const out: any = {};
+
+        for (const key of Object.keys(template)) {
+          const def = template[key];
+          const val = item[key];
+
+          if (Array.isArray(def)) {
+            out[key] = Array.isArray(val) ? val.map(String) : [];
+          } else if (typeof def === "string") {
+            out[key] = typeof val === "string" ? val : "";
+          } else if (typeof def === "boolean") {
+            out[key] = typeof val === "boolean" ? val : def;
+          } else {
+            out[key] = val && typeof val === "object" ? { ...val } : def;
+          }
+        }
+        out.id = typeof item.id === "string" ? item.id : null;
+
+        return out;
+      });
+    };
+
+    const workTemplate = {
+      id: null as string | null,
+      company: "",
+      role: "",
+      duration: "",
+      description: "",
+      bulletPoints: [] as string[],
+    };
+
+    const educationTemplate = {
+      id: null as string | null,
+      degree: "",
+      institution: "",
+      year: "",
+      description: "",
+      grade: "",
+      location: "",
+      bulletPoints: [] as string[],
+    };
+
+    const skillTemplate = {
+      id: null as string | null,
+      name: "",
+      level: "",
+      key: "",
+      value: "",
+    };
+
+    const projectTemplate = {
+      id: null as string | null,
+      title: "",
+      link: "",
+      description: "",
+      bulletPoints: [] as string[],
+      isBulletPoints: false,
+    };
+
+    const achievementTemplate = {
+      id: null as string | null,
+      title: "",
+      year: "",
+      description: "",
+      bulletPoints: [] as string[],
+      isBulletPoints: false,
+    };
+
+    const languageTemplate = {
+      id: null as string | null,
+      language: "",
+      level: "",
+    };
+
+    data.workExperience = ensureArray(data.workExperience);
+    data.education = ensureArray(data.education);
+    data.skills = ensureArray(data.skills);
+    data.projects = ensureArray(data.projects);
+    data.achievements = ensureArray(data.achievements);
+    data.languages = ensureArray(data.languages);
+
+    data.workExperience =
+      data.workExperience.length > 0
+        ? sanitizeItems(data.workExperience, workTemplate)
+        : [];
+    data.education =
+      data.education.length > 0
+        ? sanitizeItems(data.education, educationTemplate)
+        : [];
+    data.skills =
+      data.skills.length > 0 ? sanitizeItems(data.skills, skillTemplate) : [];
+    data.projects =
+      data.projects.length > 0
+        ? sanitizeItems(data.projects, projectTemplate)
+        : [];
+    data.achievements =
+      data.achievements.length > 0
+        ? sanitizeItems(data.achievements, achievementTemplate)
+        : [];
+    data.languages =
+      data.languages.length > 0
+        ? sanitizeItems(data.languages, languageTemplate)
+        : [];
+
+    data.workExperience = Array.isArray(data.workExperience)
+      ? data.workExperience
+      : [];
+    data.education = Array.isArray(data.education) ? data.education : [];
+    data.skills = Array.isArray(data.skills) ? data.skills : [];
+    data.projects = Array.isArray(data.projects) ? data.projects : [];
+    data.achievements = Array.isArray(data.achievements) ? data.achievements : [];
+    data.languages = Array.isArray(data.languages) ? data.languages : [];
+
+    try {
+      if (typeof setResumeData === "function") setResumeData(data);
+      if (typeof setIsDirty === "function") setIsDirty(false);
+    } catch (err) {
+    }
+
+    return data as unknown as ResumeData;
+  }
 
   async function onUpload(file: File) {
     if (!file) {
@@ -214,6 +349,7 @@ export default function CreateResumePage() {
 
       const data = await res.json();
       if (res.ok) {
+        console.log("File uploaded successfully:", data);
         autoFill(data.response)
         setStartOption({
           model: false,
@@ -352,9 +488,9 @@ export default function CreateResumePage() {
           loading={loading}
         />
       ) : (
-        <main className="mx-auto px-4 py-8">
+        <main className="mx-auto px-4 py-8 min-h-screen">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-0 overflow-y-auto pr-4">
+            <div className="space-y-0 pr-4">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-3 justify-start pb-4 overflow-y-visible">
                   <Button
@@ -387,12 +523,24 @@ export default function CreateResumePage() {
               <ResumeForm data={resumeData} onChange={handleDataChange} />
             </div>
             <div className="flex flex-col gap-4 items-start">
-              <Button
-                variant="primaryPlus"
-                size="sm"
-                icon={<Download className="h-4 w-4" />}
-              >Export As</Button>
-              <LivePreview data={resumeData} />
+              <div className="flex items-center justify-start gap-4">
+                <Button
+                  variant="primaryPlus"
+                  size="sm"
+                  icon={<Download className="h-4 w-4" />}
+                >Export As</Button>
+                <Button
+                  variant="primaryPlus"
+                  size="sm"
+                  icon={<Download className="h-4 w-4" />}
+                  href="/templates"
+                >Change Template</Button>
+              </div>
+              <div className="flex justify-center items-center w-full">
+                <div className="a4-page-wrapper">
+                  <LivePreview data={resumeData} />
+                </div>
+              </div>
             </div>
 
           </div>

@@ -5,6 +5,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
+import { Textarea } from "../ui/Textarea";
+import Button from "../ui/Button";
 
 export default function Summary({
   data,
@@ -29,22 +31,23 @@ export default function Summary({
       />
       <div className="border-b pb-4">
         <div
-          className={`h-40 mt-4 flex items-start flex-col ${
-            !openSections.summary && "hidden"
-          }`}
+          className={`h-40 mt-4 flex items-start flex-col w-full ${!openSections.summary && "hidden"
+            }`}
         >
-          <textarea
+          <Textarea
             ref={summaryRef}
             id="summary"
             value={data.summary}
-            onChange={(e) => onChange({ summary: e.target.value})}
+            onChange={(value) => onChange({ summary: value })}
             placeholder="Write a brief professional summary..."
-            className="border rounded h-[60%] w-full resize-none p-4 text-sm"
           />
-          <button className="mt-4 border bg-primary text-primary-foreground px-6 py-1 rounded w-40 hover:cursor-pointer flex items-center gap-2 border">
-            <Sparkles className="h-5" />
+          <Button
+            variant="primary"
+            size="md"
+            icon={<Sparkles className="h-4" />}
+          >
             Ai Inhance
-          </button>
+          </Button>
         </div>
       </div>
     </div>

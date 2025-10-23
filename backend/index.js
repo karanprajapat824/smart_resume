@@ -10,7 +10,11 @@ const pdfParse = require("pdf-parse");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const mammoth = require("mammoth");
 const textract = require("textract");
-
+const fs = require('fs-extra');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const { base } = require("framer-motion/client");
+const FormData = require("form-data");
 
 
 const app = express();
@@ -19,6 +23,48 @@ app.use(cors());
 
 const upload = multer({ storage: multer.memoryStorage() });
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
+const extractTextAi = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY_2);
+
+
+async function ocrFile(filePath, mimeType = "application/pdf") {
+
+    if (!fs.existsSync(filePath)) {
+        throw new Error('File not found: ' + filePath);
+    }
+    try {
+        const model = extractTextAi.getGenerativeModel({
+            model: "gemini-2.5-flash-lite-preview-09-2025"
+        });
+
+        const fileBuffer = fs.readFileSync(filePath);
+        const base64Data = fileBuffer.toString("base64");
+
+        const prompt = `Extract only the complete and accurate text content from the given image or PDF.
+
+Do not include any descriptions, explanations, or formatting unless it is part of the original text.
+
+Preserve the original order, line breaks, and spacing as much as possible.
+
+Ignore any irrelevant graphics, borders, or background elements.
+
+Return only the extracted text, nothing else.`
+
+        const result = await model.generateContent([
+            prompt,
+            {
+                inlineData: {
+                    data: base64Data,
+                    mimeType: mimeType,
+                },
+            },
+        ]);
+        return result.response.text().trim();
+    } catch (err) {
+        console.log("error while extracttext using orc: " + err);
+        return "";
+    }
+}
+
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
@@ -233,33 +279,51 @@ app.post("/save-resume", authenticateToken, async (req, res) => {
 app.post("/upload-file", upload.single("file"), async (req, res) => {
     try {
         const file = req.file;
-        const template = req.body.template;
         if (!file) return res.status(400).json({ message: "No file uploaded" });
-
 
         const mime = file.mimetype;
         let text = "";
 
+        const baseTempDir = path.join(process.cwd(), 'temp');
+        await fs.ensureDir(baseTempDir);
+
+        const ext = path.extname(file.originalname) || (
+            mime === 'application/pdf' ? '.pdf' :
+                mime && mime.startsWith('image/') ? (mime.split('/')[1] === 'jpeg' ? '.jpg' : '.' + mime.split('/')[1]) :
+                    '.bin'
+        );
+
+        const filePath = path.join(baseTempDir, 'upload_' + uuidv4() + ext);
+        await fs.writeFile(filePath, file.buffer);
+
         if (mime === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf")) {
             const data = await pdfParse(file.buffer);
-            text = data.text || "";
+            if (data && data.text) text = data.text.trim() || "";
+            if (text.length < 50) text = await ocrFile(filePath, mime);
+            await fs.unlink(filePath);
         } else if (mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.originalname.toLowerCase().endsWith(".docx")) {
             const result = await mammoth.extractRawText({ buffer: file.buffer });
             text = result.value || "";
         } else if (mime === "text/plain" || file.originalname.toLowerCase().endsWith(".txt")) {
             text = file.buffer.toString("utf8");
         } else {
-            text = await new Promise((resolve, reject) => {
-                textract.fromBufferWithMime(file.mimetype, file.buffer, (err, result) => {
-                    if (err) return reject(err);
-                    resolve(result || "");
+            try {
+                text = await ocrFile(filePath, mime);
+                await fs.unlink(filePath);
+            } catch (err) {
+                text = await new Promise((resolve, reject) => {
+                    textract.fromBufferWithMime(file.mimetype, file.buffer, (err, result) => {
+                        if (err) return reject(err);
+                        resolve(result || "");
+                    });
                 });
-            });
+                console.log(err);
+            }
         }
 
-
-
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash-lite-preview-09-2025"
+        });
 
         const prompt = `
 You are a helpful assistant that extracts structured resume data.
@@ -366,11 +430,10 @@ ${text}
         try {
             parsed = JSON.parse(responseText);
         } catch (err) {
-            console.warn("Model did not return valid JSON, sending raw text");
+            console.log("Model did not return valid JSON, sending raw text");
             parsed = responseText;
-            return res.status(500).json({ message: "Internal server error" });
+            return res.status(200).json({ response: parsed });
         }
-
         res.json({ response: parsed });
     } catch (err) {
         console.error("PDF parsing error:", err);

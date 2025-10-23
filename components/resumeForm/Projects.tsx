@@ -4,6 +4,7 @@ import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
 import Button from "../ui/Button";
+import ToggleMode from "../ui/ToggleMode";
 
 export default function Projects({
   data,
@@ -11,7 +12,6 @@ export default function Projects({
   openSections,
   setOpenSections,
 }: ResumeSectionProps) {
-  const [bullet, setBullet] = useState<string>("");
 
   const projectsRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
@@ -37,8 +37,7 @@ export default function Projects({
           title: "",
           link: "",
           description: "",
-          bulletPoints: [],
-          isBulletPoints: false,
+          bulletPoints: []
         },
       ],
     });
@@ -59,16 +58,8 @@ export default function Projects({
     });
   }
 
-  function updateIsBulletPoints(id: string, set: boolean) {
-    onChange({
-      projects: data.projects.map((p) =>
-        p.id === id ? { ...p, isBulletPoints: set } : p
-      ),
-    });
-  }
-
-  function addBulletPoints(id: string) {
-    const trimmed = bullet.trim();
+  function addBulletPoints(id: string, point: string) {
+    const trimmed = point.trim();
     if (!trimmed) return;
 
     onChange({
@@ -76,7 +67,6 @@ export default function Projects({
         p.id === id ? { ...p, bulletPoints: [...p.bulletPoints, trimmed] } : p
       ),
     });
-    setBullet("");
   }
 
   function deleteBulletPoint(id: string, index: number) {
@@ -87,6 +77,18 @@ export default function Projects({
           : p
       ),
     });
+  }
+
+  function updateBulletPoints(id: string, index: number, point: string) {
+    onChange({
+      projects: data.projects?.map((p) =>
+        p.id === id ?
+          {
+            ...p,
+            bulletPoints: p.bulletPoints?.map((p, i) => i === index ? point : p)
+          } : p
+      )
+    })
   }
 
   return (
@@ -115,7 +117,7 @@ export default function Projects({
               </div>
 
               <div className="space-y-4 py-2">
-                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-4">
+                <div className="grid sm:grid-cols-2 grid-cols-1 space-y-4 space-x-4">
                   {/* Title */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Project Title</label>
@@ -149,77 +151,14 @@ export default function Projects({
                   </div>
                 </div>
 
-                {/* Description / Bullet Points */}
-                <div className="flex flex-col gap-2">
-                  <label className="font-semibold text-sm flex flex-row gap-2 mb-2 items-center">
-                    <button
-                      onClick={() => updateIsBulletPoints(project.id, false)}
-                      className={`px-3 py-2 rounded-lg transition-all ${!project.isBulletPoints
-                          ? "border-b-2 border-blue-500 text-blue-600 bg-gray-100"
-                          : "border-b-2 border-transparent"
-                        } ${project.bulletPoints.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
-                      disabled={project.bulletPoints.length > 0}
-                    >
-                      Description
-                    </button>
-                    <button
-                      onClick={() => updateIsBulletPoints(project.id, true)}
-                      className={`px-3 py-2 rounded-lg transition-all flex flex-row items-center gap-1 ${project.isBulletPoints
-                          ? "border-b-2 bg-gray-100 border-blue-500 text-blue-600"
-                          : "border-b-2 border-transparent"
-                        } ${project.description.length > 0 ? "opacity-50 cursor-not-allowed" : "bg-gray-100 cursor-pointer"}`}
-                      disabled={project.description.length > 0}
-                    >
-                      <CirclePlus className="h-4" />
-                      Add Bullet Points
-                    </button>
-                  </label>
-
-                  {project.isBulletPoints ? (
-                    <div className="border rounded py-2 flex flex-row justify-between px-2 gap-5">
-                      <input
-                        value={bullet}
-                        onChange={(e) => setBullet(e.target.value)}
-                        className="text-sm px-2 w-full focus:outline-none"
-                        placeholder="Add bullet points"
-                        onKeyDown={(e) => e.key === "Enter" && addBulletPoints(project.id)}
-                      />
-                      <button
-                        onClick={() => addBulletPoints(project.id)}
-                        className="bg-primary text-primary-foreground px-3 py-1 rounded hover:cursor-pointer"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  ) : (
-                    <textarea
-                      ref={(el) => { (projectsRefs.current[index * 3 + 2] = el) }}
-                      className="border rounded w-full resize-none py-2 px-4 h-20 text-sm"
-                      value={project.description}
-                      placeholder="Describe your project..."
-                      name="description"
-                      onChange={(e) => updateProject(e, project.id)}
-                    />
-                  )}
-
-                  <div className="flex gap-3 flex-wrap">
-                    {project.isBulletPoints &&
-                      project.bulletPoints.map((point, idx) => (
-                        <div
-                          key={idx}
-                          className="border rounded px-4 py-1 flex items-center justify-center text-sm"
-                        >
-                          {point}
-                          <button
-                            onClick={() => deleteBulletPoint(project.id, idx)}
-                            className="ml-2 text-red-500 hover:text-red-700 hover:cursor-pointer"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                <ToggleMode
+                  add={addBulletPoints}
+                  update={updateProject}
+                  exp={project}
+                  deletePoints={deleteBulletPoint}
+                  updatePoints={updateBulletPoints}
+                  placeHolder="Describe Your work experience..."
+                />
               </div>
             </div>
           ))}

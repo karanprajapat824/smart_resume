@@ -114,7 +114,7 @@ const Templates = ({ templates }: TemplateType) => {
         id: "1",
         title: "Elementx",
         link: "",
-        description: "",
+        description: "8000+ reusable UI components — buttons, cards, forms, switches, etc. Real-time in-browser editor with live preview on every keystroke. Code conversion utilities to convert HTML/CSS to React, Vue, Angular. Authentication: Google OAuth, GitHub OAuth, and JWT support.",
         isBulletPoints: true,
         bulletPoints: [
           "8000+ reusable UI components — buttons, cards, forms, switches, etc.",
@@ -127,7 +127,55 @@ const Templates = ({ templates }: TemplateType) => {
         id: "2",
         title: "Smart Resume",
         link: "",
-        description: "",
+        description: "Built a dynamic resume builder allowing users to create, edit, and export resumes. Integrated real-time preview and customization features for personalized resume layouts. Implemented user authentication and secure data storage for seamless access to resumes.",
+        isBulletPoints: true,
+        bulletPoints: [
+          "Built a dynamic resume builder allowing users to create, edit, and export resumes.",
+          "Integrated real-time preview and customization features for personalized resume layouts.",
+          "Implemented user authentication and secure data storage for seamless access to resumes.",
+        ],
+      },
+      {
+        id: "3",
+        title: "Smart Resume",
+        link: "",
+        description: "Built a dynamic resume builder allowing users to create, edit, and export resumes. Integrated real-time preview and customization features for personalized resume layouts. Implemented user authentication and secure data storage for seamless access to resumes.",
+        isBulletPoints: true,
+        bulletPoints: [
+          "Built a dynamic resume builder allowing users to create, edit, and export resumes.",
+          "Integrated real-time preview and customization features for personalized resume layouts.",
+          "Implemented user authentication and secure data storage for seamless access to resumes.",
+        ],
+      },
+      {
+        id: "4",
+        title: "Smart Resume",
+        link: "",
+        description: "Built a dynamic resume builder allowing users to create, edit, and export resumes. Integrated real-time preview and customization features for personalized resume layouts. Implemented user authentication and secure data storage for seamless access to resumes.",
+        isBulletPoints: true,
+        bulletPoints: [
+          "Built a dynamic resume builder allowing users to create, edit, and export resumes.",
+          "Integrated real-time preview and customization features for personalized resume layouts.",
+          "Implemented user authentication and secure data storage for seamless access to resumes.",
+        ],
+      },
+      {
+        id: "5",
+        title: "Smart Resume",
+        link: "",
+        description: "Built a dynamic resume builder allowing users to create, edit, and export resumes. Integrated real-time preview and customization features for personalized resume layouts. Implemented user authentication and secure data storage for seamless access to resumes.",
+        isBulletPoints: true,
+        bulletPoints: [
+          "Built a dynamic resume builder allowing users to create, edit, and export resumes.",
+          "Integrated real-time preview and customization features for personalized resume layouts.",
+          "Implemented user authentication and secure data storage for seamless access to resumes.",
+        ],
+      },
+      {
+        id: "6",
+        title: "Smart Resume",
+        link: "",
+        description: "Built a dynamic resume builder allowing users to create, edit, and export resumes. Integrated real-time preview and customization features for personalized resume layouts. Implemented user authentication and secure data storage for seamless access to resumes.",
         isBulletPoints: true,
         bulletPoints: [
           "Built a dynamic resume builder allowing users to create, edit, and export resumes.",
@@ -143,18 +191,63 @@ const Templates = ({ templates }: TemplateType) => {
     ],
   };
 
+  let resumeData: ResumeData = {
+    id: "",
+    template: "",
+    order: [
+      "PersonalDetails",
+      "Summary",
+      "WorkExperience",
+      "Education",
+      "Skills",
+      "Projects",
+      "Achievements",
+      "Languages",
+    ],
+    personalDetails: {
+      name: "",
+      email: "",
+      phone: "",
+      linkedin: "",
+      github: "",
+      location: "",
+      country: "",
+    },
+    summary:
+      "",
+    workExperience: [
+    ],
+    education: [
+    ],
+    skills: [
+    ],
+    projects: [
+    ],
+    achievements: [],
+    languages: [
+    ],
+  };
+
 
 
   const handleSelectedTemplate = (template: string) => {
-    const dataToStore = { ...defaultResumeData, template };
+    let data = localStorage.getItem("data");
+    if (data) {
+      resumeData = JSON.parse(data);
+    }
+    const dataToStore = { ...resumeData, template }
     localStorage.setItem("data", JSON.stringify(dataToStore));
     localStorage.setItem("template", template);
     window.location.href = "/create-resume";
   }
 
   const handleZoomTemplate = (template: string) => {
-    defaultResumeData = { ...defaultResumeData, template };
-    localStorage.setItem("data", JSON.stringify(defaultResumeData));
+    let data = localStorage.getItem("data");
+    if (data) {
+      resumeData = JSON.parse(data);
+    }
+    const dataToStore = { ...resumeData, template }
+    localStorage.setItem("data", JSON.stringify(dataToStore));
     localStorage.setItem("template", template);
     setIsZoom(true);
   }
