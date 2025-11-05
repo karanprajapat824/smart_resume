@@ -5,6 +5,10 @@ import { URL } from "@/exports/info";
 import Loader from "@/components/ui/Loader";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { FcGoogle } from "react-icons/fc";
+import { FaLinkedin } from "react-icons/fa6";
+import CircularGallery from '@/components/ui/CircularGallery';
+import TypingEffect from '@/components/ui/TypingEffect';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,6 +23,24 @@ export default function AuthPage() {
     password: "",
     confirmPassword: "",
   });
+  const message = [
+    "Resumes That Demand Attention",
+    "Make Your First Impression Unforgettable",
+    "Your Dream Job Starts With the Right Design",
+    "Templates That Work as Hard as You Do",
+    "Because Average Resumes Don’t Get Noticed",
+    "Build a Resume That Dominates the Stack",
+    "Turn Recruiters’ Heads — Instantly",
+    "Designs That Sell Your Story",
+    "Confidence. Style. Results.",
+    "Level Up Your Resume Game",
+    "Stop Blending In — Start Standing Out",
+    "Powerful Templates for Ambitious Professionals",
+    "Be the Candidate They Remember",
+    "Resumes That Speak Success",
+    "Show Your Value Before You Even Speak"
+  ];
+
 
   const loginRefs = useRef<Array<HTMLInputElement | HTMLButtonElement | HTMLAnchorElement | null>>([]);
 
@@ -130,7 +152,7 @@ export default function AuthPage() {
       <div className="grid grid-cols-[1fr_2fr] rounded overflow-hidden items-center border h-[90%] w-[90%] shadow-lg">
         <div className="bg-white hideScrollBar h-full">
           {isLogin ? (
-            <div className="px-10 py-10">
+            <div className="px-10 pt-6">
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-center">Welcome back</div>
                 <div className="text-muted-foreground text-center pb-6">
@@ -147,7 +169,6 @@ export default function AuthPage() {
                     value={loginData.email}
                     onChange={(e) => handleChange(e, "login")}
                     name="email"
-                    classNameForLabel="text-xl"
                     label="Email"
                     onKeyDown={(e) =>
                       e.key === "Enter" && handleLoginRefs(0)
@@ -164,7 +185,6 @@ export default function AuthPage() {
                       type="text"
                       placeholder="Enter your password"
                       isPassword={true}
-                      classNameForLabel="text-xl"
                       value={loginData.password}
                       onChange={(e) => handleChange(e, "login")}
                       name="password"
@@ -195,9 +215,9 @@ export default function AuthPage() {
                   }
                   <Button
                     onClick={handleLogin}
+                    size="md"
                     disabled={loading}
                     ref={(el) => { if (el) loginRefs.current[2] = el }}
-                    className="rounded-lg shadow-sm cursor-pointer bg-primary text-primary-foreground text-center px-8 py-2 flex justify-center items-center disabled:opacity-70"
                     onKeyDown={(e) =>
                       e.key === "Enter" && handleLoginRefs(2)
                     }
@@ -213,7 +233,7 @@ export default function AuthPage() {
                       setIsLogin(false);
                       setError("");
                     }}
-                    size="md"
+                    size="sm"
                     variant="ghost"
                     className="text-primary hover:underline font-medium cursor-pointer"
                   >
@@ -223,7 +243,7 @@ export default function AuthPage() {
               </div>
             </div>
           ) : (
-            <div className="px-10 py-10">
+            <div className="px-10 pt-6">
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-center">
                   Welcome to Smart Resume
@@ -240,7 +260,6 @@ export default function AuthPage() {
                     id="signup-email"
                     type="email"
                     placeholder="Enter your email"
-                    classNameForLabel="text-xl"
                     value={signupData.email}
                     onChange={(e) => handleChange(e, "signup")}
                     name="email"
@@ -258,7 +277,6 @@ export default function AuthPage() {
                       id="signup-password"
                       type="password"
                       placeholder="Create a password"
-                      classNameForLabel="text-xl"
                       value={signupData.password}
                       onChange={(e) => handleChange(e, "signup")}
                       name="password"
@@ -278,7 +296,6 @@ export default function AuthPage() {
                       id="confirm-password"
                       type="password"
                       placeholder="Confirm your password"
-                      classNameForLabel="text-xl"
                       value={signupData.confirmPassword}
                       onChange={(e) => handleChange(e, "signup")}
                       name="confirmPassword"
@@ -302,7 +319,7 @@ export default function AuthPage() {
                   <Button
                     ref={(el) => { if (el) loginRefs.current[3] = el }}
                     variant="primary"
-                    size="lg"
+                    size="md"
                     onClick={handleSignup}
                     disabled={loading}
                     onKeyDown={(e) =>
@@ -330,13 +347,57 @@ export default function AuthPage() {
               </div>
             </div>
           )}
+          <div className="text-center font-semibold mb-2">Or With</div>
+          <div className="px-6 py-2 pb-4 flex items-center justify-around">
+            <Button
+              size="md"
+              variant="ghost"
+              className="border border-muted-foreground w-[40%] rounded"
+              icon={<FcGoogle />}
+            >
+              Google
+            </Button>
+            <Button
+              size="md"
+              variant="ghost"
+              icon={<FaLinkedin />}
+              className="border border-muted-foreground w-[40%] rounded"
+            >
+              LinkedIn
+            </Button>
+          </div>
         </div>
-        <div className="border-l h-full">
+        <div className="border-l h-full flex flex-col justify-between">
           <div className="text-start p-6">
             <div className="inline-flex items-center gap-2 text-2xl font-bold text-primary">
               <FileText className="h-8 w-8" />
               Smart Resume
             </div>
+          </div>
+          <div className="pb-8 text-3xl pl-8 font-semibold">
+            <TypingEffect 
+              messages={message}
+              loop={true}
+              cursor={true}
+              typingSpeed={40}
+              />
+            </div>
+          <div className="h-100">
+            <CircularGallery
+              items={[
+                { image: './resume1.jpg' },
+                { image: './resume1.png' },
+                { image: './resume2.jpg' },
+                { image: './resume3.jpg' },
+                { image: './resume4.png' },
+              ]}
+              cardWidth={220}
+              cardHeight={300}
+              gap={80}
+              radius={800}
+              visibleCount={4}
+              autoplayDps={8}
+            />
           </div>
         </div>
       </div>
