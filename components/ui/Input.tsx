@@ -1,48 +1,77 @@
-import React from "react";
+import React, { forwardRef, useState } from "react";
+import { Eye, FileText, EyeOff, X } from "lucide-react";
 
-export interface InputFieldProps {
-  label: string;
+interface InputFieldProps {
+  label?: string;
+  name: string;
   id: string;
   value: string;
   placeholder?: string;
-  type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   index?: number;
-  onChange: (value: string, index?: number) => void;
+  type?: string;
+  classNameForInput?: string;
+  classNameForLabel?: string;
+  isPassword?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>, ...args: any[]) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>, index?: number) => void;
-  inputRef?: (el: HTMLInputElement | null) => void;
-  className?: string;
 }
 
-export default function Input({
-  label,
-  id,
-  value,
-  placeholder,
-  index,
-  onChange,
-  type = "text",
-  onKeyDown,
-  inputRef,
-  className = "",
-}: InputFieldProps) {
-  return (
-    <div className={`flex flex-col gap-2 ${className}`}>
-      <label className="font-semibold text-sm" htmlFor={id}>
-        {label}
-      </label>
+const Input = forwardRef<HTMLInputElement, InputFieldProps>(
+  (
+    {
+      label,
+      id,
+      value,
+      placeholder,
+      index,
+      onChange,
+      type = "text",
+      onKeyDown,
+      classNameForInput = "",
+      classNameForLabel = "",
+      name = "",
+      isPassword = false,
+    },
+    ref
+  ) => {
+    const [isPasswordVisible, setIsPasswordVisible] = React.useState<boolean>(false);
+    return (
+      <div className={`flex flex-col gap-2`}>
+        <label className={`font-semibold text-sm ${classNameForLabel}`} htmlFor={id}>
+          {label}
+        </label>
+        <div className="relative">
+          <input
+            id={id}
+            name={name}
+            type={isPassword ? (isPasswordVisible ? "text" : "password") : type}
+            ref={ref}
+            className={`border rounded w-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${classNameForInput}`}
+            value={value}
+            placeholder={placeholder}
+            onChange={(e) => onChange(e)}
+            onKeyDown={(e) => onKeyDown && onKeyDown(e, index)}
+          />
 
-      <input
-        id={id}
-        type={type}
-        ref={(el) => {
-          if (typeof inputRef === "function") inputRef(el);
-        }}
-        className="border rounded py-1 px-4 text-sm"
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value, index)}
-        onKeyDown={(e) => onKeyDown && onKeyDown(e, index)}
-      />
-    </div>
-  );
-}
+          {isPassword && (
+            isPasswordVisible ? (
+              <EyeOff
+                onClick={() => setIsPasswordVisible(false)}
+                className="absolute top-[20%] right-[2%] cursor-pointer"
+              />
+            ) : (
+              <Eye
+                onClick={() => setIsPasswordVisible(true)}
+                className="absolute top-[20%] right-[2%] cursor-pointer"
+              />
+            )
+          )}
+
+        </div>
+      </div>
+    );
+  }
+);
+
+Input.displayName = "Input";
+export default Input;

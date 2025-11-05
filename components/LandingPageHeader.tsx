@@ -6,12 +6,14 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { verifyToken } from "@/app/page";
+import { verifyToken } from "@/exports/auth";
 import Button from "./ui/Button";
+import PageLoader from "./ui/PageLoader";
 
 export default function LandingPageHeader() {
   const [smallScreenMenuOpen, setSmallScreenMenuOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -19,10 +21,19 @@ export default function LandingPageHeader() {
       const checkLogin = async () => {
         const result = await verifyToken(token);
         setIsLogin(result);
+        setLoading(false);
       }
       checkLogin();
     }
-  }, []);
+    else setLoading(false);
+  },[]);
+
+  const handleRedirect = ()=>{
+    localStorage.setItem("redirectAfterLogin", "/"); 
+    window.location.href = "/login";
+  }
+
+  if(loading) return <PageLoader />
 
   return (
     <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -77,7 +88,7 @@ export default function LandingPageHeader() {
             Features
           </Button>
           <Button
-            href="#templates"
+            href="/templates"
             variant="ghost"
             size="lg"
           >
@@ -95,7 +106,7 @@ export default function LandingPageHeader() {
           <Button
             variant="outline"
             size="md"
-            href={isLogin ? "/my-resumes" : "/login"}
+            onClick={isLogin ? ()=>window.location.href = "/my-resumes" : ()=>handleRedirect()}
           >
             {
               isLogin ? "My Resumes" : "Login / Sign up"

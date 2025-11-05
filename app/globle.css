@@ -12,10 +12,10 @@
   --muted-foreground: #475569;
   --success: #bdfabd;
   --success-foreground: #08b408;
-  --destructive: red;
-  --destructive-foreground: #ffffff; /* White */
-  --border: #000000; /* Light Border */
-  --input: #ffffff; /* White */
+  --destructive: #ffe5e5;
+  --destructive-foreground: #eb0f0f;
+  --border: #000000;
+  --input: #ffffff;
   --ring: #164e6380; /* Cyan-800 with opacity (50%) */
   --chart-1: #164e63; /* Cyan-800 */
   --chart-2: #8b5cf6; /* Purple */
@@ -124,17 +124,6 @@
   }
 }
 
-.a4-page {
-  width: 210mm;
-  min-height: 297mm;
-  margin: 0 auto;
-  padding: 0;
-  background: white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
 .page {
   width: 210mm;
   min-height: 297mm;
@@ -196,6 +185,18 @@
   border: 1px solid var(--border);
   overflow-y: auto;
   overscroll-behavior: none;
+}
+
+.hideScrollBar{
+  overflow-y: auto;
+}
+
+.hideScrollBar::-webkit-scrollbar {
+  display: none;
+}
+
+.a4-page::-webkit-scrollbar {
+  display: none;
 }
 
 .small-page {

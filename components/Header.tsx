@@ -10,7 +10,7 @@ interface HeaderType {
   saveResume: () => void;
 }
 
-export function Header({ isLogin = false, isSave = false, saveResume }: HeaderType) {
+export default function Header({ isLogin = false, isSave = false, saveResume }: HeaderType) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [spin, setSpin] = useState(false);
 

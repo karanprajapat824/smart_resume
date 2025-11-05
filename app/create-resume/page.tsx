@@ -1,14 +1,14 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
-import { Header } from "@/components/Header";
+import { useEffect, useState } from "react";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ResumeForm } from "@/components/ResumeForm";
 import LivePreview from "@/components/LivePreview";
 import ResumeStartOptions from "@/components/ResumeStartOptions";
 import { Upload, Eraser, Download } from "lucide-react";
 import Modal from "@/components/Modal";
-import { URL } from "@/app/page";
-import { verifyToken } from "@/app/page";
+import { URL } from "@/exports/info";
+import { verifyToken } from "@/exports/auth";
 import Button from "@/components/ui/Button";
 
 export interface ResumeData {

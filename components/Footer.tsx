@@ -41,7 +41,7 @@ export default function Footer()
                 </li>
                 <li>
                   <a
-                    href="#templates"
+                    href="/templates"
                     className="hover:text-foreground transition-colors"
                   >
                     Templates

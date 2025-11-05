@@ -1,7 +1,7 @@
 import { ResumeData } from "@/app/create-resume/page";
 import SmallPreview from "@/components/Preview";
 import { Edit, Trash2, ZoomIn, } from "lucide-react"
-import { URL } from "@/app/page";
+import { URL } from "@/exports/info";
 import Zoom from "./Zoom";
 import { useState } from "react";
 import Modal from "./Modal";

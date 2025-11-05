@@ -2,10 +2,10 @@
 import { ResumeData } from "../create-resume/page"
 import { useEffect, useState } from "react"
 import { FileText, Plus } from "lucide-react"
-import { URL } from "../page"
+import { URL } from "@/exports/info"
 import Link from "next/link";
 import MyresumeCard from "@/components/MyresumeCard";
-import { verifyToken } from "../page";
+import { verifyToken,logout } from "@/exports/auth";
 
 
 export default function ResumeDashboard() {
@@ -20,7 +20,7 @@ export default function ResumeDashboard() {
                 return
             }
 
-            const res = await fetch(URL+"/resumes", {
+            const res = await fetch(URL + "/resumes", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -55,11 +55,6 @@ export default function ResumeDashboard() {
             checkLogin();
         }
     }, [])
-
-    const logout = () => {
-        localStorage.removeItem("token")
-        window.location.href = "/";
-    }
 
     function handleCreateResume() {
         localStorage.removeItem("data");

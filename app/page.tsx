@@ -1,5 +1,4 @@
 "use client"
-import Link from 'next/link';
 import Templates from "@/components/Templates";
 import Footer from "@/components/Footer";
 import LandingPageHeader from "@/components/LandingPageHeader";
@@ -10,43 +9,11 @@ import {
   Globe,
   Download,
   Target,
-  Star,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
-
-export const URL = "http://localhost:5000";
-
-export async function verifyToken(token: string): Promise<boolean> {
-  try {
-    const response = await fetch(`${URL}/verifyToken`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token,
-      },
-    });
-    let result: any = null;
-    try {
-      result = await response.json();
-    } catch (err) {
-      console.error("Failed to parse verifyToken response:", err);
-    }
-
-    if (!response.ok) {
-      console.log("Token verification failed:", result?.message);
-      localStorage.removeItem("token");
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.log("Token verification error:", error);
-    localStorage.removeItem("token");
-    return false;
-  }
-}
+import { templateNames } from "@/exports/info";
 
 export default function HomePage() {
-
   return (
     <div className="min-h-screen bg-background">
       <LandingPageHeader />
@@ -88,16 +55,8 @@ export default function HomePage() {
       <section id="templates" className="py-10 overflow-hidden md:py-16 px-4 bg-muted/80">
         <div className="mx-auto">
 
-
           <Templates
-            templates={[
-              "SampleResume",
-              "T1",
-              "SampleResume",
-              "SampleResume",
-              "T1",
-              "SampleResume"
-            ]}
+            templates={templateNames.slice(0,6)}
           />
 
           <div className="text-center mt-10 ">

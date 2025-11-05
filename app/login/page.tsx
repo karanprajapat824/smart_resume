@@ -1,9 +1,10 @@
 "use client";
-
-import { useState } from "react";
-import { FileText } from "lucide-react";
-import { URL } from "@/app/page";
+import { useRef, useState } from "react";
+import { X, FileText } from "lucide-react";
+import { URL } from "@/exports/info";
 import Loader from "@/components/ui/Loader";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,6 +20,16 @@ export default function AuthPage() {
     confirmPassword: "",
   });
 
+  const loginRefs = useRef<Array<HTMLInputElement | HTMLButtonElement | HTMLAnchorElement | null>>([]);
+
+  function handleLoginRefs(index: number) {
+    const nextInput = loginRefs.current[index + 1];
+    if (nextInput) {
+      nextInput.focus();
+    } else {
+    }
+  }
+
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement>,
     type: "login" | "signup"
@@ -30,6 +41,7 @@ export default function AuthPage() {
       setSignupData((prev) => ({ ...prev, [name]: value }));
     }
     setError("");
+    console.log(loginData, signupData);
   }
 
   async function handleLogin() {
@@ -38,13 +50,13 @@ export default function AuthPage() {
       return;
     }
     if (loginData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError("Password must be at least 8 characters long.");
       return;
     }
 
     try {
       setLoading(true);
-      const response = await fetch(URL + "/login", {
+      const response = await fetch(URL + "/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +68,8 @@ export default function AuthPage() {
 
       if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/create-resume";
+        const redirectTo = localStorage.getItem("redirectAfterLogin");
+        window.location.href = redirectTo || "/my-resumes";
       } else {
         setError(data.message || "Invalid email or password");
       }
@@ -74,17 +87,17 @@ export default function AuthPage() {
       return;
     }
     if (signupData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError("Password must be at least 8 characters long.");
       return;
     }
     if (signupData.password !== signupData.confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
 
     try {
       setLoading(true);
-      const response = await fetch(URL + "/signup", {
+      const response = await fetch(URL + "/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,9 +112,10 @@ export default function AuthPage() {
 
       if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/create-resume";
+        const redirectTo = localStorage.getItem("redirectAfterLogin");
+        window.location.href = redirectTo || "/templates";
       } else {
-        setError(data.message || "Signup failed. Please try again.");
+        setError(data.message || "Signup failed. Please try again later.");
       }
     } catch (err) {
       console.error("Signup failed:", err);
@@ -112,91 +126,104 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl h-auto flex flex-col justify-around">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-2xl font-bold text-primary">
-            <FileText className="h-8 w-8" />
-            Smart Resume
-          </div>
-        </div>
-
-        {/* Auth Container */}
-        <div className="max-w-md w-full mx-auto bg-white shadow-lg rounded-xl p-8">
+    <div className="border h-screen flex items-center justify-center">
+      <div className="grid grid-cols-[1fr_2fr] rounded overflow-hidden items-center border h-[90%] w-[90%] shadow-lg">
+        <div className="bg-white hideScrollBar h-full">
           {isLogin ? (
-            <div>
+            <div className="px-10 py-10">
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-center">Welcome back</div>
                 <div className="text-muted-foreground text-center pb-6">
                   Sign in to your Smart Resume account
                 </div>
               </div>
-
               <div className="space-y-4">
                 <div className="flex flex-col space-y-2">
-                  <label className="font-semibold" htmlFor="login-email">
-                    Email
-                  </label>
-                  <input
-                    id="login-email"
+                  <Input
+                    ref={(el) => { if (el) loginRefs.current[0] = el }}
+                    id="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="rounded px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary"
                     value={loginData.email}
                     onChange={(e) => handleChange(e, "login")}
                     name="email"
+                    classNameForLabel="text-xl"
+                    label="Email"
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleLoginRefs(0)
+                    }
                   />
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                  <label className="font-semibold" htmlFor="login-password">
-                    Password
-                  </label>
-                  <input
-                    id="login-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    className="rounded px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary"
-                    value={loginData.password}
-                    onChange={(e) => handleChange(e, "login")}
-                    name="password"
-                  />
+                  <div className="relative">
+                    <Input
+                      ref={(el) => { if (el) loginRefs.current[1] = el }}
+                      label="Password"
+                      id="login-password"
+                      type="text"
+                      placeholder="Enter your password"
+                      isPassword={true}
+                      classNameForLabel="text-xl"
+                      value={loginData.password}
+                      onChange={(e) => handleChange(e, "login")}
+                      name="password"
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleLoginRefs(1)
+                      }
+                    />
+                  </div>
+
                 </div>
 
                 <div className="text-right">
-                  <button className="text-sm text-primary hover:underline">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm text-primary hover:underline"
+                  >
                     Forgot password?
-                  </button>
+                  </Button>
                 </div>
 
-                <div className="flex flex-col gap-y-2">
-                  {error && <div className="text-destructive">{error}</div>}
-                  <button
+                <div className="flex flex-col gap-y-4">
+                  {error &&
+                    <div className="flex gap-2 items-center text-destructive-foreground border px-4 py-2 rounded bg-destructive">
+                      <X className="h-4 w-4 cursor-pointer" onClick={() => setError("")} />
+                      {error}
+                    </div>
+                  }
+                  <Button
                     onClick={handleLogin}
                     disabled={loading}
+                    ref={(el) => { if (el) loginRefs.current[2] = el }}
                     className="rounded-lg shadow-sm cursor-pointer bg-primary text-primary-foreground text-center px-8 py-2 flex justify-center items-center disabled:opacity-70"
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleLoginRefs(2)
+                    }
                   >
                     {loading ? <Loader /> : "Sign In"}
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
                   Don't have an account?{" "}
-                  <button
+                  <Button
                     onClick={() => {
                       setIsLogin(false);
                       setError("");
                     }}
+                    size="md"
+                    variant="ghost"
                     className="text-primary hover:underline font-medium cursor-pointer"
                   >
                     Sign up here
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           ) : (
-            <div>
+            <div className="px-10 py-10">
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-center">
                   Welcome to Smart Resume
@@ -208,76 +235,109 @@ export default function AuthPage() {
 
               <div className="space-y-4">
                 <div className="flex flex-col space-y-2">
-                  <label className="font-semibold" htmlFor="signup-email">
-                    Email
-                  </label>
-                  <input
+                  <Input
+                    ref={(el) => { if (el) loginRefs.current[0] = el }}
                     id="signup-email"
                     type="email"
                     placeholder="Enter your email"
-                    className="rounded px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary"
+                    classNameForLabel="text-xl"
                     value={signupData.email}
                     onChange={(e) => handleChange(e, "signup")}
                     name="email"
+                    label="Email"
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleLoginRefs(0)
+                    }
                   />
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                  <label className="font-semibold" htmlFor="signup-password">
-                    Password
-                  </label>
-                  <input
-                    id="signup-password"
-                    type="password"
-                    placeholder="Create a password"
-                    className="rounded px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary"
-                    value={signupData.password}
-                    onChange={(e) => handleChange(e, "signup")}
-                    name="password"
-                  />
+                  <div className="relative">
+                    <Input
+                      ref={(el) => { if (el) loginRefs.current[1] = el }}
+                      id="signup-password"
+                      type="password"
+                      placeholder="Create a password"
+                      classNameForLabel="text-xl"
+                      value={signupData.password}
+                      onChange={(e) => handleChange(e, "signup")}
+                      name="password"
+                      label="Password"
+                      isPassword={true}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleLoginRefs(1)
+                      }
+                    />
+                  </div>
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                  <label className="font-semibold" htmlFor="confirm-password">
-                    Confirm Password
-                  </label>
-                  <input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Confirm your password"
-                    className="rounded px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-primary"
-                    value={signupData.confirmPassword}
-                    onChange={(e) => handleChange(e, "signup")}
-                    name="confirmPassword"
-                  />
+                  <div className="relative">
+                    <Input
+                      ref={(el) => { if (el) loginRefs.current[2] = el }}
+                      id="confirm-password"
+                      type="password"
+                      placeholder="Confirm your password"
+                      classNameForLabel="text-xl"
+                      value={signupData.confirmPassword}
+                      onChange={(e) => handleChange(e, "signup")}
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      isPassword={true}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleLoginRefs(2)
+                      }
+                    />
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-y-2">
-                  {error && <div className="text-destructive">{error}</div>}
-                  <button
+                <div className="flex flex-col gap-y-4 mt-10">
+                  {error &&
+                    <div className="flex gap-2 items-center text-destructive-foreground border px-4 py-2 rounded bg-destructive">
+                      <X className="h-4 w-4" onClick={() => setError("")} />
+                      {error}
+                    </div>
+                  }
+
+                  <Button
+                    ref={(el) => { if (el) loginRefs.current[3] = el }}
+                    variant="primary"
+                    size="lg"
                     onClick={handleSignup}
                     disabled={loading}
-                    className="rounded-lg shadow-sm cursor-pointer bg-primary text-primary-foreground text-center px-8 py-2 flex justify-center items-center disabled:opacity-70"
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handleLoginRefs(3)
+                    }
                   >
                     {loading ? <Loader /> : "Create Account"}
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
                   Already have an account?{" "}
-                  <button
+                  <Button
                     onClick={() => {
                       setIsLogin(true);
                       setError("");
                     }}
+                    variant="ghost"
+                    size="md"
                     className="text-primary hover:underline font-medium cursor-pointer"
                   >
                     Sign in here
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
           )}
+        </div>
+        <div className="border-l h-full">
+          <div className="text-start p-6">
+            <div className="inline-flex items-center gap-2 text-2xl font-bold text-primary">
+              <FileText className="h-8 w-8" />
+              Smart Resume
+            </div>
+          </div>
         </div>
       </div>
     </div>
