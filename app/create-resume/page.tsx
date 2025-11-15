@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ResumeForm } from "@/components/ResumeForm";
@@ -7,69 +7,15 @@ import LivePreview from "@/components/LivePreview";
 import ResumeStartOptions from "@/components/ResumeStartOptions";
 import { Upload, Eraser, Download } from "lucide-react";
 import Modal from "@/components/Modal";
-import { URL } from "@/exports/info";
+import { API_URL, ResumeData } from "@/exports/utility";
 import { verifyToken } from "@/exports/auth";
 import Button from "@/components/ui/Button";
-
-export interface ResumeData {
-  id: string | null;
-  template: string | null;
-  order: Array<string>;
-  personalDetails: {
-    name: string;
-    email: string;
-    phone: string;
-    linkedin: string;
-    github: string;
-    location: string;
-    country: string;
-  };
-  summary: string;
-  workExperience: Array<{
-    id: string;
-    company: string;
-    role: string;
-    duration: string;
-    description: string;
-    bulletPoints: Array<string>;
-  }>;
-  education: Array<{
-    id: string;
-    degree: string;
-    institution: string;
-    year: string;
-    description: string;
-    grade: string;
-    location: string;
-  }>;
-  skills: Array<{
-    id: string;
-    name: string;
-    level: string;
-    key: string;
-    value: string;
-  }>;
-  projects: Array<{
-    id: string;
-    title: string;
-    link: string;
-    description: string;
-    bulletPoints: Array<string>;
-  }>;
-  achievements: Array<{
-    id: string;
-    title: string;
-    year: string;
-    description: string;
-    bulletPoints: Array<string>;
-    isBulletPoints: boolean;
-  }>;
-  languages: Array<{
-    id: string;
-    language: string;
-    level: string;
-  }>
-}
+import { CiImageOn } from "react-icons/ci";
+import { FaRegFilePdf } from "react-icons/fa";
+import { IoDocument } from "react-icons/io5";
+import { BsFiletypeTxt } from "react-icons/bs";
+import { toPng } from "html-to-image";
+import PageLoader from "@/components/ui/PageLoader";
 
 interface startOptionsType {
   model: boolean;
@@ -136,6 +82,21 @@ export default function CreateResumePage() {
   const [loading, setLoading] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const [isDirty, setIsDirty] = useState(true);
+  const [exportAs, setExportAs] = useState(false);
+  const resumeRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement | null>(null);
+  const [exportLoading, setExportLoading] = useState(false);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setExportAs(false);
+      }
+    }
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   const handleDataChange = (newData: Partial<ResumeData>) => {
     setResumeData((prev) => ({ ...prev, ...newData }));
@@ -145,10 +106,137 @@ export default function CreateResumePage() {
   useEffect(() => {
     try {
       localStorage.setItem("data", JSON.stringify(resumeData));
+      console.log(resumeData);
     } catch (err) {
       console.error("Failed to save resume data:", err);
     }
   }, [resumeData]);
+
+  async function fetchResumeById(token: string, id: string) {
+    if (!token || !id) {
+      console.error("Missing token or id");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/resume/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error(err.message || "Failed to fetch resume");
+        return;
+      }
+
+      const data = await res.json();
+      if (data?.resume) autoFill(data.resume);
+
+    } catch (error) {
+      console.error("Network error while fetching resume", error);
+    }
+  }
+
+  const handlePDFDownload = async () => {
+    if (!resumeRef.current) return;
+
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Resume</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+      </head>
+      <body>
+        ${resumeRef.current.outerHTML}
+      </body>
+    </html>
+  `;
+
+    try {
+      setExportLoading(true);
+      const response = await fetch(`${API_URL}/extract/pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html }),
+      });
+
+      if (!response.ok) {
+        console.error("PDF generation failed:", await response.text());
+        alert("Failed to generate PDF");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "resume.pdf";
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF request error:", err);
+      alert("Something went wrong while generating the PDF.");
+    } finally {
+      setExportLoading(false);
+      setExportAs(false);
+    }
+  };
+
+
+  const handleImageDownload = async () => {
+    if (!resumeRef.current) return;
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Resume</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+      </head>
+      <body style="background:white;">
+        ${resumeRef.current.outerHTML}
+      </body>
+    </html>
+  `;
+    try {
+      setExportLoading(true);
+      const response = await fetch(`${API_URL}/extract/image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html }),
+      });
+      
+      if (!response.ok) {
+        console.error("PDF generation failed:", await response.text());
+        alert("Failed to generate PDF");
+        return;
+      }
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "resume.png";
+      link.click();
+    } catch (err) {
+      console.error("Image export failed:", err);
+      alert("Failed to export image");
+    } finally {
+      setExportLoading(false);
+      setExportAs(false);
+    }
+  };
+
+
+
 
   function autoFill(data: any): ResumeData | null {
     try {
@@ -342,7 +430,7 @@ export default function CreateResumePage() {
     setLoading(true);
 
     try {
-      const res = await fetch(URL + "/upload-file", {
+      const res = await fetch(API_URL + "/upload-file", {
         method: "POST",
         body: formData,
       });
@@ -366,7 +454,6 @@ export default function CreateResumePage() {
     } finally {
       setLoading(false);
     }
-
   }
 
   function onManual() {
@@ -419,11 +506,22 @@ export default function CreateResumePage() {
       });
     }
 
+    const id = new URLSearchParams(window.location.search).get("id");
+
+
+    if (id && token) {
+      fetchResumeById(token, id);
+      setStartOption({
+        model: false,
+        option: "m"
+      });
+    }
+
   }, []);
 
   const saveResume = async () => {
     try {
-      const response = await fetch(URL + "/save-resume", {
+      const response = await fetch(API_URL + "/resume/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -436,8 +534,7 @@ export default function CreateResumePage() {
       if (!response.ok) {
         console.error("Auto-save failed:", data.message);
       } else {
-        autoFill(data.resume);
-        console.log("Auto-saved:", data.message, data.resume);
+        console.log("Auto-saved : ", data.message, data.resume);
         setIsSave(true);
       }
     } catch (error) {
@@ -459,9 +556,11 @@ export default function CreateResumePage() {
     }
   }, [resumeData]);
 
+  if (exportLoading) return <PageLoader />
 
   return (
-    <div className="min-h-screen bg-background ">
+    <div className="min-h-screen bg-background z-0">
+
       <Header isLogin={isLogin} isSave={isSave} saveResume={saveResume} />
       <Modal
         isOpen={uploadError}
@@ -523,22 +622,28 @@ export default function CreateResumePage() {
               <ResumeForm data={resumeData} onChange={handleDataChange} />
             </div>
             <div className="flex flex-col gap-4 items-start">
-              <div className="flex items-center justify-start gap-4">
+              <div ref={exportRef} className="flex items-center justify-start gap-4 relative z-1">
                 <Button
                   variant="primaryPlus"
                   size="sm"
                   icon={<Download className="h-4 w-4" />}
+                  onClick={() => setExportAs(!exportAs)}
                 >Export As</Button>
+                {
+                  exportAs && <div className="absolute w-[21vh] bg-primary top-[7vh] rounded-lg z-999 border px-4 py-2 flex text-sm flex-col text-primary-foreground font-semibold gap-4 justify-center">
+                    <div onClick={handlePDFDownload} className="flex gap-2 items-center cursor-pointer hover:text-black"><FaRegFilePdf className="h-4 w-4" />PDF</div>
+                    <div onClick={handleImageDownload} className="flex gap-2 items-center cursor-pointer hover:text-black"><CiImageOn className="h-4 w-4" />Image</div>
+                  </div>
+                }
                 <Button
                   variant="primaryPlus"
                   size="sm"
-                  icon={<Download className="h-4 w-4" />}
                   href="/templates"
                 >Change Template</Button>
               </div>
               <div className="flex justify-center items-center w-full">
                 <div className="a4-page-wrapper">
-                  <LivePreview data={resumeData} />
+                  <LivePreview data={resumeData} ref={resumeRef} temp={resumeData?.template || ""} />
                 </div>
               </div>
             </div>

@@ -11,13 +11,13 @@ import {
   Target,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { templateNames } from "@/exports/info";
+import { templateNames } from "@/exports/utility";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <LandingPageHeader />
-      
+
       <section className="py-20 px-4 overflow-hidden">
         <div className="mx-auto text-center max-w-6xl">
           <span className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium border mb-4 hover:cursor-pointer">
@@ -56,7 +56,7 @@ export default function HomePage() {
         <div className="mx-auto">
 
           <Templates
-            templates={templateNames.slice(0,6)}
+            templates={templateNames.slice(0, 6)}
           />
 
           <div className="text-center mt-10 ">

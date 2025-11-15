@@ -30,7 +30,7 @@ const PageLoader = () => {
             <div className="keyboard" />
           </div>
         </StyledWrapper>
-        <div className='text-2xl'>{messages[messageIndex]}</div>
+        <div className='md:text-2xl text-center'>{messages[messageIndex]}</div>
       </div>
     </div>
   );

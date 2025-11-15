@@ -20,7 +20,7 @@ const Popup: React.FC<PopupProps> = ({
 
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 10000); 
+    }, 20000); 
 
     return () => clearTimeout(timer);
   }, [visible, setVisible]);

@@ -3,7 +3,7 @@ import { Eye, FileText, EyeOff, X } from "lucide-react";
 
 interface InputFieldProps {
   label?: string;
-  name: string;
+  name?: string;
   id: string;
   value: string;
   placeholder?: string;

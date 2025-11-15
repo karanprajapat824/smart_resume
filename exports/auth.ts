@@ -1,9 +1,9 @@
-import { URL } from "./info";
+import { API_URL } from "./utility";
 
 export async function verifyToken(token: string): Promise<boolean> {
   try {
     console.log("Verifying token:", token);
-    const response = await fetch(`${URL}/auth/verifyToken`, {
+    const response = await fetch(`${API_URL}/auth/verifyToken`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import type { ResumeData } from "@/app/create-resume/page";
+import type { ResumeData } from "@/exports/utility";
 import PersonalDetails from "./resumeForm/PersonalDetails";
 import Summary from "./resumeForm/Summary";
 import WorkExperience from "./resumeForm/WorkExperience";

@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const dotenv = require('dotenv');
 const multer = require("multer");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const nodemailer = require('nodemailer');
 dotenv.config();
 
 
@@ -44,10 +45,19 @@ async function ocrFile(filePath, mimeType = "application/pdf") {
     }
 }
 
+const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
 
 module.exports = {
     ocrFile,
     extractTextAi,
     genAI,
-    upload
+    upload,
+    transporter
 };

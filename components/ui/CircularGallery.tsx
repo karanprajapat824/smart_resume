@@ -5,31 +5,20 @@ export type GalleryItem = { image: string; alt?: string };
 
 export type CircularGalleryProps = {
   items: GalleryItem[];
-  /** Horizontal size of each card (px). */
   cardWidth?: number;
-  /** Vertical size of each card (px). */
   cardHeight?: number;
-  /** Corner radius in CSS units. */
   borderRadius?: string;
-  /** Gap between cards (px) along the arc. */
   gap?: number;
-  /** Radius of the arc (px). */
   radius?: number;
-  /** How many items to render around the center (for perf). */
   visibleCount?: number;
-  /** Drag speed multiplier. */
   dragSpeed?: number;
-  /** Wheel sensitivity. */
   wheelSpeed?: number;
-  /** Lerp factor for easing (0..1). Lower is smoother. */
   ease?: number;
-  /** Autoplay degrees per second (can be negative for reverse). */
   autoplayDps?: number;
-  /** Pause autoplay on pointer hover. */
   pauseOnHover?: boolean;
-  /** Optional click handler */
   onItemClick?: (index: number) => void;
   className?: string;
+  wheelBehavior?: "none" | "hover" | "always";
 };
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
@@ -50,49 +39,41 @@ export default function CircularGallery({
   pauseOnHover = true,
   onItemClick,
   className,
+  wheelBehavior = "hover",
 }: CircularGalleryProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Angle between adjacent cards along the arc (radians)
   const step = useMemo(() => {
-    // Approximate angular width of a card + gap along the circle
-    const arcLen = cardWidth + gap; // px along circumference
-    return arcLen / radius; // radians per item
+    const arcLen = cardWidth + gap;
+    return arcLen / radius;
   }, [cardWidth, gap, radius]);
 
-  // Total visible on each side of the center
   const half = Math.floor(clamp(visibleCount, 3, 51) / 2);
 
-  // Center index in logical space
   const [centerIdx, setCenterIdx] = useState(0);
-  const targetAngleRef = useRef(0); // radians
-  const currentAngleRef = useRef(0); // radians
-  const velRef = useRef(0); // for fling/inertia
+  const targetAngleRef = useRef(0);
+  const currentAngleRef = useRef(0);
+  const velRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const isPointerDownRef = useRef(false);
   const pointerXRef = useRef(0);
 
-  // Normalize index to [0, n)
   const mod = (n: number, m: number) => ((n % m) + m) % m;
 
-  // Compute world positions for -half..+half around the center
   const indices = useMemo(() => Array.from({ length: 2 * half + 1 }, (_, i) => i - half), [half]);
 
-  // Animation loop
+
   useEffect(() => {
     const tick = (time: number) => {
-      // Autoplay (degrees/sec -> radians/frame)
       if (autoplayDps !== 0 && !(pauseOnHover && hovered) && !isPointerDownRef.current) {
         targetAngleRef.current += (autoplayDps * Math.PI / 180) / 60;
       }
 
-      // Ease current angle toward target
       const next = lerp(currentAngleRef.current, targetAngleRef.current, ease);
       const delta = next - currentAngleRef.current;
       currentAngleRef.current = next;
 
-      // Derive a fractional shift in index space from angle change
       const indexShift = delta / step;
       if (Math.abs(indexShift) > 0.0001) {
         setCenterIdx(prev => prev + indexShift);
@@ -106,20 +87,28 @@ export default function CircularGallery({
     };
   }, [autoplayDps, ease, pauseOnHover, hovered, step]);
 
-  // Wheel (passive)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    const shouldHandle = (e: WheelEvent) => {
+      if (wheelBehavior === "none") return false;
+      if (wheelBehavior === "always") return true;
+      return hovered;
+    };
+
     const onWheel = (e: WheelEvent) => {
-      // convert wheel delta to angle
+      if (!shouldHandle(e)) return; 
+      e.preventDefault(); 
       const deltaAngle = e.deltaY * wheelSpeed * step;
       targetAngleRef.current += deltaAngle;
     };
-    el.addEventListener("wheel", onWheel, { passive: true });
-    return () => el.removeEventListener("wheel", onWheel as any);
-  }, [step, wheelSpeed]);
 
-  // Pointer drag
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel as any);
+  }, [step, wheelSpeed, wheelBehavior, hovered]);
+
+
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -128,24 +117,22 @@ export default function CircularGallery({
       isPointerDownRef.current = true;
       pointerXRef.current = e.clientX;
       velRef.current = 0;
-      ;(e.target as Element).setPointerCapture?.(e.pointerId);
+      ; (e.target as Element).setPointerCapture?.(e.pointerId);
     };
 
     const onPointerMove = (e: PointerEvent) => {
       if (!isPointerDownRef.current) return;
       const dx = e.clientX - pointerXRef.current;
       pointerXRef.current = e.clientX;
-      // Map pixels to angle roughly by relating dx to arc length
       const deltaAngle = -dx * dragSpeed * (step / (cardWidth + gap));
       targetAngleRef.current += deltaAngle;
-      velRef.current = deltaAngle; // last delta for inertia
+      velRef.current = deltaAngle;
     };
 
     const onPointerUp = (e: PointerEvent) => {
       if (!isPointerDownRef.current) return;
       isPointerDownRef.current = false;
-      // Fling inertia: keep a bit of the last motion
-      targetAngleRef.current += velRef.current * 8; // damped fling
+      targetAngleRef.current += velRef.current * 8;
       velRef.current = 0;
     };
 
@@ -159,42 +146,33 @@ export default function CircularGallery({
     };
   }, [cardWidth, gap, dragSpeed, step]);
 
-  // hover state for autoplay pause
   const hoverBind = pauseOnHover
     ? {
-        onPointerEnter: () => setHovered(true),
-        onPointerLeave: () => setHovered(false),
-      }
+      onPointerEnter: () => setHovered(true),
+      onPointerLeave: () => setHovered(false),
+    }
     : undefined;
 
-  // Precompute transforms for visible items
   const rendered = useMemo(() => {
     const n = items.length;
     if (n === 0) return [] as Array<{
       key: string; index: number; style: React.CSSProperties; z: number
     }>;
 
-    // logical center (fractional)
     const c = centerIdx;
 
     return indices.map((offset) => {
-      // Which real item occupies this slot?
-      // Pick the integer index nearest to c + offset
       const slotIndex = Math.round(c) + offset;
       const itemIndex = mod(slotIndex, n);
 
-      // How far (in item steps) from the exact fractional center?
-      const stepDelta = slotIndex - c; // can be fractional
-      const theta = stepDelta * step; // radians along arc, 0 at center
+      const stepDelta = slotIndex - c;
+      const theta = stepDelta * step;
 
-      // Arc layout: x across, y bends up/down using cosine.
       const x = Math.sin(theta) * radius;
-      const y = (1 - Math.cos(theta)) * radius * 0.45; // 0.45 controls curvature strength
-
-      // Depth and scale for a subtle parallax (cheaper than real 3D)
-      const depth = Math.cos(theta); // [-1..1]
-      const scale = 0.9 + 0.1 * (depth + 1) / 2; // 0.9..1.0
-      const zIndex = Math.round(1000 + depth * 100); // keep centered items on top
+      const y = (1 - Math.cos(theta)) * radius * 0.45;
+      const depth = Math.cos(theta);
+      const scale = 0.9 + 0.1 * (depth + 1) / 2;
+      const zIndex = Math.round(1000 + depth * 100);
 
       const style: React.CSSProperties = {
         position: "absolute",
@@ -224,7 +202,6 @@ export default function CircularGallery({
       }
       style={{
         cursor: isPointerDownRef.current ? "grabbing" : "grab",
-        // perspective can add depth feel but costs a bit; keep it subtle.
         perspective: 1000,
         background: "transparent",
       }}
@@ -232,9 +209,6 @@ export default function CircularGallery({
       role="region"
       aria-label="Circular image gallery"
     >
-      {/* Center guide (optional) */}
-      {/* <div className="absolute left-1/2 top-1/2 w-1 h-1 -translate-x-1/2 -translate-y-1/2 bg-pink-500 rounded-full" /> */}
-
       {rendered.map(({ key, index, style }) => (
         <button
           key={key}
@@ -255,14 +229,6 @@ export default function CircularGallery({
           />
         </button>
       ))}
-
-      {/* Accessibility hint
-      <div
-        className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 text-xs text-white/50"
-        aria-hidden
-      >
-        
-      </div> */}
     </div>
   );
 }

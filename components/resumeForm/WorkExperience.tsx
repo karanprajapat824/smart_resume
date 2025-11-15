@@ -138,15 +138,16 @@ export default function WorkExperience({
                   <Input
                     label="Company"
                     id={`company-${exp.id}`}
+                    name="company"
                     value={exp.company}
                     placeholder="Company Name"
                     index={index * 4 + 0}
-                    inputRef={(el) => {
+                    ref={(el) => {
                       workExperienceRefs.current[index * 4 + 0] = el;
                     }}
-                    onChange={(value) =>
+                    onChange={(e) =>
                       updateWorkExperience(
-                        { target: { name: "company", value } } as React.ChangeEvent<HTMLInputElement>,
+                        e,
                         exp.id
                       )
                     }
@@ -156,16 +157,17 @@ export default function WorkExperience({
                   />
                   <Input
                     label="Role"
+                    name="role"
                     id={`role-${exp.id}`}
                     value={exp.role}
                     placeholder="Job Title"
                     index={index * 4 + 1}
-                    inputRef={(el) => {
+                    ref={(el) => {
                       workExperienceRefs.current[index * 4 + 1] = el;
                     }}
-                    onChange={(value) =>
+                    onChange={(e) =>
                       updateWorkExperience(
-                        { target: { name: "role", value } } as React.ChangeEvent<HTMLInputElement>,
+                        e,
                         exp.id
                       )
                     }
@@ -177,19 +179,20 @@ export default function WorkExperience({
 
                 <Input
                   label="Duration"
+                  name="duration"
                   id={`duration-${exp.id}`}
                   value={exp.duration}
                   placeholder="Jan 2020 - Present"
                   index={index * 4 + 2}
-                  inputRef={(el) => {
+                  ref={(el) => {
                     workExperienceRefs.current[index * 4 + 2] = el;
                   }}
-                  onChange={(value) =>
-                    updateWorkExperience(
-                      { target: { name: "duration", value } } as React.ChangeEvent<HTMLInputElement>,
-                      exp.id
-                    )
-                  }
+                  onChange={(e) =>
+                      updateWorkExperience(
+                        e,
+                        exp.id
+                      )
+                    }
                   onKeyDown={(e) =>
                     e.key === "Enter" && handleWorkExperienceRefs(index * 4 + 2)
                   }
@@ -202,7 +205,7 @@ export default function WorkExperience({
                   deletePoints={deleteBulletPoint}
                   updatePoints={updateBulletPoints}
                   placeHolder="Describe Your work experience..."
-                  inputRef={(el) => { workExperienceRefs.current[index * 4 + 3] = el;}}
+                  ref={(el) => { workExperienceRefs.current[index * 4 + 3] = el;}}
                 />
               </div>
             </div>

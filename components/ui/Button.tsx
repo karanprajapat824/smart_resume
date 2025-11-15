@@ -9,10 +9,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   size?: Size;
   icon?: React.ReactNode;
   href?: string;
+  disabled?: boolean;
 }
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  ({ children, className = "", variant = "primary", size = "md", icon, href, ...rest }, ref) => {
+  ({ children, className = "", variant = "primary", size = "md", icon, href, disabled = false, ...rest }, ref) => {
     const base =
       "inline-flex items-center justify-center font-semibold rounded-md transition-all duration-300 ease-in-out overflow-hidden relative";
 
@@ -33,14 +34,17 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
       lg: "px-5 py-3 text-base h-12",
     };
 
-    const classes = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
+    const disabledStyles =
+      "opacity-50 cursor-not-allowed pointer-events-none hover:scale-100 hover:shadow-none hover:bg-none";
+
+    const classes = `${base} ${variants[variant]} ${sizes[size]} ${disabled ? disabledStyles : ""} ${className}`;
 
     const content = (
       <>
         {icon && <span className="mr-2 flex items-center">{icon}</span>}
         <span className="flex items-center gap-2 justify-center">{children}</span>
 
-        {(variant === "primary" || variant === "primaryPlus") && (
+        {(variant === "primary" || variant === "primaryPlus") && !disabled && (
           <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
             <div className="relative h-full w-10 bg-white/30" />
           </div>
@@ -57,7 +61,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     }
 
     return (
-      <button ref={ref as React.Ref<HTMLButtonElement>} className={classes} {...rest}>
+      <button ref={ref as React.Ref<HTMLButtonElement>} className={classes} disabled={disabled} {...rest}>
         {content}
       </button>
     );

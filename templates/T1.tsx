@@ -1,5 +1,5 @@
 import React from "react";
-import { ResumeData } from "@/app/create-resume/page";
+import { ResumeData } from "@/exports/utility";
 
 interface TemplateType {
   data: ResumeData;
@@ -196,7 +196,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
     };
 
     return (
-      <main ref={ref} className="print:text-black print:m-0 print:p-0 print:w-full">
+      <main ref={ref} className="print:text-black print:m-0 print:p-0 print:w-full bg-white h-full">
         <article className="w-full max-w-4xl">
           {orderToRender?.map((section) => renderMap[section])}
         </article>

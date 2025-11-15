@@ -7,6 +7,8 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const Router = express.Router();
 const { ocrFile, genAI, upload } = require("../utility");
+const puppeteer = require("puppeteer");
+
 
 
 Router.post("/", upload.single("file"), async (req, res) => {
@@ -79,5 +81,81 @@ Router.post("/", upload.single("file"), async (req, res) => {
         res.status(500).json({ message: "Failed to process PDF" });
     }
 });
+
+
+Router.post("/pdf", async (req, res) => {
+    const { html } = req.body;
+
+    if (!html) {
+        return res.status(400).json({ error: "HTML is required" });
+    }
+
+    try {
+        const browser = await puppeteer.launch({
+            headless: "new",
+            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        });
+
+        const page = await browser.newPage();
+
+        await page.setContent(html, {
+            waitUntil: "networkidle0",
+        });
+
+        const pdfBuffer = await page.pdf({
+            format: "A4",
+            printBackground: true,
+            margin: { top: "0px", bottom: "0px" }
+        });
+
+        await browser.close();
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Length": pdfBuffer.length,
+        });
+
+        return res.send(pdfBuffer);
+    } catch (err) {
+        console.error("PDF error:", err);
+        res.status(500).json({ error: "PDF generation failed" });
+    }
+});
+
+Router.post("/image", async (req, res) => {
+    const { html } = req.body;
+
+    if (!html) return res.status(400).json({ error: "HTML required" });
+
+    try {
+        const browser = await puppeteer.launch({
+            headless: "new",
+            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        });
+
+        const page = await browser.newPage();
+
+        await page.setContent(html, { waitUntil: "networkidle0" });
+
+        const imageBuffer = await page.screenshot({
+            type: "png",
+            fullPage: true,
+            omitBackground: false,
+            captureBeyondViewport: true,
+            backgroundColor: "#ffffff"
+        });
+
+        await browser.close();
+
+        res.setHeader("Content-Type", "image/png");
+        res.send(imageBuffer);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Image generation failed" });
+    }
+});
+
+
 
 module.exports = Router;

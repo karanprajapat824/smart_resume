@@ -1,6 +1,6 @@
 import Button from "./ui/Button";
 import SmallPreview from "./Preview";
-import { ResumeData } from "@/app/create-resume/page";
+import { ResumeData } from "@/exports/utility";
 import { ZoomIn } from "lucide-react";
 import { useEffect, useState } from "react";
 import Zoom from "./Zoom";

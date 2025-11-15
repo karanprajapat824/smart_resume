@@ -40,18 +40,19 @@ export default function PersonalDetails({
             <Input
               label="Full Name"
               id="name"
+              name="name"
               value={data.personalDetails.name}
               placeholder="Karan Prajapat"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    name: value,
+                    name: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 0)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[0] = el;
               }}
             />
@@ -61,16 +62,16 @@ export default function PersonalDetails({
               type="email"
               value={data.personalDetails.email}
               placeholder="karanprajapat824@gmail.com"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    email: value,
+                    email: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 1)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[1] = el;
               }}
             />
@@ -81,16 +82,16 @@ export default function PersonalDetails({
               id="phone"
               value={data.personalDetails.phone}
               placeholder="+91 8770738268"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    phone: value,
+                    phone: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 2)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[2] = el;
               }}
             />
@@ -99,16 +100,16 @@ export default function PersonalDetails({
               id="linkedin"
               value={data.personalDetails.linkedin}
               placeholder="karanprajapat824"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    linkedin: value,
+                    linkedin: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 3)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[3] = el;
               }}
             />
@@ -119,16 +120,16 @@ export default function PersonalDetails({
               id="github"
               value={data.personalDetails.github}
               placeholder="karanprajapat824"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    github: value,
+                    github: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 4)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[4] = el;
               }}
             />
@@ -137,16 +138,16 @@ export default function PersonalDetails({
               id="address"
               value={data.personalDetails.location}
               placeholder="Ujjain M.P"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    location: value,
+                    location: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 5)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[5] = el;
               }}
             />
@@ -157,16 +158,16 @@ export default function PersonalDetails({
               id="country"
               value={data.personalDetails.country}
               placeholder="India"
-              onChange={(value) =>
+              onChange={(e) =>
                 onChange({
                   personalDetails: {
                     ...data.personalDetails,
-                    country: value,
+                    country: e.target.value,
                   },
                 })
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, 6)}
-              inputRef={(el) => {
+              ref={(el) => {
                 personalDetailsRefs.current[6] = el;
               }}
             />

@@ -1,7 +1,7 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { X, FileText } from "lucide-react";
-import { URL } from "@/exports/info";
+import { API_URL } from "@/exports/utility";
 import Loader from "@/components/ui/Loader";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -9,6 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa6";
 import CircularGallery from '@/components/ui/CircularGallery';
 import TypingEffect from '@/components/ui/TypingEffect';
+import Popup from "@/components/ui/Popup";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -40,7 +41,7 @@ export default function AuthPage() {
     "Resumes That Speak Success",
     "Show Your Value Before You Even Speak"
   ];
-
+  const [popup, setPopup] = useState<boolean>(false);
 
   const loginRefs = useRef<Array<HTMLInputElement | HTMLButtonElement | HTMLAnchorElement | null>>([]);
 
@@ -51,6 +52,23 @@ export default function AuthPage() {
     } else {
     }
   }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error")) {
+      const error = urlParams.get("error")?.replaceAll("_", " ") ?? "";
+      setError(error);
+    }
+    else {
+      const token = urlParams.get("token");
+      if (token) {
+        setPopup(true);
+        localStorage.setItem("token", token);
+        const redirectTo = localStorage.getItem("redirectAfterLogin");
+        window.location.href = redirectTo || "/my-resumes";
+      }
+    }
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -63,7 +81,6 @@ export default function AuthPage() {
       setSignupData((prev) => ({ ...prev, [name]: value }));
     }
     setError("");
-    console.log(loginData, signupData);
   }
 
   async function handleLogin() {
@@ -78,7 +95,7 @@ export default function AuthPage() {
 
     try {
       setLoading(true);
-      const response = await fetch(URL + "/auth/login", {
+      const response = await fetch(API_URL + "/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,6 +107,7 @@ export default function AuthPage() {
 
       if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
+        setPopup(true);
         const redirectTo = localStorage.getItem("redirectAfterLogin");
         window.location.href = redirectTo || "/my-resumes";
       } else {
@@ -119,7 +137,7 @@ export default function AuthPage() {
 
     try {
       setLoading(true);
-      const response = await fetch(URL + "/auth/signup", {
+      const response = await fetch(API_URL + "/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -134,6 +152,7 @@ export default function AuthPage() {
 
       if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
+        setPopup(true);
         const redirectTo = localStorage.getItem("redirectAfterLogin");
         window.location.href = redirectTo || "/templates";
       } else {
@@ -148,11 +167,16 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="border h-screen flex items-center justify-center">
-      <div className="grid grid-cols-[1fr_2fr] rounded overflow-hidden items-center border h-[90%] w-[90%] shadow-lg">
-        <div className="bg-white hideScrollBar h-full">
+    <div className="h-screen flex items-center justify-center w-full">
+      <Popup
+        visible={popup}
+        setVisible={setPopup}
+        message={isLogin ? "Logged in successfully!" : "Account created successfully!"}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] place-items-center rounded lg:overflow-hidden items-center justify-center border md:h-[90%] md:w-[90%] h-[100%] w-full shadow-lg">
+        <div className="bg-white hideScrollBar h-full pt-10 max-w-xl w-full">
           {isLogin ? (
-            <div className="px-10 pt-6">
+            <div className="px-10 md:pt-6">
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-center">Welcome back</div>
                 <div className="text-muted-foreground text-center pb-6">
@@ -201,6 +225,7 @@ export default function AuthPage() {
                     variant="ghost"
                     size="sm"
                     className="text-sm text-primary hover:underline"
+                    href="/forgot-password"
                   >
                     Forgot password?
                   </Button>
@@ -208,7 +233,7 @@ export default function AuthPage() {
 
                 <div className="flex flex-col gap-y-4">
                   {error &&
-                    <div className="flex gap-2 items-center text-destructive-foreground border px-4 py-2 rounded bg-destructive">
+                    <div className="flex gap-2 items-center text-destructive-foreground border px-4 py-2 rounded bg-destructive text-sm">
                       <X className="h-4 w-4 cursor-pointer" onClick={() => setError("")} />
                       {error}
                     </div>
@@ -354,6 +379,7 @@ export default function AuthPage() {
               variant="ghost"
               className="border border-muted-foreground w-[40%] rounded"
               icon={<FcGoogle />}
+              href={`${API_URL}/auth/google`}
             >
               Google
             </Button>
@@ -362,12 +388,13 @@ export default function AuthPage() {
               variant="ghost"
               icon={<FaLinkedin />}
               className="border border-muted-foreground w-[40%] rounded"
+              href={`${API_URL}/auth/linkedin`}
             >
               LinkedIn
             </Button>
           </div>
         </div>
-        <div className="border-l h-full flex flex-col justify-between">
+        <div className="border-l h-full flex-col justify-between hidden lg:flex w-full">
           <div className="text-start p-6">
             <div className="inline-flex items-center gap-2 text-2xl font-bold text-primary">
               <FileText className="h-8 w-8" />
@@ -375,13 +402,13 @@ export default function AuthPage() {
             </div>
           </div>
           <div className="pb-8 text-3xl pl-8 font-semibold">
-            <TypingEffect 
+            <TypingEffect
               messages={message}
               loop={true}
               cursor={true}
               typingSpeed={40}
-              />
-            </div>
+            />
+          </div>
           <div className="h-100">
             <CircularGallery
               items={[
@@ -390,6 +417,10 @@ export default function AuthPage() {
                 { image: './resume2.jpg' },
                 { image: './resume3.jpg' },
                 { image: './resume4.png' },
+                { image: './resume5.webp' },
+                { image: './resume6.webp' },
+                { image: './resume7.jpg' },
+                { image: './resume8.webp' },
               ]}
               cardWidth={220}
               cardHeight={300}
@@ -397,6 +428,7 @@ export default function AuthPage() {
               radius={800}
               visibleCount={4}
               autoplayDps={8}
+              wheelBehavior="none"
             />
           </div>
         </div>

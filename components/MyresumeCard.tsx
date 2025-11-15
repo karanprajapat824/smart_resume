@@ -1,11 +1,11 @@
 import { ResumeData } from "@/app/create-resume/page";
 import SmallPreview from "@/components/Preview";
 import { Edit, Trash2, ZoomIn, } from "lucide-react"
-import { URL } from "@/exports/info";
+import { URL } from "@/exports/utility";
 import Zoom from "./Zoom";
 import { useState } from "react";
 import Modal from "./Modal";
-import Popup from "./Popup";
+import Popup from "./ui/Popup";
 
 interface myresumeCardType {
     resume: ResumeData,

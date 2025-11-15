@@ -79,29 +79,6 @@ export default function LandingPageHeader() {
             </div>
           )
         }
-        <nav className="hidden lg:flex items-center space-x-0">
-          <Button
-            href="#features"
-            variant="ghost"
-            size="lg"
-          >
-            Features
-          </Button>
-          <Button
-            href="/templates"
-            variant="ghost"
-            size="lg"
-          >
-            Templates
-          </Button>
-          <Button
-            href="#contact"
-            variant="ghost"
-            size="lg"
-          >
-            Contact
-          </Button>
-        </nav>
         <div className="hidden md:flex items-center space-x-3">
           <Button
             variant="outline"
