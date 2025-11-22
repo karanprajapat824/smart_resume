@@ -64,11 +64,11 @@ export default function AuthPage() {
       setError(error);
     }
     else {
-      // if(loggedIn) {
-      //   setPopup(true);
-      //   const redirectTo = localStorage.getItem("redirectAfterLogin");
-      //   window.location.href = redirectTo || "/my-resumes";
-      // }
+      if(loggedIn) {
+        setPopup(true);
+        const redirectTo = localStorage.getItem("afterLoginRedirect");
+        window.location.href = redirectTo || "/my-resumes";
+      }
     }
   }, []);
 
@@ -123,7 +123,7 @@ export default function AuthPage() {
 
       setAccessToken(accessToken);
 
-      const redirectTo = localStorage.getItem("redirectAfterLogin");
+      const redirectTo = localStorage.getItem("afterLoginRedirect");
       window.location.href = redirectTo || "/my-resumes";
 
     } catch (err) {
@@ -181,7 +181,7 @@ export default function AuthPage() {
 
       setAccessToken(accessToken);
 
-      const redirectTo = localStorage.getItem("redirectAfterLogin");
+      const redirectTo = localStorage.getItem("afterLoginRedirect");
       window.location.href = redirectTo || "/templates";
 
     } catch (err) {

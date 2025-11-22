@@ -1,10 +1,8 @@
 "use client";
-import LandingPageHeader from "@/components/LandingPageHeader";
-import Input from "@/components/ui/Input";
-import { Button } from "@/components/Ui"
+import { Button, Loader, Input } from "@/components/Ui"
 import { useState } from "react";
 import Popup from "@/components/Popup";
-import Loader from "@/components/ui/Loader";
+import Header from "@/components/Header";
 import { ArrowLeft } from "lucide-react";
 import { useUtility } from "../providers/UtilityProvider";
 
@@ -115,7 +113,10 @@ export default function ForgotPassword() {
 
     return (
         <div>
-            <LandingPageHeader />
+            <Header
+                items={["templates","login","create-my-resume"]}
+                afterLoginRedirect="/login"
+            />
             <Popup
                 visible={popup}
                 setVisible={setpopup}

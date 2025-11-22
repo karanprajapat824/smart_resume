@@ -256,7 +256,12 @@ export default function CreateResumePage() {
 
   return (
     <div className="min-h-screen bg-background z-0">
-      <Header items={["save", "home", "templates", "my-resumes"]} isSave={isSave} saveResume={saveResume} />
+      <Header
+        items={["save", "home", "templates", "my-resumes"]}
+        isSave={isSave}
+        saveResume={saveResume}
+        afterLoginRedirect="/create-resume"
+      />
       <Modal
         isOpen={uploadError}
         message={"Something wrong!"}

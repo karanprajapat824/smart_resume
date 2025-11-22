@@ -11,9 +11,10 @@ interface HeaderProps {
   items: string[];
   isSave?: boolean;
   saveResume?: () => void;
+  afterLoginRedirect?: string;
 }
 
-export default function Header({ items, isSave = false, saveResume }: HeaderProps) {
+export default function Header({ items, isSave = false, saveResume, afterLoginRedirect="/" }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [spin, setSpin] = useState(false);
   const { loggedIn, setLoggedIn, setAccessToken } = useAuth();
@@ -45,6 +46,12 @@ export default function Header({ items, isSave = false, saveResume }: HeaderProp
     }
   }
 
+  function handleLogin(){
+    alert(afterLoginRedirect);
+    localStorage.setItem("afterLoginRedirect",afterLoginRedirect);
+    window.location.href = "/login";
+  }
+
   const renderButton = (key: string) => {
     switch (key) {
       case "home":
@@ -69,7 +76,7 @@ export default function Header({ items, isSave = false, saveResume }: HeaderProp
 
       case "login":
         return !loggedIn ? (
-          <Button href="/login" variant="outline" size="md">Login / Sign up</Button>
+          <Button onClick={handleLogin} variant="outline" size="md">Login / Sign up</Button>
         ) : null;
 
       case "logout":
@@ -116,7 +123,7 @@ export default function Header({ items, isSave = false, saveResume }: HeaderProp
                 )
               ) : (
                 <Button
-                  href="/login"
+                  onClick={handleLogin}
                   variant="outline"
                   size="sm"
                   icon={<Save className="h-4" />}

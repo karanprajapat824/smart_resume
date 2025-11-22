@@ -21,7 +21,7 @@ const Templates = ({ templates }: TemplateType) => {
   
 
   let myResumeData : ResumeData = {
-    id: "",
+    resume_id: "",
     template: "",
     order: [
       "PersonalDetails",

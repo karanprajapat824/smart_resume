@@ -117,7 +117,7 @@ export interface ResumeData {
 export function UtilityProvider({ children }: { children: React.ReactNode }) {
 
     const API_URL = "http://localhost:5000";
-    const templateNames = ["SampleResume", "T1", "SampleResume", "T1", "SampleResume", "T1", "SampleResume", "T1", "SampleResume", "T1"];
+    const templateNames = ["SampleResume", "T1"];
     const [width, setWidth] = useState<number>(0);
     const [resumeData, setResumeData] = useState<ResumeData>(() => initialLoad(defaultResumeData));
     const [isDirty, setIsDirty] = useState(true);
