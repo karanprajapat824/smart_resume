@@ -1,7 +1,7 @@
 "use client"
 import Templates from "@/components/Templates";
 import Footer from "@/components/Footer";
-import LandingPageHeader from "@/components/LandingPageHeader";
+import Header from "@/components/Header";
 import {
   CheckCircle,
   FileText,
@@ -10,14 +10,20 @@ import {
   Download,
   Target,
 } from "lucide-react";
-import Button from "@/components/ui/Button";
-import { templateNames } from "@/exports/utility";
+import { Button } from "@/components/Ui"
+import { useUtility } from "@/app/providers/UtilityProvider";
+import { useAuth } from "./providers/AuthProvider";
+import PageLoader from "@/components/PageLoader";
 
 export default function HomePage() {
+  const { templateNames, width } = useUtility();
+  const { loading } = useAuth();
+
+  if (loading) return <PageLoader />
+
   return (
     <div className="min-h-screen bg-background">
-      <LandingPageHeader />
-
+      <Header items={["my-resumes", "login", "create-my-resume"]} />
       <section className="py-20 px-4 overflow-hidden">
         <div className="mx-auto text-center max-w-6xl">
           <span className="inline-flex items-center px-3 py-2 rounded-full text-sm font-medium border mb-4 hover:cursor-pointer">
@@ -31,7 +37,7 @@ export default function HomePage() {
             Choose from professional templates, customize instantly, and land
             your dream job.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-12">
             <Button
               variant='primaryPlus'
               size='lg'
@@ -52,14 +58,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="templates" className="py-10 overflow-hidden md:py-16 px-4 bg-muted/80">
-        <div className="mx-auto">
-
+      <section id="templates" className="py-10 overflow-hidden md:py-16 w-full">
+        <div className="w-full">
           <Templates
-            templates={templateNames.slice(0, 6)}
+            templates={templateNames.slice(0, width < 770 ? 3 : (width < 1024 || width > 1549) ? 4 : 6)}
           />
 
-          <div className="text-center mt-10 ">
+          <div className="text-center mt-20 ">
             <Button
               variant='outline'
               size="lg"

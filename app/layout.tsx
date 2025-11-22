@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globle.css";
 import { ThemeProvider } from "next-themes";
 import { cookies } from "next/headers";
+import { AuthProvider } from "./providers/AuthProvider";
+import { UtilityProvider } from "./providers/UtilityProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,7 +26,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const cookieStore = await cookies(); 
+  const cookieStore = await cookies();
   const themeCookie = cookieStore.get("theme")?.value ?? "light";
 
   return (
@@ -33,9 +35,13 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme={themeCookie} enableSystem={true}>
-          {children}
-        </ThemeProvider>
+        <UtilityProvider>
+          <AuthProvider >
+            <ThemeProvider attribute="class" defaultTheme={themeCookie} enableSystem={true}>
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
+        </UtilityProvider>
       </body>
     </html>
   );

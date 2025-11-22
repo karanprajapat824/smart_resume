@@ -1,6 +1,6 @@
-import Button from "./ui/Button";
+import { Button } from "@/components/Ui"
 import SmallPreview from "./Preview";
-import { ResumeData } from "@/exports/utility";
+import { ResumeData, useUtility } from "@/app/providers/UtilityProvider";
 import { ZoomIn } from "lucide-react";
 import { useEffect, useState } from "react";
 import Zoom from "./Zoom";
@@ -12,21 +12,15 @@ interface TemplateType {
 const Templates = ({ templates }: TemplateType) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isZoom, setIsZoom] = useState(false);
+  const { width } = useUtility();
+  const [currentTemplate, setCurrentTemplate] = useState("");
 
   useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
-    };
+    setIsMobile(width < 768 || "ontouchstart" in window);
+  }, [width]);
+  
 
-    checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkIsMobile);
-    };
-  }, []);
-
-  let defaultResumeData : ResumeData = {
+  let myResumeData : ResumeData = {
     id: "",
     template: "",
     order: [
@@ -140,64 +134,12 @@ const Templates = ({ templates }: TemplateType) => {
     ],
   };
 
-  let resumeData: ResumeData = {
-    id: "",
-    template: "",
-    order: [
-      "PersonalDetails",
-      "Summary",
-      "WorkExperience",
-      "Education",
-      "Skills",
-      "Projects",
-      "Achievements",
-      "Languages",
-    ],
-    personalDetails: {
-      name: "",
-      email: "",
-      phone: "",
-      linkedin: "",
-      github: "",
-      location: "",
-      country: "",
-    },
-    summary:
-      "",
-    workExperience: [
-    ],
-    education: [
-    ],
-    skills: [
-    ],
-    projects: [
-    ],
-    achievements: [],
-    languages: [
-    ],
-  };
-
-
-
-  const handleSelectedTemplate = (template: string) => {
-    let data = localStorage.getItem("data");
-    if (data) {
-      resumeData = JSON.parse(data);
-    }
-    const dataToStore = { ...resumeData, template }
-    localStorage.setItem("data", JSON.stringify(dataToStore));
-    localStorage.setItem("template", template);
-    window.location.href = "/create-resume";
+  const handleSelectedTemplate = (template? : string) => {
+    window.location.href = `/create-resume/?template=${template}`;
   }
 
-  const handleZoomTemplate = (template: string) => {
-    let data = localStorage.getItem("data");
-    if (data) {
-      resumeData = JSON.parse(data);
-    }
-    const dataToStore = { ...resumeData, template }
-    localStorage.setItem("data", JSON.stringify(dataToStore));
-    localStorage.setItem("template", template);
+  const handleZoom = (template: string) => {
+    setCurrentTemplate(template);
     setIsZoom(true);
   }
 
@@ -236,7 +178,7 @@ const Templates = ({ templates }: TemplateType) => {
 
                   <div className="border p-4 rounded-full bg-muted/80 hover:scale-105 z-30 transition-transform cursor-pointer">
                     <ZoomIn
-                      onClick={() => handleZoomTemplate(template)}
+                      onClick={() => handleZoom(template)}
                     />
                   </div>
 
@@ -248,12 +190,18 @@ const Templates = ({ templates }: TemplateType) => {
                 </div>
 
                 <div className="relative z-10">
-                  <SmallPreview data={defaultResumeData} template={template} />
+                  <SmallPreview data={myResumeData} template={template} />
                 </div>
               </div>
             );
           })}
-          <Zoom isOpen={isZoom} setIsOpen={setIsZoom} data={defaultResumeData} handleSelectedTemplate={handleSelectedTemplate} />
+          <Zoom
+            isOpen={isZoom}
+            setIsOpen={setIsZoom}
+            data={myResumeData}
+            handleSelectedTemplate={handleSelectedTemplate}
+            template={currentTemplate}
+          />
         </div>
       </div>
     </section>

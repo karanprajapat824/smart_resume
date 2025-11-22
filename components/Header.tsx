@@ -1,129 +1,162 @@
-"use client"
-import { Cloud, FileText, Menu, X, Save, RefreshCw } from "lucide-react"
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import { useEffect, useState } from "react";
-import Button from "./ui/Button";
+"use client";
 
-interface HeaderType {
-  isLogin?: boolean,
-  isSave?: boolean,
-  saveResume: () => void;
+import { useState } from "react";
+import { FileText, Menu, X, Cloud, RefreshCw, Save } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
+import { Button } from "@/components/Ui";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { useUtility } from "@/app/providers/UtilityProvider";
+
+interface HeaderProps {
+  items: string[];
+  isSave?: boolean;
+  saveResume?: () => void;
 }
 
-export default function Header({ isLogin = false, isSave = false, saveResume }: HeaderType) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function Header({ items, isSave = false, saveResume }: HeaderProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [spin, setSpin] = useState(false);
+  const { loggedIn, setLoggedIn, setAccessToken } = useAuth();
+  const { API_URL } = useUtility();
 
-  useEffect(() => {
-    if (!isSave) return;
-    setTimeout(() => setSpin(false), 5000);
-  }, [spin]);
+  const handleSave = () => {
+    if (!saveResume) return;
+    saveResume();
+    setSpin(true);
+    setTimeout(() => setSpin(false), 3000);
+  };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  async function logout() {
+    try {
+      const res = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include"
+      });
+
+      if (res.ok) {
+        setAccessToken(null);
+        setLoggedIn(false);
+      }
+    } catch (e) {
+      console.log("Error in logout : " + e);
+    }
+  }
+
+  const renderButton = (key: string) => {
+    switch (key) {
+      case "home":
+        return (
+          <Button href="/" variant="ghost" size="lg">Home</Button>
+        );
+
+      case "templates":
+        return (
+          <Button href="/templates" variant="ghost" size="lg">Templates</Button>
+        );
+
+      case "create-my-resume":
+        return (
+          <Button href="/templates" variant="primary" size="md">Create My Resume</Button>
+        );
+
+      case "my-resumes":
+        return loggedIn ? (
+          <Button href="/my-resumes" variant="outline" size="md">My Resumes</Button>
+        ) : null;
+
+      case "login":
+        return !loggedIn ? (
+          <Button href="/login" variant="outline" size="md">Login / Sign up</Button>
+        ) : null;
+
+      case "logout":
+        return loggedIn ? (
+          <Button onClick={logout} variant="outline" size="md">Logout</Button>
+        ) : null;
+
+      default:
+        return null;
+    }
   };
 
   return (
-    <header className="sticky top-0 z-50 left-0 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-2 md:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-1">
-          <FileText className="md:h-8 md:w-8 h-6 w-6 text-primary" />
-          <span onClick={() => window.location.href = "/"} className="text-sm md:text-xl font-bold text-foreground cursor-pointer">Smart Resume</span>
+    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+      <div className="px-4 md:px-8 h-16 flex justify-between items-center">
+
+        <div className="flex items-center gap-2 cursor-pointer">
+          <div onClick={() => (window.location.href = "/")} className="flex items-center gap-2 cursor-pointer">
+            <FileText className="h-7 w-7 text-primary" />
+            <span className="text-lg font-bold mr-4">Smart Resume</span>
+          </div>
           {
-            isLogin ?
-              (
-                !isSave ?
+            items[0] === "save" && (
+              loggedIn ? (
+                !isSave ? (
                   <Button
                     variant="outline"
                     size="sm"
-                    className="ml-4"
-                    icon={<Cloud className="h-8" />}
-                    onClick={() => { saveResume(); setSpin(true) }}
+                    icon={<Cloud className="h-4" />}
+                    onClick={handleSave}
                   >
-                    <div>Save to cloud</div>
+                    Save
                     <RefreshCw className={`h-4 ${spin && "animate-spin"}`} />
-                  </Button> :
+                  </Button>
+                ) : (
                   <Button
                     variant="outline"
-                    className="ml-4 border-success-foreground"
                     size="sm"
+                    className="border-success-foreground text-success-foreground"
+                    disabled={isSave}
                   >
-                    <div className="flex items-center gap-2 text-success-foreground"><Cloud className="h-8" /> Saved to cloud</div>
+                    <Cloud className="h-4" /> Saved
                   </Button>
+                )
+              ) : (
+                <Button
+                  href="/login"
+                  variant="outline"
+                  size="sm"
+                  icon={<Save className="h-4" />}
+                >
+                  Login to Save
+                </Button>
               )
-              :
-              <Button
-                href="/login"
-                icon={<Save className="h-4" />}
-                size={"sm"}
-                variant="outline"
-                className="ml-4"
-              >
-                Login to Save
-              </Button>
+            )
           }
+
         </div>
 
-        <nav className="hidden md:flex items-center justify-between space-x-2">
-          <Button
-            href="/templates"
-            variant="ghost"
-            size="lg"
-          >
-            Templates
-          </Button>
-          <Button
-            href="/my-resumes"
-            variant="ghost"
-            size="lg"
-          >
-            My Resumes
-          </Button>
-          <ThemeToggle />
+        <nav className="hidden md:flex items-center gap-2">
+          {items.map((item) => (
+            <div key={item}>
+              {renderButton(item)}
+            </div>
+          ))}
+          <div className="ml-4">
+            <ThemeToggle />
+          </div>
         </nav>
 
-        <button
-          className="md:hidden p-2 rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden">
+          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {isMenuOpen && (
-        <div className="md:hidden">
-          <nav className="fixed top-20 right-5 bg-background border p-4 flex flex-col space-y-2 rounded-lg items-start">
-            <Button
-              href="/"
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Home
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              href="/templates"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Templates
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              href="/my-resumes"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              My Resumes
-            </Button>
-            <div className="pl-2">
-              <ThemeToggle />
+      {mobileOpen && (
+        <nav className="md:hidden text-right absolute right-0 px-4 py-8 w-full border bg-background flex flex-col items-center gap-3">
+          {items.map((item) => (
+            <div className="text-right" key={item}>
+              {renderButton(item)}
             </div>
-          </nav>
-        </div>
+          ))}
+          <div className="mt-4 text-right">
+            <ThemeToggle />
+          </div>
+        </nav>
       )}
     </header>
-  )
+  );
 }

@@ -1,18 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { Plus, Trash2, CirclePlus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
-import Button from "../ui/Button";
-import ToggleMode from "../ui/ToggleMode";
+import { Button, ToggleMode } from "@/components/Ui"
+import { useUtility } from "@/app/providers/UtilityProvider";
 
 export default function Projects({
-  data,
-  onChange,
   openSections,
   setOpenSections,
 }: ResumeSectionProps) {
-
+  const { resumeData, handleDataChange } = useUtility();
   const projectsRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
@@ -29,9 +27,9 @@ export default function Projects({
   }
 
   function addProject() {
-    onChange({
+    handleDataChange({
       projects: [
-        ...data.projects,
+        ...resumeData.projects,
         {
           id: Date.now().toString(),
           title: "",
@@ -44,8 +42,8 @@ export default function Projects({
   }
 
   function deleteProject(id: string) {
-    const remainingProjects = data.projects.filter((p) => p.id !== id);
-    onChange({ projects: remainingProjects });
+    const remainingProjects = resumeData.projects.filter((p) => p.id !== id);
+    handleDataChange({ projects: remainingProjects });
   }
 
   function updateProject(
@@ -53,8 +51,8 @@ export default function Projects({
     id: string
   ) {
     const { value, name } = e.target;
-    onChange({
-      projects: data.projects.map((p) => (p.id === id ? { ...p, [name]: value } : p)),
+    handleDataChange({
+      projects: resumeData.projects.map((p) => (p.id === id ? { ...p, [name]: value } : p)),
     });
   }
 
@@ -62,16 +60,16 @@ export default function Projects({
     const trimmed = point.trim();
     if (!trimmed) return;
 
-    onChange({
-      projects: data.projects.map((p) =>
+    handleDataChange({
+      projects: resumeData.projects.map((p) =>
         p.id === id ? { ...p, bulletPoints: [...p.bulletPoints, trimmed] } : p
       ),
     });
   }
 
   function deleteBulletPoint(id: string, index: number) {
-    onChange({
-      projects: data.projects.map((p) =>
+    handleDataChange({
+      projects: resumeData.projects.map((p) =>
         p.id === id
           ? { ...p, bulletPoints: p.bulletPoints.filter((_, i) => i !== index) }
           : p
@@ -80,8 +78,8 @@ export default function Projects({
   }
 
   function updateBulletPoints(id: string, index: number, point: string) {
-    onChange({
-      projects: data.projects?.map((p) =>
+    handleDataChange({
+      projects: resumeData.projects?.map((p) =>
         p.id === id ?
           {
             ...p,
@@ -104,7 +102,7 @@ export default function Projects({
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${!openSections.project && "hidden"
             }`}
         >
-          {data.projects.map((project, index) => (
+          {resumeData.projects.map((project, index) => (
             <div className="border p-4 w-[100%] rounded" key={project.id}>
               <div className="flex flex-row items-center justify-between space-y-0 py-2">
                 <div className="text-lg font-semibold">Project Entry</div>

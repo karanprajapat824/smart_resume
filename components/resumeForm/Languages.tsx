@@ -1,15 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
-import { Plus, Trash2,ChevronDown } from "lucide-react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
+import { useUtility } from "@/app/providers/UtilityProvider";
+import { Input } from "@/components/Ui";
 
 export default function Languages({
-    data,
-    onChange,
     openSections,
     setOpenSections,
 }: ResumeSectionProps) {
+    const { resumeData, handleDataChange } = useUtility();
     const langRef = useRef<HTMLInputElement>(null);
     const [language, setLanguage] = useState<string>("");
     const [level, setLevel] = useState<string>("");
@@ -31,7 +32,7 @@ export default function Languages({
         }
 
         if (
-            data.languages?.some(
+            resumeData.languages?.some(
                 (l) => l.language.toLowerCase() === trimmedLang.toLowerCase()
             )
         ) {
@@ -41,9 +42,9 @@ export default function Languages({
         }
 
         setError("");
-        onChange({
+        handleDataChange({
             languages: [
-                ...data.languages,
+                ...resumeData.languages,
                 {
                     id: Date.now().toString(),
                     language: trimmedLang,
@@ -57,8 +58,8 @@ export default function Languages({
     }
 
     function deleteLanguage(id: string) {
-        const remaining = data.languages.filter((l) => l.id !== id);
-        onChange({ languages: remaining });
+        const remaining = resumeData.languages.filter((l) => l.id !== id);
+        handleDataChange({ languages: remaining });
     }
 
     return (
@@ -77,10 +78,11 @@ export default function Languages({
                     <div className="w-full flex flex-col gap-y-2">
                         {/* Input fields */}
                         <div className="flex gap-2 relative">
-                            <input
+                            <Input
                                 ref={langRef}
+                                id=""
                                 placeholder="Language (e.g., English)"
-                                className={`rounded px-2 w-1/2 border py-2 text-sm ${error && "border-red-500"
+                                classNameForInput={`rounded px-2 w-1/2 border py-2 text-sm ${error && "border-red-500"
                                     }`}
                                 onChange={(e) => {
                                     setLanguage(e.target.value);
@@ -91,27 +93,27 @@ export default function Languages({
                             />
                             <div className="w-1/2 relative">
                                 <select
-                                ref={selectRef}
-                                id="select"
-                                className={`appearance-none  bg-transparent w-full rounded px-2 border py-2 hover:cursor-pointer text-sm mr-2 ${error && "border-red-500"}`}
-                                value={level}
-                                onChange={(e) => {
-                                    setLevel(e.target.value);
-                                    setError("");
-                                }}
-                            >
-                                <option value="">Select level</option>
-                                <option value="Beginner">Beginner</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Fluent">Fluent</option>
-                                <option value="Native">Native</option>
-                            </select>
-                            <button 
-                            type="button"
-                            onClick={() => selectRef.current?.focus()}
-                            className="pointer-events-none absolute top-2 right-2 cursor-pointer">
-                                <ChevronDown  />
-                            </button>
+                                    ref={selectRef}
+                                    id="select"
+                                    className={`appearance-none  bg-transparent w-full rounded px-2 border py-2 hover:cursor-pointer text-sm mr-2 ${error && "border-red-500"}`}
+                                    value={level}
+                                    onChange={(e) => {
+                                        setLevel(e.target.value);
+                                        setError("");
+                                    }}
+                                >
+                                    <option value="">Select level</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Fluent">Fluent</option>
+                                    <option value="Native">Native</option>
+                                </select>
+                                <button
+                                    type="button"
+                                    onClick={() => selectRef.current?.focus()}
+                                    className="pointer-events-none absolute top-2 right-2 cursor-pointer">
+                                    <ChevronDown />
+                                </button>
                             </div>
                             <button
                                 className="px-4 py-1 bg-primary flex justify-center items-center gap-2 text-primary-foreground rounded hover:cursor-pointer transition duration-500"
@@ -125,7 +127,7 @@ export default function Languages({
 
                         {/* List */}
                         <div className="flex gap-3 flex-wrap pb-4">
-                            {data.languages?.map((lang) => (
+                            {resumeData.languages?.map((lang) => (
                                 <div
                                     key={lang.id}
                                     className="border rounded-full px-4 py-1 flex items-center justify-center text-sm"

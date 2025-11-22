@@ -3,16 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
-import Button from "../ui/Button";
+import { Button,Input} from "@/components/Ui"
+import {useUtility} from "@/app/providers/UtilityProvider";
 
 export default function Skills({
-  data,
-  onChange,
   openSections,
   setOpenSections,
 }: ResumeSectionProps) {
-
-  const skillRef = useRef<HTMLInputElement>(null);
+  const { resumeData,handleDataChange} = useUtility();
+  const skillRef = useRef<HTMLInputElement>(null);  
   const [skill, setSkill] = useState<string>("");
   const [skillError, setSkillError] = useState<string>("");
   const [isUpdateSkill, setIsUpdateSkill] = useState(false);
@@ -29,15 +28,15 @@ export default function Skills({
     if (trimmed.length === 0) {
       setSkillError("length");
     } else if (
-      data.skills.some((s) => s.name.toLowerCase() === trimmed.toLowerCase())
+      resumeData.skills.some((s) => s.name.toLowerCase() === trimmed.toLowerCase())
     ) {
       setSkillError("exist");
       setSkill("");
     } else {
       setSkillError("");
-      onChange({
+      handleDataChange({
         skills: [
-          ...data.skills,
+          ...resumeData.skills,
           {
             id: Date.now().toString(),
             name: trimmed,
@@ -52,8 +51,8 @@ export default function Skills({
   }
 
   function deleteSkill(id: string) {
-    const remaringSkill = data.skills.filter((skill) => skill.id !== id);
-    onChange({
+    const remaringSkill = resumeData.skills.filter((skill) => skill.id !== id);
+    handleDataChange({
       skills: remaringSkill,
     });
   }
@@ -73,8 +72,8 @@ export default function Skills({
 
   function updateSkill()
   {
-      onChange({
-        skills : data.skills?.map((s)=> s.id === id ? {
+      handleDataChange({
+        skills : resumeData.skills?.map((s)=> s.id === id ? {
           ...s,
           name : skill
         } : s)
@@ -104,8 +103,9 @@ export default function Skills({
                 "border-red-500"
                 }`}
             >
-              <input
+              <Input
                 ref={skillRef}
+                id=""
                 placeholder={
                   skillError === "length"
                     ? "Please enter a skill..."
@@ -113,9 +113,7 @@ export default function Skills({
                       ? "Skill is already mentioned"
                       : "JavaScript"
                 }
-                className={`rounded px-2 w-full focus:outline-none text-sm ${(skillError === "length" || skillError === "exist") &&
-                  "text-red-600"
-                  }`}
+                classNameForInput={`${(skillError === "length" || skillError === "exist") && "text-red-600"}`}
                 onChange={(e) => {
                   setSkill(e.target.value);
                   setSkillError("");
@@ -156,7 +154,7 @@ export default function Skills({
 
             {/* Skills list */}
             <div className="flex gap-3 flex-wrap py-4">
-              {data.skills.map((skill, index) => (
+              {resumeData.skills.map((skill, index) => (
                 <div
                   key={index}
                   className="border rounded-full px-4 py-1 flex items-center justify-center text-sm"

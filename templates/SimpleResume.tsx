@@ -1,4 +1,4 @@
-import { ResumeData } from "@/app/create-resume/page";
+import { ResumeData } from "@/app/providers/UtilityProvider";
 import React from "react";
 
 interface TemplateType {

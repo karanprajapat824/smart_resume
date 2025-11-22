@@ -1,5 +1,5 @@
 import React from "react";
-import { ResumeData } from "@/exports/utility";
+import { ResumeData } from "@/app/providers/UtilityProvider";
 
 interface TemplateType {
   data: ResumeData;

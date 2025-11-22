@@ -2,11 +2,11 @@ const express = require("express");
 const { authenticateToken } = require("../middleware/auth");
 const { Resume } = require("../models/model");
 const Router = express.Router();
-    
+
 Router.get("/", authenticateToken, async (req, res) => {
     try {
         const { email } = req.user;
-        console.log("Fetching resumes for email:", email);
+
         if (!email) {
             return res.status(400).json({ message: "Email not found in token" });
         }
@@ -25,15 +25,12 @@ Router.get("/", authenticateToken, async (req, res) => {
 
 Router.delete("/", authenticateToken, async (req, res) => {
     try {
-        const { id } = req.body;
+        const { resume_id } = req.body;
 
-        if (!id) {
+        if (!resume_id) {
             return res.status(400).json({ message: "Resume Id not found" });
         }
-
-        console.log(id);
-        const result = await Resume.deleteOne({ _id: id });
-        console.log(result);
+        const result = await Resume.deleteOne({ resume_id });
 
         if (result.deletedCount > 0) {
             return res.json({ message: "Resume deleted successfully" });
@@ -54,7 +51,7 @@ Router.get("/:id", authenticateToken, async (req, res) => {
             return res.status(400).json({ message: "Resume Id not provided" });
         }
 
-        const resume = await Resume.findById(id);
+        const resume = await Resume.findOne({ resume_id : id });
         if (!resume) {
             return res.status(404).json({ message: "Resume not found" });
         }
@@ -72,55 +69,37 @@ Router.get("/:id", authenticateToken, async (req, res) => {
 
 Router.post("/save", authenticateToken, async (req, res) => {
     try {
-        let resumeData = req.body;
-        resumeData.email = req.user.email;
+        const resumeData = req.body.resumeData;
 
-        let updatedResume;
-
-        if (resumeData.id) {
-            updatedResume = await Resume.findOneAndUpdate(
-                { id: resumeData.id },
-                resumeData
-            );
-        } else {
-            const newResume = new Resume(resumeData);
-            newResume.id = newResume._id.toString();
-            updatedResume = await newResume.save();
+        if (!req.user?.email) {
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
-        res.status(200).json({
+        if (!resumeData.resume_id) {
+            resumeData.resume_id = Date.now().toString();
+        }
+
+        resumeData.email = req.user.email.toLowerCase();
+
+        const updatedResume = await Resume.findOneAndUpdate(
+            { resume_id: resumeData.resume_id },
+            { $set: resumeData },
+            { upsert: true, new: true }
+        );
+
+        return res.status(200).json({
             message: "Resume saved successfully",
             resume: updatedResume,
         });
+
     } catch (error) {
         console.error("Error saving resume:", error);
-        res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        });
     }
 });
-
-Router.delete("/delete", authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.body;
-
-        if (!id) {
-            return res.status(400).json({ message: "Resume ID is required" });
-        }
-
-        const deletedResume = await Resume.findByIdAndDelete(id);
-
-        if (!deletedResume) {
-            return res.status(404).json({ message: "Resume not found" });
-        }
-
-        res.status(200).json({ message: "Resume deleted successfully", deletedResume });
-    } catch (error) {
-        console.error("Error deleting resume:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-});
-
-
-
 
 
 module.exports = Router;

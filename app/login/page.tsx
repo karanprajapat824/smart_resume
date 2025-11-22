@@ -1,18 +1,20 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { X, FileText } from "lucide-react";
-import { API_URL } from "@/exports/utility";
-import Loader from "@/components/ui/Loader";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import { Button,Loader,Input } from "@/components/Ui";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa6";
-import CircularGallery from '@/components/ui/CircularGallery';
-import TypingEffect from '@/components/ui/TypingEffect';
-import Popup from "@/components/ui/Popup";
+import CircularGallery from '@/components/CircularGallery';
+import TypingEffect from '@/components/TypingEffect';
+import Popup from "@/components/Popup";
+import { useAuth } from "../providers/AuthProvider";
+import { useUtility } from "../providers/UtilityProvider";
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const { accessToken, setAccessToken, loggedIn } = useAuth();
+  const { API_URL } = useUtility();
+
+  const [loginPage, setLoginPage] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [loginData, setLoginData] = useState({
@@ -24,6 +26,7 @@ export default function AuthPage() {
     password: "",
     confirmPassword: "",
   });
+
   const message = [
     "Resumes That Demand Attention",
     "Make Your First Impression Unforgettable",
@@ -41,6 +44,7 @@ export default function AuthPage() {
     "Resumes That Speak Success",
     "Show Your Value Before You Even Speak"
   ];
+
   const [popup, setPopup] = useState<boolean>(false);
 
   const loginRefs = useRef<Array<HTMLInputElement | HTMLButtonElement | HTMLAnchorElement | null>>([]);
@@ -60,13 +64,11 @@ export default function AuthPage() {
       setError(error);
     }
     else {
-      const token = urlParams.get("token");
-      if (token) {
-        setPopup(true);
-        localStorage.setItem("token", token);
-        const redirectTo = localStorage.getItem("redirectAfterLogin");
-        window.location.href = redirectTo || "/my-resumes";
-      }
+      // if(loggedIn) {
+      //   setPopup(true);
+      //   const redirectTo = localStorage.getItem("redirectAfterLogin");
+      //   window.location.href = redirectTo || "/my-resumes";
+      // }
     }
   }, []);
 
@@ -88,6 +90,7 @@ export default function AuthPage() {
       setError("Invalid Email Address");
       return;
     }
+
     if (loginData.password.length < 8) {
       setError("Password must be at least 8 characters long.");
       return;
@@ -95,24 +98,34 @@ export default function AuthPage() {
 
     try {
       setLoading(true);
+
       const response = await fetch(API_URL + "/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(loginData),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        setPopup(true);
-        const redirectTo = localStorage.getItem("redirectAfterLogin");
-        window.location.href = redirectTo || "/my-resumes";
-      } else {
+      if (!response.ok) {
         setError(data.message || "Invalid email or password");
+        return;
       }
+
+      const accessToken = data.accessToken;
+      if (!accessToken) {
+        setError("No access token received");
+        return;
+      }
+
+      setAccessToken(accessToken);
+
+      const redirectTo = localStorage.getItem("redirectAfterLogin");
+      window.location.href = redirectTo || "/my-resumes";
+
     } catch (err) {
       console.error("Login failed:", err);
       setError("Something went wrong. Please try again.");
@@ -121,15 +134,18 @@ export default function AuthPage() {
     }
   }
 
+
   async function handleSignup() {
     if (!signupData.email.includes("@")) {
       setError("Invalid Email Address");
       return;
     }
+
     if (signupData.password.length < 8) {
       setError("Password must be at least 8 characters long.");
       return;
     }
+
     if (signupData.password !== signupData.confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -137,11 +153,13 @@ export default function AuthPage() {
 
     try {
       setLoading(true);
-      const response = await fetch(API_URL + "/auth/signup", {
+
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           email: signupData.email,
           password: signupData.password,
@@ -150,14 +168,22 @@ export default function AuthPage() {
 
       const data = await response.json();
 
-      if (response.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        setPopup(true);
-        const redirectTo = localStorage.getItem("redirectAfterLogin");
-        window.location.href = redirectTo || "/templates";
-      } else {
+      if (!response.ok) {
         setError(data.message || "Signup failed. Please try again later.");
+        return;
       }
+
+      const accessToken = data.accessToken;
+      if (!accessToken) {
+        setError("Signup succeeded but no access token received.");
+        return;
+      }
+
+      setAccessToken(accessToken);
+
+      const redirectTo = localStorage.getItem("redirectAfterLogin");
+      window.location.href = redirectTo || "/templates";
+
     } catch (err) {
       console.error("Signup failed:", err);
       setError("Something went wrong. Please try again.");
@@ -166,16 +192,17 @@ export default function AuthPage() {
     }
   }
 
+
   return (
     <div className="h-screen flex items-center justify-center w-full">
       <Popup
         visible={popup}
         setVisible={setPopup}
-        message={isLogin ? "Logged in successfully!" : "Account created successfully!"}
+        message={loginPage ? "Logged in successfully!" : "Account created successfully!"}
       />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] place-items-center rounded lg:overflow-hidden items-center justify-center border md:h-[90%] md:w-[90%] h-[100%] w-full shadow-lg">
         <div className="bg-white hideScrollBar h-full pt-10 max-w-xl w-full">
-          {isLogin ? (
+          {loginPage ? (
             <div className="px-10 md:pt-6">
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-center">Welcome back</div>
@@ -255,7 +282,7 @@ export default function AuthPage() {
                   Don't have an account?{" "}
                   <Button
                     onClick={() => {
-                      setIsLogin(false);
+                      setLoginPage(false);
                       setError("");
                     }}
                     size="sm"
@@ -359,7 +386,7 @@ export default function AuthPage() {
                   Already have an account?{" "}
                   <Button
                     onClick={() => {
-                      setIsLogin(true);
+                      setLoginPage(true);
                       setError("");
                     }}
                     variant="ghost"

@@ -1,12 +1,12 @@
 "use client";
 import LandingPageHeader from "@/components/LandingPageHeader";
 import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button"
+import { Button } from "@/components/Ui"
 import { useState } from "react";
-import { API_URL } from "@/exports/utility";
-import Popup from "@/components/ui/Popup";
+import Popup from "@/components/Popup";
 import Loader from "@/components/ui/Loader";
 import { ArrowLeft } from "lucide-react";
+import { useUtility } from "../providers/UtilityProvider";
 
 
 export default function ForgotPassword() {
@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     const [verificationCode, setVerificationCode] = useState<string>("");
     const [newPassword, setNewPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
-
+    const { API_URL } = useUtility();
 
     const handleVerifyCode = async () => {
         setLoading(true);

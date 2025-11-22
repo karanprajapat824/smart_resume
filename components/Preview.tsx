@@ -1,5 +1,5 @@
 "use client";
-import { ResumeData } from "@/app/create-resume/page";
+import { ResumeData } from "@/app/providers/UtilityProvider";
 import SimpleResume from "@/templates/SimpleResume";
 import T1 from "@/templates/T1";
 import { useRef, useState } from "react";

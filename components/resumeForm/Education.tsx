@@ -3,16 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
-import Button from "../ui/Button";
-import ToggleMode from "../ui/ToggleMode";
+import { Button, Input } from "@/components/Ui"
+import { useUtility } from "@/app/providers/UtilityProvider";
 
 export default function Education({
-  data,
-  onChange,
   openSections,
   setOpenSections
 }: ResumeSectionProps) {
-
+  const { resumeData, handleDataChange } = useUtility();
   const educationRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
@@ -32,9 +30,9 @@ export default function Education({
   }, [openSections.education]);
 
   function addEducation() {
-    onChange({
+    handleDataChange({
       education: [
-        ...data.education,
+        ...resumeData.education,
         {
           id: Date.now().toString(),
           degree: "",
@@ -49,8 +47,8 @@ export default function Education({
   }
 
   function deleteEducation(id: string) {
-    const remainingEducation = data?.education?.filter((edu) => edu?.id !== id);
-    onChange({
+    const remainingEducation = resumeData?.education?.filter((edu) => edu?.id !== id);
+    handleDataChange({
       education: remainingEducation,
     });
   }
@@ -60,8 +58,8 @@ export default function Education({
     id: string
   ) {
     const { value, name } = e.target;
-    onChange({
-      education: data?.education?.map((edu) =>
+    handleDataChange({
+      education: resumeData?.education?.map((edu) =>
         edu?.id === id ? { ...edu, [name]: value } : edu
       ),
     });
@@ -81,7 +79,7 @@ export default function Education({
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${!openSections.education && "hidden"
             }`}
         >
-          {data.education.map((edu, index) => (
+          {resumeData.education.map((edu, index) => (
             <div className="border w-full p-4 rounded" key={edu.id}>
               <div className="flex flex-row items-center justify-between space-y-0 py-2">
                 <div className="text-lg font-semibold">Education Entry</div>
@@ -98,11 +96,11 @@ export default function Education({
                   {/* Degree */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Degree</label>
-                    <input
+                    <Input
                       ref={(el) => {
                         educationRefs.current[index * 4 + 0] = el;
                       }}
-                      className="border rounded py-1 px-4 text-sm"
+                      id={edu.id}
                       value={edu.degree}
                       placeholder="Bachelor of Science"
                       name="degree"
@@ -116,11 +114,11 @@ export default function Education({
                   {/* Year */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Year</label>
-                    <input
+                    <Input
                       ref={(el) => {
                         educationRefs.current[index * 4 + 1] = el;
                       }}
-                      className="border rounded py-1 px-4 text-sm"
+                      id={edu.id}
                       value={edu.year}
                       placeholder="2025"
                       name="year"
@@ -137,11 +135,11 @@ export default function Education({
                   <label className="font-semibold text-sm">
                     Institute Name
                   </label>
-                  <input
+                  <Input
                     ref={(el) => {
                       educationRefs.current[index * 4 + 2] = el;
                     }}
-                    className="border rounded py-1 px-4 text-sm"
+                    id={edu.id}
                     value={edu.institution}
                     placeholder="Indian Institute of Technology"
                     name="institution"
@@ -156,11 +154,11 @@ export default function Education({
                   {/* Grade or marks */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Grade or Marks</label>
-                    <input
+                    <Input
                       ref={(el) => {
                         educationRefs.current[index * 4 + 3] = el;
                       }}
-                      className="border rounded py-1 px-4 text-sm"
+                      id={edu.id}
                       value={edu.grade}
                       placeholder="8.00 CGPA or 80%"
                       name="grade"
@@ -174,11 +172,11 @@ export default function Education({
                   {/* Location */}
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold text-sm">Location (optinal)</label>
-                    <input
+                    <Input
                       ref={(el) => {
                         educationRefs.current[index * 4 + 4] = el;
                       }}
-                      className="border rounded py-1 px-4 text-sm"
+                      id={edu.id}
                       value={edu.location}
                       placeholder="Ujjain , M.P"
                       name="location"

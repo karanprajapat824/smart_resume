@@ -1,6 +1,5 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import type { ResumeData } from "@/exports/utility";
 import PersonalDetails from "./resumeForm/PersonalDetails";
 import Summary from "./resumeForm/Summary";
 import WorkExperience from "./resumeForm/WorkExperience";
@@ -9,13 +8,10 @@ import Skills from "./resumeForm/Skills";
 import Projects from "./resumeForm/Projects";
 import Achievements from "./resumeForm/Achievements";
 import Languages from "./resumeForm/Languages";
+import { useUtility } from "@/app/providers/UtilityProvider";
 
-export interface ResumeFormProps {
-  data: ResumeData;
-  onChange: (data: Partial<ResumeData>) => void;
-}
 
-export interface ResumeSectionProps extends ResumeFormProps {
+export interface ResumeSectionProps {
   openSections: {
     personalDetail: boolean;
     summary: boolean;
@@ -29,7 +25,8 @@ export interface ResumeSectionProps extends ResumeFormProps {
   setOpenSections: (name: keyof ResumeSectionProps["openSections"]) => void;
 }
 
-export function ResumeForm({ data, onChange}: ResumeFormProps) {
+export function ResumeForm() {
+  const { resumeData, handleDataChange } = useUtility();
   const [openSections, setOpenSections] = useState({
     personalDetail: true,
     summary: false,
@@ -38,7 +35,7 @@ export function ResumeForm({ data, onChange}: ResumeFormProps) {
     skill: false,
     project: false,
     achievement: false,
-    language : false
+    language: false
   });
 
   const handleOpenSection = (name: keyof typeof openSections) => {
@@ -52,7 +49,7 @@ export function ResumeForm({ data, onChange}: ResumeFormProps) {
         skill: false,
         project: false,
         achievement: false,
-        language : false,
+        language: false,
         [name]: !isCurrentlyOpen,
       };
     });
@@ -108,12 +105,12 @@ export function ResumeForm({ data, onChange}: ResumeFormProps) {
       return;
     }
 
-    const next = data.order;
-    const [moved] = next.splice(fromIndex,1);
-    next.splice(toIndex,0,moved);
-    
-    onChange({
-      order : next
+    const next = resumeData?.order;
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+
+    handleDataChange({
+      order: next
     });
 
     dragIndexRef.current = null;
@@ -123,7 +120,7 @@ export function ResumeForm({ data, onChange}: ResumeFormProps) {
 
   function handleContainerDragOver(e: React.DragEvent) {
     e.preventDefault();
-    hoverIndexRef.current = data.order.length;
+    hoverIndexRef.current = resumeData?.order.length;
   }
 
   function handleDragEnd() {
@@ -138,7 +135,7 @@ export function ResumeForm({ data, onChange}: ResumeFormProps) {
       className="w-full"
       aria-label="Resume sections draggable list"
     >
-      {data.order?.map((key, index) => {
+      {resumeData?.order?.map((key, index) => {
         const Section = componentsMap[key];
         const isDragging = draggingIndex === index;
 
@@ -155,8 +152,6 @@ export function ResumeForm({ data, onChange}: ResumeFormProps) {
           >
             <div className="w-full cursor-grap">
               <Section
-                data={data}
-                onChange={onChange}
                 openSections={openSections}
                 setOpenSections={handleOpenSection}
               />

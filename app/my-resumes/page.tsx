@@ -1,15 +1,13 @@
 "use client"
 import { useEffect, useState } from "react"
 import { FileText, Plus, X, Menu, ZoomIn, Trash, CircleFadingArrowUp } from "lucide-react"
-import { API_URL, ResumeData } from "@/exports/utility"
-import Button from "@/components/ui/Button";
-import { verifyToken, logout } from "@/exports/auth";
+import { useUtility, ResumeData } from "@/app/providers/UtilityProvider"
+import { Button, Loader } from "@/components/Ui"
 import SmallPreview from "@/components/Preview";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import Zoom from "@/components/ZoomInForMyResume"
-import Popup from "@/components/ui/Popup";
-import Loader from "@/components/ui/Loader";
-
+import Popup from "@/components/Popup";
+import { useAuth } from "../providers/AuthProvider";
+import PageLoader from "@/components/PageLoader"
+import Header from "@/components/Header";
 
 type PopupState = {
     visible: boolean;
@@ -18,9 +16,9 @@ type PopupState = {
 };
 
 export default function ResumeDashboard() {
+    const { API_URL } = useUtility();
+    const {loggedIn, loading, accessToken } = useAuth();
     const [resumes, setResumes] = useState<ResumeData[]>([])
-    const [isLogin, setIsLogin] = useState(false);
-    const [smallScreenMenuOpen, setSmallScreenMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [popup, setPopup] = useState<PopupState>({
         visible: false,
@@ -29,37 +27,19 @@ export default function ResumeDashboard() {
     });
     const [deleteLoading, setDeleteLoading] = useState(false);
 
-    const handleLogin = () => {
-        localStorage.setItem("redirectAfterLogin", "/my-resumes");
-        window.location.href = "/login";
-    }
-
 
     useEffect(() => {
-        const checkIsMobile = () => {
-            setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
-        };
-
-        checkIsMobile();
-        window.addEventListener("resize", checkIsMobile);
-
-        return () => {
-            window.removeEventListener("resize", checkIsMobile);
-        };
+        setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
     }, []);
+
 
     async function fetchResumes() {
         try {
-            const token = localStorage.getItem("token")
-            if (!token) {
-                return
-            }
-
             const res = await fetch(API_URL + "/resume/", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `${token}`,
+                    Authorization: `${accessToken}`,
                 },
             })
 
@@ -78,31 +58,14 @@ export default function ResumeDashboard() {
         }
     }
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            const checkLogin = async () => {
-                const result = await verifyToken(token);
-                if (!result) setIsLogin(false)
-                else {
-                    setIsLogin(true);
-                    fetchResumes();
-                }
-            }
-            checkLogin();
-        }
-    }, [])
-
     function handleCreateResume() {
         localStorage.removeItem("data");
-        sessionStorage.removeItem("option");
         window.location.href = "/templates";
     }
 
     async function handleDelete(id: string) {
-        const token = localStorage.getItem("token");
 
-        if (!token || !id) {
+        if (!accessToken || !id) {
             setPopup({
                 visible: true,
                 message: "Something went wrong. Please try again later.",
@@ -113,14 +76,14 @@ export default function ResumeDashboard() {
 
         try {
             setDeleteLoading(true);
-
+           
             const response = await fetch(`${API_URL}/resume/`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `${token}`,
+                    Authorization: `${accessToken}`,
                 },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({ resume_id : id }),
             });
 
             if (response.ok) {
@@ -129,8 +92,7 @@ export default function ResumeDashboard() {
                     message: "Delete successfully",
                     type: "success",
                 });
-
-                setResumes(resumes.filter((resume) => resume.id !== id));
+                setResumes(resumes.filter((resume) => resume.resume_id !== id));
                 return;
             }
 
@@ -158,6 +120,13 @@ export default function ResumeDashboard() {
         window.location.href = `/create-resume?id=${id}`
     }
 
+    useEffect(() => {
+        if (loggedIn) {
+            fetchResumes();
+        }
+    }, [loggedIn]);
+
+    if (loading) return <PageLoader />
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -172,98 +141,7 @@ export default function ResumeDashboard() {
                     }))
                 }
             />
-            <nav className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div onClick={() => window.location.href = "/"} className="flex items-center space-x-3 cursor-pointer">
-                            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                                <FileText className="w-3 h-3 md:w-5 md:h-5 text-white" />
-                            </div>
-                            <h1 className="md:text-xl text-lg font-bold text-gray-900">Smart Resume</h1>
-                        </div>
-                        <div className="hidden md:flex items-center space-x-4">
-                            <Button
-                                href="/"
-                                size="lg"
-                                variant="ghost"
-                            >
-                                Home
-                            </Button>
-                            <Button
-                                href="/templates"
-                                size="lg"
-                                variant="ghost"
-                            >
-                                Templates
-                            </Button>
-                            {
-                                isLogin ? (
-                                    <Button
-                                        onClick={logout}
-                                        variant="outline"
-                                        size="md"
-                                    >
-                                        Logout
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={handleLogin}
-                                        size="md"
-                                        variant="outline"
-                                    >
-                                        Login / Sign up
-                                    </Button>
-                                )
-                            }
-
-                        </div>
-                        <div className="md:hidden flex items-center space-x-2">
-                            <ThemeToggle />
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSmallScreenMenuOpen(!smallScreenMenuOpen)}
-                            >
-                                {
-                                    smallScreenMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />
-                                }
-                            </Button>
-                            {
-                                smallScreenMenuOpen && (
-                                    <div
-                                        className="absolute top-20 right-5 bg-background border rounded-lg border-bl-lg flex flex-col p-5  space-y-4 md:hidden z-50 justify-start">
-                                        {
-                                            isLogin ?
-                                                <Button
-                                                    variant="outline"
-                                                    size="md"
-                                                    onClick={logout}
-                                                >
-                                                    Logout
-                                                </Button>
-                                                :
-                                                <Button
-                                                    variant="outline"
-                                                    size="md"
-                                                    onClick={handleLogin}
-                                                >
-                                                    Login / Signup
-                                                </Button>
-                                        }
-                                        <Button
-                                            variant="primary"
-                                            size="md"
-                                            href={"/templates"}
-                                        >
-                                            Tamplates
-                                        </Button>
-                                    </div>
-                                )
-                            }
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <Header items={["home","templates", "logout", "login"]} />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
@@ -310,7 +188,7 @@ export default function ResumeDashboard() {
                                         size="md"
                                         className="bg-destructive-foreground text-white w-1/2 hover:scale-[1.1] hover:bg-red-500 hover:text-white"
                                         icon={<Trash className="w-4 h-4" />}
-                                        onClick={() => handleDelete(resume?.id || "")}
+                                        onClick={() => handleDelete(resume?.resume_id || "")}
                                         disabled={deleteLoading}
                                     >{
                                             deleteLoading ? <Loader /> : "Delete"
@@ -321,7 +199,7 @@ export default function ResumeDashboard() {
                                         size="md"
                                         className="bg-success-foreground text-white w-1/2 hover:scale-[1.1] hover:bg-success-foreground hover:text-white"
                                         icon={<CircleFadingArrowUp className="w-4 h-4" />}
-                                        onClick={() => handleUpdateResume(resume?.id || "")}
+                                        onClick={() => handleUpdateResume(resume?.resume_id || "")}
                                     >Update</Button>
                                 </div>
                             </div>

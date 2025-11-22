@@ -1,21 +1,19 @@
 "use client"
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import {
   Sparkles,
 } from "lucide-react";
-import { ResumeSectionProps } from "../ResumeForm";
-import { Textarea } from "../ui/Textarea";
-import Button from "../ui/Button";
+import { ResumeSectionProps } from "../ResumeForm";;
+import { Button, Textarea } from "@/components/Ui"
+import { useUtility } from "@/app/providers/UtilityProvider";
 
 export default function Summary({
-  data,
-  onChange,
   openSections,
   setOpenSections
 }: ResumeSectionProps) {
   const summaryRef = useRef<HTMLTextAreaElement>(null);
-
+  const { resumeData, handleDataChange } = useUtility();
   useEffect(() => {
     summaryRef.current?.focus();
   }, [openSections.summary]);
@@ -37,8 +35,8 @@ export default function Summary({
           <Textarea
             ref={summaryRef}
             id="summary"
-            value={data.summary}
-            onChange={(value) => onChange({ summary: value })}
+            value={resumeData?.summary}
+            onChange={(e) => handleDataChange({ summary: e.target.value })}
             placeholder="Write a brief professional summary..."
           />
           <Button

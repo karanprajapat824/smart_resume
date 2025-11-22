@@ -1,11 +1,11 @@
 "use client"
-import { ResumeData } from "@/app/create-resume/page"
+import { ResumeData } from "@/app/providers/UtilityProvider";
 import {
     X, Check, Users,
     Palette, Sparkles, HelpCircle, Download
 } from "lucide-react"
 import LivePreview from "./LivePreview"
-import Button from "./ui/Button"
+import { Button } from "@/components/Ui"
 
 
 interface ZoomType {
@@ -13,9 +13,10 @@ interface ZoomType {
     data: ResumeData,
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     handleSelectedTemplate: (template: string) => void
+    template: string
 }
 
-export default function Zoom({ isOpen = false, data, setIsOpen, handleSelectedTemplate }: ZoomType) {
+export default function Zoom({ isOpen = false, data, setIsOpen, handleSelectedTemplate, template }: ZoomType) {
 
     if (!isOpen) {
         return (null)
@@ -29,7 +30,7 @@ export default function Zoom({ isOpen = false, data, setIsOpen, handleSelectedTe
                 className="relative md:rounded-lg h-full w-full md:h-[90vh] md:w-[90vw] bg-background overflow-y-auto my-auto grid grid-cols-1 lg:grid-cols-[2fr_1fr]">
                 <div className="relative flex items-center justify-center py-15 lg:pt-10 ">
                     <div className="rounded bg-white a4-page-wrapper">
-                        <LivePreview data={data} />
+                        <LivePreview data={data} temp={template}/>
                     </div>
                 </div>
                 <div className="lg:pt-10 relative flex flex-col items-center ">
@@ -55,15 +56,14 @@ export default function Zoom({ isOpen = false, data, setIsOpen, handleSelectedTe
                             </div>
                             <div className="flex items-center gap-3">
                                 <Check className="w-5 h-5 text-green-600" />
-                                <span className="text-sm text-gray-700">Download as PDF, Word, or TXT file</span>
+                                <span className="text-sm text-gray-700">Download as PDF, Image file</span>
                             </div>
                         </div>
 
-                        {/* Use Template Button */}
                         <Button
                             variant="primaryPlus"
                             size="lg"
-                            onClick={() => handleSelectedTemplate(localStorage.getItem("template") || "SimpleResume")}
+                            onClick={() => handleSelectedTemplate(template)}
                         >Use this template
                         </Button>
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { User,TempOPT } = require("../models/model");
+const { User, TempOPT } = require("../models/model");
 const { authenticateToken } = require("../middleware/auth");
 const Router = express.Router();
 const axios = require("axios");
@@ -21,16 +21,18 @@ Router.get("/google", async (req, res) => {
 
 Router.get("/google/callback", async (req, res) => {
     const code = req.query.code;
+
     try {
+
         const { data } = await axios.post("https://oauth2.googleapis.com/token", {
             code,
             client_id: process.env.GOOGLE_CLIENT_ID,
             client_secret: process.env.GOOGLE_CLIENT_SECRET,
             redirect_uri: `${process.env.SERVER_URL}/auth/google/callback`,
-            grant_type: "authorization_code"
+            grant_type: "authorization_code",
         });
 
-        const { access_token, id_token } = data;
+        const { access_token } = data;
 
         const { data: userInfo } = await axios.get(
             "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -38,22 +40,45 @@ Router.get("/google/callback", async (req, res) => {
         );
 
         if (!userInfo.email_verified) {
-            return res.redirect(`${process.env.CLIENT_URL}/login?error=Email_not_verified_By_Google`);
+            return res.redirect(`${process.env.CLIENT_URL}/login?error=email_not_verified`);
         }
 
-        const existingUser = await User.findOne({ email: userInfo.email.toLowerCase() });
+        let user = await User.findOne({ email: userInfo.email.toLowerCase() });
 
-        if (!existingUser) {
-            const newUser = new User({ email: userInfo.email.toLowerCase(), password: null, loginMethod: 'google' });
-            await newUser.save();
+        if (!user) {
+            user = new User({
+                email: userInfo.email.toLowerCase(),
+                password: null,
+                loginMethod: "google",
+            });
+            await user.save();
         }
 
-        const token = jwt.sign({ email: userInfo.email }, process.env.SECRET_KEY);
-        res.redirect(`${process.env.CLIENT_URL}/login?token=${token}`);
+        const accessToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
+
+        const refreshToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return res.redirect(`${process.env.CLIENT_URL}/`);
 
     } catch (err) {
         console.error("Google OAuth error:", err);
-        res.redirect(`${process.env.CLIENT_URL}/login?error=google_auth_failed_Try_again_later`);
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=google_auth_failed`);
     }
 });
 
@@ -77,23 +102,24 @@ Router.get("/linkedin", (req, res) => {
 
 Router.get("/linkedin/callback", async (req, res) => {
     try {
-
         if (req.query.error) {
             console.error("LinkedIn error:", req.query.error, req.query.error_description);
-            return res.redirect(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed_try_again_later`);
+            return res.redirect(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed`);
         }
 
         const { code, state } = req.query;
-        const savedState = req.cookies?.li_oauth_state;
 
-        if (!code || !state || state !== savedState) return res.redirect(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed_try_again_later`);
+        const savedState = req.cookies?.li_oauth_state;
+        if (!code || !state || state !== savedState) {
+            return res.redirect(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed`);
+        }
 
         const tokenParams = new URLSearchParams({
             grant_type: "authorization_code",
             code,
             redirect_uri: process.env.LINKEDIN_REDIRECT_URI,
             client_id: process.env.LINKEDIN_CLIENT_ID,
-            client_secret: process.env.LINKEDIN_CLIENT_SECRET
+            client_secret: process.env.LINKEDIN_CLIENT_SECRET,
         });
 
         const tokenResp = await axios.post(
@@ -103,89 +129,177 @@ Router.get("/linkedin/callback", async (req, res) => {
         );
 
         const accessToken = tokenResp.data.access_token;
-        if (!accessToken) return res.status(401).send("No LinkedIn access token");
+        if (!accessToken) {
+            return res.redirect(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed`);
+        }
 
         const userinfo = await axios.get("https://api.linkedin.com/v2/userinfo", {
-            headers: { Authorization: `Bearer ${accessToken}` }
+            headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        console.log(userinfo.data);
         const email = userinfo.data?.email;
-        console.log(email);
 
         if (!email) {
-            return res.redirect(`${process.env.CLIENT_URL}/login?error=Email_not_verified_By_LinkedIn`);
+            return res.redirect(`${process.env.CLIENT_URL}/login?error=email_not_verified`);
         }
 
-        const existingUser = await User.findOne({ email: email.toLowerCase() });
+        let user = await User.findOne({ email: email.toLowerCase() });
 
-        if (!existingUser) {
-            const newUser = new User({ email: email.toLowerCase(), password: null, loginMethod: 'linkedin' });
-            await newUser.save();
-        }
-
-        const token = jwt.sign({ email }, process.env.SECRET_KEY);
-
-        res.clearCookie("li_oauth_state",
-            {
-                httpOnly: false,
-                sameSite: "lax",
-                secure: false
+        if (!user) {
+            user = new User({
+                email: email.toLowerCase(),
+                password: null,
+                loginMethod: "linkedin",
             });
+            await user.save();
+        }
 
-        const redirect = new URL(`${process.env.CLIENT_URL}/login?token=${token}`);
-        res.redirect(redirect.toString());
+        const appAccessToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
+
+        const refreshToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.clearCookie("li_oauth_state", {
+            httpOnly: false,
+            sameSite: "lax",
+            secure: false,
+        });
+
+        return res.redirect(`${process.env.CLIENT_URL}/`);
 
     } catch (e) {
         console.error("LinkedIn OAuth error:", e?.response?.data || e);
-        const r = new URL(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed_try_again_later`);
-        res.redirect(r.toString());
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=linkedin_auth_failed`);
     }
-});
-
-Router.get("/verifyToken", authenticateToken, async (req, res) => {
-    res.status(200).json({ message: "success", email: req.user.email });
 });
 
 Router.post("/signup", async (req, res) => {
     try {
         const { email, password } = req.body;
+
         const existingUser = await User.findOne({ email: email.toLowerCase() });
 
-        if (existingUser) return res.status(400).json({ message: "An account with this email already exists. Try logging in instead." });
+        if (existingUser) {
+            return res.status(400).json({
+                message: "An account with this email already exists. Try logging in instead."
+            });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ email: email.toLowerCase(), password: hashedPassword });
+
+        const newUser = new User({
+            email: email.toLowerCase(),
+            password: hashedPassword,
+        });
         await newUser.save();
 
-        const token = jwt.sign({ email: newUser.email }, process.env.SECRET_KEY);
+        const accessToken = jwt.sign(
+            { id: newUser._id, email: newUser.email },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
 
-        res.json({ message: "User registered successfully", token });
+        const refreshToken = jwt.sign(
+            { id: newUser._id, email: newUser.email },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.json({
+            message: "User registered successfully",
+            accessToken,
+            user: {
+                id: newUser._id,
+                email: newUser.email
+            }
+        });
+
     } catch (err) {
-        res.status(500).json({ message: "Internal server error. Please try again later.", error: err.message });
+        console.error(err);
+        res.status(500).json({
+            message: "Internal server error. Please try again later.",
+            error: err.message
+        });
     }
 });
 
 Router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log("Fetching data from : "+email);
+
         const user = await User.findOne({ email: email.toLowerCase() });
-        console.log(user);
-        if (!user) return res.status(400).json({ message: "No account found with that email address." });
+        if (!user) {
+            return res.status(400).json({ message: "No account found with that email address." });
+        }
 
         if (user.password === null) {
-            if (user.loginMethod === 'google') return res.status(400).json({ message: "This email is registered via Google. Please use Google Sign-In to log in." });
-            else return res.status(400).json({ message: "This email is registered via Linkedin. Please use Linkedin Sign-In to log in." });
+            if (user.loginMethod === "google") {
+                return res.status(400).json({ message: "This email is registered via Google. Use Google Sign-In." });
+            } else {
+                return res.status(400).json({ message: "This email is registered via LinkedIn. Use LinkedIn Sign-In." });
+            }
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid password" });
+        }
 
-        const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY);
+        const accessToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
 
-        res.json({ message: "Login successful", token });
+        const refreshToken = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        res.json({
+            message: "Login successful",
+            accessToken,
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name
+            }
+        });
+
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Error in login", error: err.message });
     }
 });
@@ -252,6 +366,37 @@ Router.post("/verifyCode", async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: "Error in verifying code", error: err.message });
     }
+});
+
+Router.post("/refresh", (req, res) => {
+    const token = req.cookies.refreshToken;
+    if (!token) return res.status(401).json({ message: "No refresh token" });
+
+    try {
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+
+        const accessToken = jwt.sign(
+            { id: decoded.id, email: decoded.email },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "15m" }
+        );
+
+        return res.json({ accessToken });
+
+    } catch (err) {
+        return res.status(403).json({ message: "Invalid refresh token" });
+    }
+});
+
+Router.post("/logout", (req, res) => {
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/"
+    });
+
+    return res.json({ message: "Logged out successfully" });
 });
 
 module.exports = Router;
