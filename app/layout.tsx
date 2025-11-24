@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { cookies } from "next/headers";
 import { AuthProvider } from "./providers/AuthProvider";
 import { UtilityProvider } from "./providers/UtilityProvider";
+import { Analytics } from '@vercel/analytics/react';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smart Resume"
+  title: "Smart Resume",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default async function RootLayout({
@@ -31,7 +35,6 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={themeCookie} style={{ colorScheme: themeCookie }}>
-      <link rel="icon" type="image" href="/favicon.png" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -39,6 +42,7 @@ export default async function RootLayout({
           <AuthProvider >
             <ThemeProvider attribute="class" defaultTheme={themeCookie} enableSystem={true}>
               {children}
+              <Analytics />
             </ThemeProvider>
           </AuthProvider>
         </UtilityProvider>
