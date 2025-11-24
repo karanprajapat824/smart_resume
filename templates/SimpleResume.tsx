@@ -81,9 +81,6 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                         <div>{edu.location && "|"}</div>
                         <div className="capitalize">{edu.location}</div>
                       </div>
-                      <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line w-145">
-                        {edu.description}
-                      </p>
                     </div>
                   }
                   right={<p>Graduation Date: {edu.year}</p>}

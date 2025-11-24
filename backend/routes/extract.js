@@ -60,8 +60,8 @@ Router.post("/", upload.single("file"), async (req, res) => {
             model: "gemini-2.5-flash-lite-preview-09-2025"
         });
 
-        const prompt = `
-            {"id":"","email":"","template":"","order":["PersonalDetails","Summary","WorkExperience","Education","Skills","Projects","Achievements","Languages"],"personalDetails":{"name":"","email":"","phone":"","linkedin":"","github":"","location":"","country":""},"summary":"","workExperience":[{"id":"1","company":"","role":"","duration":"","description":"","bulletPoints":[],"isBulletPoints":false}],"education":[{"id":"1","degree":"","institution":"","year":"","description":"","grade":"","location":""}],"skills":[{"id":"1","name":"","level":"","key":"","value":""}],"projects":[{"id":"1","title":"","link":"","description":"","bulletPoints":[],"isBulletPoints":false}],"achievements":[{"id":"1","title":"","year":"","description":"","bulletPoints":[],"isBulletPoints":false}],"languages":[{"id":"1","language":"","level":""}]} ${text}`;
+        const prompt = `${process.env.PROMPT_1}\nTEXT:\n${text}`;
+
 
         const result = await model.generateContent(prompt);
         let responseText = result.response.text();

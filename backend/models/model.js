@@ -79,7 +79,8 @@ const resumeSchema = new mongoose.Schema(
                 title: String,
                 link: String,
                 description: String,
-                bulletPoints: [String]
+                bulletPoints: [String],
+                duration : String
             }
         ],
 
@@ -115,5 +116,6 @@ const TempOPT = mongoose.model("TempOPT", new mongoose.Schema({
 module.exports = {
     User,
     Resume,
-    TempOPT
+    TempOPT,
+    resumeSchema
 }
