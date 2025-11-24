@@ -13,7 +13,6 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
           <h1 className="text-2xl font-semibold text-neutral-900 capitalize">
             {data.personalDetails.name || "Your Name"}
           </h1>
-
           <div className="mt-1 flex flex-wrap items-center gap-x-1 gap-y-1 text-[13px] text-neutral-800">
             {
               (Object.keys(data.personalDetails) as (keyof ResumeData['personalDetails'])[])
@@ -171,7 +170,7 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
                         )}
                       </p>
                     }
-                    // right={<p>{p.duration}</p>}
+                    right={<p>{p.duration}</p>}
                   />
                   <ItemRow
                     left={
@@ -201,25 +200,42 @@ const SimpleResume = React.forwardRef<HTMLDivElement, TemplateType>(
           <ResumeSection title="Achievements" key="Achievements">
             <div className="space-y-3">
               {data.achievements.map((a) => (
-                <ItemRow
-                  key={a.id}
-                  left={
-                    <div>
-                      <p className="font-medium">{a.title}</p>
-                      <p className="text-[13px] text-neutral-700 mt-1 text-justify leading-5 whitespace-pre-line">
-                        {a.description}
-                      </p>
-                      {a.isBulletPoints && (
-                        <Bullets
-                          items={a.bulletPoints.map((b, i) => (
-                            <span key={i}>{b}</span>
-                          ))}
-                        />
-                      )}
-                    </div>
-                  }
-                  right={<p>{a.year}</p>}
-                />
+                <div key={a.id}>
+                  <ItemRow
+                    left={
+                      <div>
+                        <p className="font-medium">{a.title}</p>
+                        <p className="text-[13px] text-neutral-700 mt-1 text-justify leading-5 whitespace-pre-line">
+                          {a.description}
+                        </p>
+                        {a.isBulletPoints && (
+                          <Bullets
+                            items={a.bulletPoints.map((b, i) => (
+                              <span key={i}>{b}</span>
+                            ))}
+                          />
+                        )}
+                      </div>
+                    }
+                    right={<p>{a.year}</p>}
+                  />
+                  <ItemRow
+                    left={
+                      <div>
+                        <p className="text-[13px] text-neutral-700 mt-1 leading-5 text-justify whitespace-pre-line">
+                          {a.description}
+                        </p>
+                        {a?.bulletPoints?.length > 0 && (
+                          <Bullets
+                            items={a.bulletPoints?.map((b, i) => (
+                              <span key={i}>{b}</span>
+                            ))}
+                          />
+                        )}
+                      </div>
+                    }
+                  />
+                </div>
               ))}
             </div>
           </ResumeSection>

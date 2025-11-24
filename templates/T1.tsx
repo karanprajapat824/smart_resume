@@ -17,7 +17,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
       PersonalDetails: (
         <header
           style={{ backgroundColor: "#475569" }}
-          className="bg-[#475569] text-white px-8 py-6 mb-6" key="PersonalDetails">
+          className="bg-[#475569] text-white px-8 py-6 mb-2" key="PersonalDetails">
           <div className="flex items-center gap-4 max-w-6xl mx-auto">
             <div className="w-12 h-12 border-2 border-white flex items-center justify-center text-lg font-bold">
               {(data.personalDetails.name && initialsFromName(data.personalDetails.name)) || "YN"}
@@ -44,7 +44,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
       ),
 
       Summary: data.summary ? (
-        <section key="Summary" className="max-w-6xl mx-auto px-8 mb-6">
+        <section key="Summary" className="max-w-6xl mx-auto px-8 mb-2">
           <ResumeSection title="SUMMARY">
             <p className="text-sm leading-5 text-justify whitespace-pre-line text-gray-700">{data.summary}</p>
           </ResumeSection>
@@ -53,7 +53,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
 
       Skills:
         data.skills && data.skills.length > 0 ? (
-          <section key="Skills" className="max-w-6xl mx-auto px-8 mb-6">
+          <section key="Skills" className="max-w-6xl mx-auto px-8 mb-2">
             <ResumeSection title="SKILLS">
               <div className="grid grid-cols-4 gap-2">
                 {chunkArray(data.skills, 4).map(
@@ -74,7 +74,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
 
       WorkExperience:
         data.workExperience && data.workExperience.length > 0 ? (
-          <section key="WorkExperience" className="max-w-6xl mx-auto px-8 mb-6">
+          <section key="WorkExperience" className="max-w-6xl mx-auto px-8 mb-2">
             <ResumeSection title="EXPERIENCE">
               <div className="space-y-4">
                 {data.workExperience.map((we) => (
@@ -99,7 +99,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
 
       Projects:
         data.projects && data.projects.length > 0 ? (
-          <section key="Projects" className="max-w-6xl mx-auto px-8 mb-6">
+          <section key="Projects" className="max-w-6xl mx-auto px-8 mb-2">
             <ResumeSection title="PROJECTS">
               <div className="space-y-4">
                 {data.projects.map((p) => (
@@ -116,6 +116,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
                           )}
                         </div>
                       }
+                      right={<p>{p.duration}</p>}
                     />
                   </div>
                 ))}
@@ -126,7 +127,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
 
       Education:
         data.education && data.education.length > 0 ? (
-          <section key="Education" className="max-w-6xl mx-auto px-8 mb-6">
+          <section key="Education" className="max-w-6xl mx-auto px-8 mb-2">
             <ResumeSection title="EDUCATION AND TRAINING">
               <div className="space-y-3">
                 {data.education.map((edu) => (
@@ -143,7 +144,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
 
       Languages:
         data.languages && data.languages.length > 0 ? (
-          <section key="Languages" className="max-w-6xl mx-auto px-8 mb-6">
+          <section key="Languages" className="max-w-6xl mx-auto px-8 mb-2">
             <ResumeSection title="LANGUAGES">
               <div className="grid grid-cols-2 gap-4">
                 {chunkArray(data.languages, Math.ceil(data.languages.length / 2)).map(
@@ -167,7 +168,7 @@ const T1 = React.forwardRef<HTMLDivElement, TemplateType>(
 
       Achievements:
         data.achievements && data.achievements.length > 0 ? (
-          <section key="Achievements" className="max-w-6xl mx-auto px-8 mb-6">
+          <section key="Achievements" className="max-w-6xl mx-auto px-8 mb-2">
             <ResumeSection title="ACHIEVEMENTS">
               <div className="space-y-3">
                 {data.achievements.map((a) => (
@@ -231,7 +232,7 @@ function ItemRow({ left, right, className }: { left: React.ReactNode; right?: Re
 
 function ResumeSection({ title, children, className }: { title: string; children: React.ReactNode; className?: string; }) {
   return (
-    <section data-section-name={title} className={["space-y-2 mt-4", className].filter(Boolean).join(" ")}>
+    <section data-section-name={title} className={["space-y-1", className].filter(Boolean).join(" ")}>
       <h2 className="text-lg font-bold text-blue-600 mb-3 border-b border-gray-300 pb-1 uppercase">{title}</h2>
       <div className="text-sm leading-6 text-gray-900">{children}</div>
     </section>

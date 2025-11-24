@@ -167,16 +167,16 @@ export default function Achievements({
                       }
                     />
                   </div>
-                  <ToggleMode
-                    add={addBulletPoints}
-                    update={updateAchievement}
-                    exp={achievement}
-                    deletePoints={deleteBulletPoint}
-                    updatePoints={updateBulletPoints}
-                    placeHolder="Describe Your Achievements..."
-                    ref={(el) => { achievementsRefs.current[index * 3 + 2] = el; }}
-                  />
                 </div>
+                <ToggleMode
+                  add={addBulletPoints}
+                  update={updateAchievement}
+                  exp={achievement}
+                  deletePoints={deleteBulletPoint}
+                  updatePoints={updateBulletPoints}
+                  placeHolder="Describe Your Achievements..."
+                  ref={(el) => { achievementsRefs.current[index * 3 + 2] = el; }}
+                />
               </div>
             </div>
           ))}

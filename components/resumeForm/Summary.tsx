@@ -40,13 +40,6 @@ export default function Summary({
             onBlur={(e) => handleDataChange({ summary: e.target.value },true)}
             placeholder="Write a brief professional summary..."
           />
-          <Button
-            variant="primary"
-            size="md"
-            icon={<Sparkles className="h-4" />}
-          >
-            Ai Inhance
-          </Button>
         </div>
       </div>
     </div>
