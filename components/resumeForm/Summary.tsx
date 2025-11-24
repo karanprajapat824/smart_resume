@@ -36,7 +36,8 @@ export default function Summary({
             ref={summaryRef}
             id="summary"
             value={resumeData?.summary}
-            onChange={(e) => handleDataChange({ summary: e.target.value })}
+            onChange={(e) => handleDataChange({ summary: e.target.value },false)}
+            onBlur={(e) => handleDataChange({ summary: e.target.value },true)}
             placeholder="Write a brief professional summary..."
           />
           <Button

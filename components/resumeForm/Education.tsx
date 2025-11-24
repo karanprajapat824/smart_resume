@@ -43,26 +43,27 @@ export default function Education({
           location: "",
         },
       ],
-    });
+    }, false);
   }
 
   function deleteEducation(id: string) {
     const remainingEducation = resumeData?.education?.filter((edu) => edu?.id !== id);
     handleDataChange({
       education: remainingEducation,
-    });
+    }, true);
   }
 
   function updateEducation(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    id: string
+    id: string,
+    commit: boolean
   ) {
     const { value, name } = e.target;
     handleDataChange({
       education: resumeData?.education?.map((edu) =>
         edu?.id === id ? { ...edu, [name]: value } : edu
       ),
-    });
+    }, commit);
   }
 
 
@@ -104,7 +105,8 @@ export default function Education({
                       value={edu.degree}
                       placeholder="Bachelor of Science"
                       name="degree"
-                      onChange={(e) => updateEducation(e, edu.id)}
+                      onChange={(e) => updateEducation(e, edu.id, false)}
+                      onBlur={(e) => updateEducation(e, edu.id, true)}
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleEducationRefs(index * 4 + 0)
                       }
@@ -122,7 +124,8 @@ export default function Education({
                       value={edu.year}
                       placeholder="2025"
                       name="year"
-                      onChange={(e) => updateEducation(e, edu.id)}
+                      onChange={(e) => updateEducation(e, edu.id, false)}
+                      onBlur={(e) => updateEducation(e, edu.id, true)}
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleEducationRefs(index * 4 + 1)
                       }
@@ -143,7 +146,8 @@ export default function Education({
                     value={edu.institution}
                     placeholder="Indian Institute of Technology"
                     name="institution"
-                    onChange={(e) => updateEducation(e, edu.id)}
+                    onChange={(e) => updateEducation(e, edu.id, false)}
+                    onBlur={(e) => updateEducation(e, edu.id, true)}
                     onKeyDown={(e) =>
                       e.key === "Enter" && handleEducationRefs(index * 4 + 2)
                     }
@@ -162,7 +166,8 @@ export default function Education({
                       value={edu.grade}
                       placeholder="8.00 CGPA or 80%"
                       name="grade"
-                      onChange={(e) => updateEducation(e, edu.id)}
+                      onChange={(e) => updateEducation(e, edu.id, false)}
+                      onBlur={(e) => updateEducation(e, edu.id, true)}
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleEducationRefs(index * 4 + 3)
                       }
@@ -180,7 +185,8 @@ export default function Education({
                       value={edu.location}
                       placeholder="Ujjain , M.P"
                       name="location"
-                      onChange={(e) => updateEducation(e, edu.id)}
+                      onChange={(e) => updateEducation(e, edu.id, false)}
+                      onBlur={(e) => updateEducation(e, edu.id, true)}
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleEducationRefs(index * 4 + 4)
                       }

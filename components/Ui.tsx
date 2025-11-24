@@ -13,6 +13,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
   href?: string;
   disabled?: boolean;
+  title?: string;
 }
 
 interface InputFieldProps {
@@ -28,6 +29,7 @@ interface InputFieldProps {
   isPassword?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>, ...args: any[]) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>, index?: number) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 interface TextareaProps {
@@ -35,7 +37,8 @@ interface TextareaProps {
   id: string;
   value: string;
   placeholder?: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>, ...args: any[]) => void;
+  onBlur: (e: React.ChangeEvent<HTMLTextAreaElement>, ...args: any[]) => void;
   className?: string;
 }
 
@@ -44,31 +47,31 @@ interface ToggleModeProps {
   placeHolder?: string;
   exp: any;
   add: (id: string, point: string) => void;
-  update: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => void;
+  update: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string, commit: boolean) => void;
   deletePoints: (id: string, index: number) => void;
-  updatePoints: (id: string, index: number, point: string) => void;
+  updatePoints: (id: string, index: number, point: string, commit: boolean) => void;
 };
 
 interface LoaderType {
-    size?: string,
+  size?: string,
 }
 
 function Loader({ size = "1" }: LoaderType) {
-    return (
-        <div
-            style={{
-                height: `${size}em`,
-                width: `${size}em`,
-                borderWidth: `${parseInt(size) / 6}em`,
-                borderStyle: "solid",     
-                borderColor: "rgb(229 231 235)",
-                borderTopColor: "rgb(59 130 246)",
-                borderRadius: "9999px",
-            }}
-            className="animate-spin"
-        ></div>
+  return (
+    <div
+      style={{
+        height: `${size}em`,
+        width: `${size}em`,
+        borderWidth: `${parseInt(size) / 6}em`,
+        borderStyle: "solid",
+        borderColor: "rgb(229 231 235)",
+        borderTopColor: "rgb(59 130 246)",
+        borderRadius: "9999px",
+      }}
+      className="animate-spin"
+    ></div>
 
-    )
+  )
 }
 
 const ToggleMode = forwardRef<HTMLTextAreaElement, ToggleModeProps>(
@@ -102,7 +105,7 @@ const ToggleMode = forwardRef<HTMLTextAreaElement, ToggleModeProps>(
     };
 
     const applyUpdate = () => {
-      updatePoints(exp.id, index, bullet);
+      updatePoints(exp.id, index, bullet, true);
       setIsUpdating(false);
       setBullet("");
     };
@@ -178,7 +181,8 @@ const ToggleMode = forwardRef<HTMLTextAreaElement, ToggleModeProps>(
             value={exp.description}
             name="description"
             placeholder={placeHolder || "Describe in detail"}
-            onChange={(e) => update(e, exp.id)}
+            onChange={(e) => update(e, exp.id, false)}
+            onBlur={(e) => update(e, exp.id, true)}
           />
         )}
 
@@ -205,7 +209,7 @@ const ToggleMode = forwardRef<HTMLTextAreaElement, ToggleModeProps>(
 
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, id, value, placeholder, onChange, className = "" }, ref) => {
+  ({ label, id, value, placeholder, onChange, className = "", onBlur }, ref) => {
     return (
       <div className={`flex flex-col gap-2 w-full h-full ${className}`}>
         {label && (
@@ -219,6 +223,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e)}
+          onBlur={onBlur}
           className="border rounded w-full h-[90%] resize-none p-4 text-sm"
         />
       </div>
@@ -241,6 +246,7 @@ const Input = forwardRef<HTMLInputElement, InputFieldProps>(
       classNameForLabel = "",
       name = "",
       isPassword = false,
+      onBlur
     },
     ref
   ) => {
@@ -256,11 +262,12 @@ const Input = forwardRef<HTMLInputElement, InputFieldProps>(
             name={name}
             type={isPassword ? (isPasswordVisible ? "text" : "password") : type}
             ref={ref}
-            className={`border rounded w-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${classNameForInput}`}
+            className={`border focus:border-none rounded w-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${classNameForInput}`}
             value={value}
             placeholder={placeholder}
             onChange={(e) => onChange(e)}
             onKeyDown={(e) => onKeyDown && onKeyDown(e, index)}
+            onBlur={onBlur}
           />
 
           {isPassword && (
@@ -284,19 +291,19 @@ const Input = forwardRef<HTMLInputElement, InputFieldProps>(
 );
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  ({ children, className = "", variant = "primary", size = "md", icon, href, disabled = false, ...rest }, ref) => {
+  ({ children, className = "", variant = "primary", size = "md", icon, href, disabled = false, title, ...rest }, ref) => {
     const base =
-      "inline-flex items-center justify-center font-semibold rounded-md transition-all duration-300 ease-in-out overflow-hidden relative";
+      "group/button inline-flex items-center justify-center font-semibold rounded-md transition-all duration-300 ease-in-out overflow-hidden relative";
 
     const variants: Record<Variant, string> = {
       primary:
-        "group/button bg-primary text-primary-foreground border border-white/20 backdrop-blur-sm hover:shadow-sm cursor-pointer hover:shadow-blue-2xl ",
+        "bg-primary text-primary-foreground border border-white/20 backdrop-blur-sm hover:shadow-sm cursor-pointer hover:shadow-blue-2xl",
       primaryPlus:
-        "group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-primary backdrop-blur-lg px-6 py-2 cursor-pointer font-semibold text-primary-foreground transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-sm hover:shadow-blue-2xl border border-white/20",
+        "relative inline-flex items-center justify-center overflow-hidden rounded-md bg-primary backdrop-blur-lg px-6 py-2 cursor-pointer font-semibold text-primary-foreground transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-sm hover:shadow-blue-2xl border border-white/20",
       secondary:
         "bg-secondary text-secondary-foreground border border-zinc-600 shadow-md hover:shadow-xl cursor-pointer",
       outline: "text-muted-foreground hover:opacity-90 cursor-pointer border hover:bg-muted hover:text-primary",
-      ghost: "text-muted-foreground hover:text-foreground transition-colors cursor-pointer",
+      ghost: "text-muted-foreground hover:text-foreground cursor-pointer",
     };
 
     const sizes: Record<Size, string> = {
@@ -320,6 +327,21 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
             <div className="relative h-full w-10 bg-white/30" />
           </div>
         )}
+
+        {title && (
+          <span
+            className="
+              absolute top-full mt-2 left-1/2 -translate-x-1/2
+              whitespace-nowrap 
+              rounded-md bg-black/90 text-white px-2 py-1 text-xs 
+              opacity-0 invisible 
+              transition-all duration-200
+              group-hover/button:opacity-100 group-hover/button:visible
+            "
+          >
+            {title}
+          </span>
+        )}
       </>
     );
 
@@ -338,6 +360,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
     );
   }
 );
+
 
 Button.displayName = "Button";
 Input.displayName = "Input";

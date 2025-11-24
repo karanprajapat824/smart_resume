@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
-import { Button, ToggleMode } from "@/components/Ui"
+import { Button, Input, ToggleMode } from "@/components/Ui";
 import { useUtility } from "@/app/providers/UtilityProvider";
 
 export default function Projects({
@@ -11,15 +11,10 @@ export default function Projects({
   setOpenSections,
 }: ResumeSectionProps) {
   const { resumeData, handleDataChange } = useUtility();
+
   const projectsRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      projectsRefs.current[0]?.focus();
-    }, 0);
-  }, [openSections.project]);
 
   function handleProjectRefs(index: number) {
     const nextInput = projectsRefs.current[index + 1];
@@ -27,67 +22,110 @@ export default function Projects({
   }
 
   function addProject() {
-    handleDataChange({
-      projects: [
-        ...resumeData.projects,
-        {
-          id: Date.now().toString(),
-          title: "",
-          link: "",
-          description: "",
-          bulletPoints: []
-        },
-      ],
-    });
+    handleDataChange(
+      {
+        projects: [
+          ...resumeData.projects,
+          {
+            id: Date.now().toString(),
+            title: "",
+            link: "",
+            description: "",
+            bulletPoints: [],
+            duration: ""
+          },
+        ],
+      },
+      false
+    );
   }
 
   function deleteProject(id: string) {
-    const remainingProjects = resumeData.projects.filter((p) => p.id !== id);
-    handleDataChange({ projects: remainingProjects });
+    handleDataChange(
+      {
+        projects: resumeData.projects.filter((p) => p.id !== id),
+      },
+      true
+    );
   }
 
   function updateProject(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    id: string
+    id: string,
+    commit: boolean
   ) {
     const { value, name } = e.target;
-    handleDataChange({
-      projects: resumeData.projects.map((p) => (p.id === id ? { ...p, [name]: value } : p)),
-    });
+
+    handleDataChange(
+      {
+        projects: resumeData.projects.map((p) =>
+          p.id === id ? { ...p, [name]: value } : p
+        ),
+      },
+      commit
+    );
   }
 
   function addBulletPoints(id: string, point: string) {
     const trimmed = point.trim();
     if (!trimmed) return;
 
-    handleDataChange({
-      projects: resumeData.projects.map((p) =>
-        p.id === id ? { ...p, bulletPoints: [...p.bulletPoints, trimmed] } : p
-      ),
-    });
+    handleDataChange(
+      {
+        projects: resumeData.projects.map((p) =>
+          p.id === id
+            ? { ...p, bulletPoints: [...p.bulletPoints, trimmed] }
+            : p
+        ),
+      },
+      true
+    );
   }
 
   function deleteBulletPoint(id: string, index: number) {
-    handleDataChange({
-      projects: resumeData.projects.map((p) =>
-        p.id === id
-          ? { ...p, bulletPoints: p.bulletPoints.filter((_, i) => i !== index) }
-          : p
-      ),
-    });
+    handleDataChange(
+      {
+        projects: resumeData.projects.map((p) =>
+          p.id === id
+            ? {
+              ...p,
+              bulletPoints: p.bulletPoints.filter((_, i) => i !== index),
+            }
+            : p
+        ),
+      },
+      true
+    );
   }
 
-  function updateBulletPoints(id: string, index: number, point: string) {
-    handleDataChange({
-      projects: resumeData.projects?.map((p) =>
-        p.id === id ?
-          {
-            ...p,
-            bulletPoints: p.bulletPoints?.map((p, i) => i === index ? point : p)
-          } : p
-      )
-    })
+  function updateBulletPoints(
+    id: string,
+    index: number,
+    point: string,
+    commit: boolean
+  ) {
+    handleDataChange(
+      {
+        projects: resumeData.projects.map((p) =>
+          p.id === id
+            ? {
+              ...p,
+              bulletPoints: p.bulletPoints.map((bp, i) =>
+                i === index ? point : bp
+              ),
+            }
+            : p
+        ),
+      },
+      commit
+    );
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      projectsRefs.current[0]?.focus();
+    }, 0);
+  }, [openSections.project]);
 
   return (
     <div>
@@ -97,6 +135,7 @@ export default function Projects({
         setIsOpen={setOpenSections}
         name="project"
       />
+
       <div className="border-b pt-4 pb-0">
         <div
           className={`space-y-4 flex flex-col items-center justify-center mb-4 ${!openSections.project && "hidden"
@@ -104,7 +143,7 @@ export default function Projects({
         >
           {resumeData.projects.map((project, index) => (
             <div className="border p-4 w-[100%] rounded" key={project.id}>
-              <div className="flex flex-row items-center justify-between space-y-0 py-2">
+              <div className="flex flex-row items-center justify-between py-2">
                 <div className="text-lg font-semibold">Project Entry</div>
                 <button
                   className="hover:cursor-pointer hover:text-red-600"
@@ -116,38 +155,61 @@ export default function Projects({
 
               <div className="space-y-4 py-2">
                 <div className="grid sm:grid-cols-2 grid-cols-1 space-y-4 space-x-4">
-                  {/* Title */}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold text-sm">Project Title</label>
-                    <input
-                      ref={(el) => { (projectsRefs.current[index * 3 + 0] = el) }}
-                      className="border rounded py-1 px-4 text-sm"
-                      value={project.title}
-                      placeholder="My Awesome Project"
-                      name="title"
-                      onChange={(e) => updateProject(e, project.id)}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && handleProjectRefs(index * 3 + 0)
-                      }
-                    />
-                  </div>
+                  <Input
+                    label="Project Title"
+                    name="title"
+                    id="title"
+                    value={project.title}
+                    placeholder="My Awesome Project"
+                    index={index * 4 + 0}
+                    ref={(el) => { projectsRefs.current[index * 4 + 0] = el }}
+                    onChange={(e) => updateProject(e, project.id, false)}
+                    onBlur={(e) => updateProject(e, project.id, true)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      handleProjectRefs(index * 4 + 0)
+                    }
+                  />
 
-                  {/* Link */}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-semibold text-sm">Link</label>
-                    <input
-                      ref={(el) => { (projectsRefs.current[index * 3 + 1] = el) }}
-                      className="border rounded py-1 px-4 text-sm"
-                      value={project.link}
-                      placeholder="https://github.com/username/project"
-                      name="link"
-                      onChange={(e) => updateProject(e, project.id)}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && handleProjectRefs(index * 3 + 1)
-                      }
-                    />
-                  </div>
+                  <Input
+                    label="Link"
+                    name="link"
+                    id="link"
+                    value={project.link}
+                    placeholder="https://github.com/username/project"
+                    index={index * 4 + 1}
+                    ref={(el) => { projectsRefs.current[index * 4 + 1] = el }}
+                    onChange={(e) => updateProject(e, project.id, false)}
+                    onBlur={(e) => updateProject(e, project.id, true)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      handleProjectRefs(index * 4 + 1)
+                    }
+                  />
                 </div>
+                
+                <Input
+                  label="Duration"
+                  name="duration"
+                  id={`duration-${project.id}`}
+                  value={project.duration}
+                  placeholder="Jan 2020 - Present"
+                  index={index * 4 + 2}
+                  ref={(el) => {
+                    projectsRefs.current[index * 4 + 2] = el;
+                  }}
+                  onChange={(e) => updateProject(e, project.id, false)}
+                  onBlur={(e) =>
+                    updateProject(
+                      e,
+                      project.id,
+                      true
+                    )
+                  }
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && handleProjectRefs(index * 4 + 2)
+                  }
+                />
 
                 <ToggleMode
                   add={addBulletPoints}
@@ -155,7 +217,10 @@ export default function Projects({
                   exp={project}
                   deletePoints={deleteBulletPoint}
                   updatePoints={updateBulletPoints}
-                  placeHolder="Describe Your work experience..."
+                  placeHolder="Describe your project..."
+                  ref={(el) => {
+                    projectsRefs.current[index * 4 + 3] = el;
+                  }}
                 />
               </div>
             </div>
@@ -167,8 +232,7 @@ export default function Projects({
             className="w-full"
             onClick={addProject}
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Project
+            <Plus className="h-4 w-4 mr-2" /> Add Project
           </Button>
         </div>
       </div>

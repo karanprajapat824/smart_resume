@@ -7,6 +7,8 @@ import { Button } from "@/components/Ui";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { useUtility } from "@/app/providers/UtilityProvider";
 
+
+
 interface HeaderProps {
   items: string[];
   isSave?: boolean;
@@ -14,11 +16,11 @@ interface HeaderProps {
   afterLoginRedirect?: string;
 }
 
-export default function Header({ items, isSave = false, saveResume, afterLoginRedirect="/" }: HeaderProps) {
+export default function Header({ items, isSave = false, saveResume, afterLoginRedirect = "/" }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [spin, setSpin] = useState(false);
   const { loggedIn, setLoggedIn, setAccessToken } = useAuth();
-  const { API_URL } = useUtility();
+  const { API_URL, undo, redo } = useUtility();
 
   const handleSave = () => {
     if (!saveResume) return;
@@ -46,9 +48,9 @@ export default function Header({ items, isSave = false, saveResume, afterLoginRe
     }
   }
 
-  function handleLogin(){
+  function handleLogin() {
     alert(afterLoginRedirect);
-    localStorage.setItem("afterLoginRedirect",afterLoginRedirect);
+    localStorage.setItem("afterLoginRedirect", afterLoginRedirect);
     window.location.href = "/login";
   }
 
@@ -107,6 +109,8 @@ export default function Header({ items, isSave = false, saveResume, afterLoginRe
                     size="sm"
                     icon={<Cloud className="h-4" />}
                     onClick={handleSave}
+                    title="Autosaves every 30s"
+                    className="overflow-visible"
                   >
                     Save
                     <RefreshCw className={`h-4 ${spin && "animate-spin"}`} />
@@ -117,6 +121,7 @@ export default function Header({ items, isSave = false, saveResume, afterLoginRe
                     size="sm"
                     className="border-success-foreground text-success-foreground"
                     disabled={isSave}
+                    title="Resume Saved"
                   >
                     <Cloud className="h-4" /> Saved
                   </Button>

@@ -1,5 +1,59 @@
 "use client";
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect, useContext, useCallback } from "react";
+
+function useUndoRedo<T>(initial: T, maxHistory = 30) {
+    const [state, setState] = useState<T>(initial);
+    const [undoStack, setUndoStack] = useState<T[]>([]);
+    const [redoStack, setRedoStack] = useState<T[]>([]);
+    const [pendingChange, setPendingChange] = useState<boolean>(false);
+
+    const updateState = useCallback(
+        (newState: T, commit = false) => {
+            if (commit) {
+                setUndoStack(stack => {
+                    const updated = [...stack, structuredClone(state)];
+                    return updated.length > maxHistory
+                        ? updated.slice(updated.length - maxHistory)
+                        : updated;
+                });
+                setRedoStack([]);
+                setPendingChange(false);
+            } else {
+                setPendingChange(true);
+            }
+
+            setState(structuredClone(newState));
+        },
+        [state, maxHistory]
+    );
+
+    const undo = useCallback(() => {
+        if (undoStack.length === 0) return;
+        const prev = undoStack[undoStack.length - 1];
+
+        setRedoStack(r => [...r, structuredClone(state)]);
+        setUndoStack(u => u.slice(0, -1));
+        setState(prev);
+    }, [undoStack, state]);
+
+    const redo = useCallback(() => {
+        if (redoStack.length === 0) return;
+        const next = redoStack[redoStack.length - 1];
+
+        setUndoStack(u => [...u, structuredClone(state)]);
+        setRedoStack(r => r.slice(0, -1));
+        setState(next);
+    }, [redoStack, state]);
+
+    return {
+        state,
+        updateState,
+        undo,
+        redo,
+        pendingChange
+    };
+}
+
 
 export const defaultResumeData: ResumeData = {
     resume_id: null,
@@ -37,10 +91,12 @@ interface UtilityContextType {
     templateNames: string[]
     width: number;
     resumeData: ResumeData,
-    handleDataChange: (newData: Partial<ResumeData>) => void;
+    handleDataChange: (newData: Partial<ResumeData>, commit: boolean) => void;
     autoFill: (d: any) => void;
     clearForm: () => void;
     isDirty: boolean,
+    undo: () => void;
+    redo: () => void;
 }
 
 const UtilityContext = createContext<UtilityContextType>({
@@ -52,6 +108,8 @@ const UtilityContext = createContext<UtilityContextType>({
     autoFill: (d: any) => { },
     clearForm: () => { },
     isDirty: false,
+    undo: () => { },
+    redo: () => { },
 });
 
 export interface ResumeData {
@@ -96,6 +154,7 @@ export interface ResumeData {
         id: string;
         title: string;
         link: string;
+        duration : string;
         description: string;
         bulletPoints: Array<string>;
     }>;
@@ -119,26 +178,35 @@ export function UtilityProvider({ children }: { children: React.ReactNode }) {
     const API_URL = "http://localhost:5000";
     const templateNames = ["SampleResume", "T1"];
     const [width, setWidth] = useState<number>(0);
-    const [resumeData, setResumeData] = useState<ResumeData>(() => initialLoad(defaultResumeData));
     const [isDirty, setIsDirty] = useState(true);
+    const {
+        state: resumeData,
+        updateState,
+        undo,
+        redo,
+        pendingChange
+    } = useUndoRedo<ResumeData>(initialLoad(defaultResumeData));
 
     function initialLoad(defaultData: ResumeData): ResumeData {
-        if (typeof window === "undefined") return defaultData;
+        if (typeof window === "undefined") return autoFix(defaultData)!;
+
         try {
             const raw = localStorage.getItem("data");
+
             if (!raw) {
-                localStorage.setItem("data", JSON.stringify(defaultData));
-                return defaultData;
+                const fresh = autoFix(defaultData)!;
+                localStorage.setItem("data", JSON.stringify(fresh));
+                return fresh;
             }
-            return JSON.parse(raw) as ResumeData;
-        } catch (err) {
-            console.error("initialLoad error:", err);
-            return defaultData;
+
+            return autoFix(JSON.parse(raw))!;
+        } catch {
+            return autoFix(defaultData)!;
         }
     }
 
     function clearForm() {
-        setResumeData(defaultResumeData);
+        updateState(defaultResumeData, true);
         localStorage.removeItem("data");
     }
 
@@ -159,7 +227,7 @@ export function UtilityProvider({ children }: { children: React.ReactNode }) {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    function autoFill(data: any): ResumeData | null {
+    function autoFix(data: any): ResumeData | null {
         try {
             if (typeof data === "string") {
                 data = JSON.parse(data);
@@ -187,7 +255,15 @@ export function UtilityProvider({ children }: { children: React.ReactNode }) {
             "Achievements",
             "Languages",
         ];
-        data.order = Array.isArray(data.order) ? data.order.map(String) : defaultOrder;
+
+        let userOrder = Array.isArray(data.order) ? data.order.map(String) : [];
+
+        const mergedOrder = [
+            ...userOrder,
+            ...defaultOrder.filter(section => !userOrder.includes(section))
+        ];
+        data.order = mergedOrder;
+
 
         data.personalDetails = data.personalDetails && typeof data.personalDetails === "object"
             ? data.personalDetails
@@ -271,6 +347,7 @@ export function UtilityProvider({ children }: { children: React.ReactNode }) {
             id: null as string | null,
             title: "",
             link: "",
+            duration : "",
             description: "",
             bulletPoints: [] as string[],
             isBulletPoints: false,
@@ -330,22 +407,45 @@ export function UtilityProvider({ children }: { children: React.ReactNode }) {
         data.achievements = Array.isArray(data.achievements) ? data.achievements : [];
         data.languages = Array.isArray(data.languages) ? data.languages : [];
 
-        try {
-            if (typeof setIsDirty === "function") setIsDirty(false);
-            if (typeof setResumeData === "function") setResumeData(data);
-        } catch (err) {
-        }
-
-        return data as unknown as ResumeData;
+        return data as ResumeData;
     }
 
-    const handleDataChange = (newData: Partial<ResumeData>) => {
-        setResumeData((prev) => ({ ...prev, ...newData }));
+    function autoFill(data: any) {
+        const fixed = autoFix(data);
+        if (!fixed) return null;
+
+        updateState(fixed, true);
+        setIsDirty(false);
+    }
+
+
+    const handleDataChange = (
+        newData: Partial<ResumeData>,
+        commit: boolean = false
+    ) => {
+        updateState(
+            {
+                ...resumeData,
+                ...newData
+            },
+            commit
+        );
         setIsDirty(true);
     };
 
     return (
-        <UtilityContext.Provider value={{ API_URL, templateNames, width, resumeData, handleDataChange, autoFill, clearForm, isDirty }}>
+        <UtilityContext.Provider value={{
+            API_URL,
+            templateNames,
+            width,
+            resumeData,
+            handleDataChange,
+            autoFill,
+            clearForm,
+            isDirty,
+            undo,
+            redo,
+        }}>
             {children}
         </UtilityContext.Provider>
     )

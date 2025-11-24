@@ -3,15 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2 } from "lucide-react";
 import { ResumeSectionProps } from "../ResumeForm";
-import { Button,Input} from "@/components/Ui"
-import {useUtility} from "@/app/providers/UtilityProvider";
+import { Button, Input } from "@/components/Ui"
+import { useUtility } from "@/app/providers/UtilityProvider";
 
 export default function Skills({
   openSections,
   setOpenSections,
 }: ResumeSectionProps) {
-  const { resumeData,handleDataChange} = useUtility();
-  const skillRef = useRef<HTMLInputElement>(null);  
+  const { resumeData, handleDataChange } = useUtility();
+  const skillRef = useRef<HTMLInputElement>(null);
   const [skill, setSkill] = useState<string>("");
   const [skillError, setSkillError] = useState<string>("");
   const [isUpdateSkill, setIsUpdateSkill] = useState(false);
@@ -34,6 +34,7 @@ export default function Skills({
       setSkill("");
     } else {
       setSkillError("");
+      setIsUpdateSkill(false);
       handleDataChange({
         skills: [
           ...resumeData.skills,
@@ -45,7 +46,7 @@ export default function Skills({
             value: ""
           },
         ],
-      });
+      }, true);
       setSkill("");
     }
   }
@@ -54,7 +55,7 @@ export default function Skills({
     const remaringSkill = resumeData.skills.filter((skill) => skill.id !== id);
     handleDataChange({
       skills: remaringSkill,
-    });
+    }, true);
   }
 
   function tryUpdateSkill(skill: string, id: string) {
@@ -63,24 +64,22 @@ export default function Skills({
     setId(id);
   }
 
-  function cancelUpdateSkill()
-  {
-     setSkill("");
-     setIsUpdateSkill(false);
-     setId("");
+  function cancelUpdateSkill() {
+    setSkill("");
+    setIsUpdateSkill(false);
+    setId("");
   }
 
-  function updateSkill()
-  {
-      handleDataChange({
-        skills : resumeData.skills?.map((s)=> s.id === id ? {
-          ...s,
-          name : skill
-        } : s)
-      });
-      setIsUpdateSkill(false);
-      setSkill("");
-      setId("");
+  function updateSkill() {
+    handleDataChange({
+      skills: resumeData.skills?.map((s) => s.id === id ? {
+        ...s,
+        name: skill
+      } : s)
+    }, true);
+    setIsUpdateSkill(false);
+    setSkill("");
+    setId("");
   }
 
   return (
@@ -99,32 +98,38 @@ export default function Skills({
           <div className="w-full flex flex-col gap-y-2">
             {/* Input box to add new skills */}
             <div
-              className={`flex justify-between px-2 border w-full py-2 rounded ${(skillError === "length" || skillError === "exist") &&
+              className={`flex items-center gap-4 border px-4 justify-between w-full py-2 rounded 
+                ${(skillError === "length" || skillError === "exist") &&
                 "border-red-500"
                 }`}
             >
-              <Input
-                ref={skillRef}
-                id=""
-                placeholder={
-                  skillError === "length"
-                    ? "Please enter a skill..."
-                    : skillError === "exist"
-                      ? "Skill is already mentioned"
-                      : "JavaScript"
-                }
-                classNameForInput={`${(skillError === "length" || skillError === "exist") && "text-red-600"}`}
-                onChange={(e) => {
-                  setSkill(e.target.value);
-                  setSkillError("");
-                }}
-                value={skill}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    addSkill();
+              <div className="w-full">
+                <Input
+                  ref={skillRef}
+                  id=""
+                  placeholder={
+                    skillError === "length"
+                      ? "Please enter a skill..."
+                      : skillError === "exist"
+                        ? "Skill is already mentioned"
+                        : "JavaScript"
                   }
-                }}
-              />
+                  classNameForInput={`
+                  ${(skillError === "length" || skillError === "exist") && "text-red-600 border-red-500"} 
+                  mb-2
+                  `}
+                  onChange={(e) => {
+                    setSkill(e.target.value);
+                    setSkillError("");
+                  }}
+                  value={skill}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      isUpdateSkill ? updateSkill() : addSkill()
+                    }
+                  }}
+                />
+              </div>
               {
                 isUpdateSkill ? <div className="flex gap-2 items-center">
                   <Button

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { Plus, Trash2, CirclePlus } from "lucide-react";
 import { ResumeSectionProps } from "@/components/ResumeForm";
-import { Button, Input } from "@/components/Ui"
+import { Button, Input, ToggleMode } from "@/components/Ui"
 import { useUtility } from "@/app/providers/UtilityProvider";
 
 export default function Achievements({
@@ -41,34 +41,35 @@ export default function Achievements({
           isBulletPoints: false
         },
       ],
-    });
+    }, false);
   }
 
   function deleteAchievement(id: string) {
     const remainingAchievements = resumeData.achievements.filter(
       (achievement) => achievement.id !== id
     );
-    handleDataChange({ achievements: remainingAchievements });
+    handleDataChange({ achievements: remainingAchievements }, true);
   }
 
   function updateAchievement(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    id: string
+    id: string,
+    commit: boolean
   ) {
     const { value, name } = e.target;
     handleDataChange({
       achievements: resumeData.achievements.map((achievement) =>
         achievement.id === id ? { ...achievement, [name]: value } : achievement
       ),
-    });
+    }, commit);
   }
 
   function CurrentTab() {
     setCurrentTab(!currentTab);
   }
 
-  function addBulletPoints(id: string) {
-    const trimmed = bullet.trim();
+  function addBulletPoints(id: string, point: string) {
+    const trimmed = point.trim();
     if (trimmed.length === 0) return;
 
     handleDataChange({
@@ -77,9 +78,7 @@ export default function Achievements({
           ? { ...achievement, bulletPoints: [...achievement.bulletPoints, trimmed] }
           : achievement
       ),
-    });
-
-    setBullet("");
+    }, true);
   }
 
   function deleteBulletPoint(id: string, index: number) {
@@ -92,7 +91,19 @@ export default function Achievements({
           }
           : achievement
       ),
-    });
+    }, true);
+  }
+
+  function updateBulletPoints(id: string, index: number, point: string, commit: boolean) {
+    handleDataChange({
+      achievements: resumeData.achievements?.map((achievement) =>
+        achievement.id === id ?
+          {
+            ...achievement,
+            bulletPoints: achievement.bulletPoints?.map((p, i) => i === index ? point : p)
+          } : achievement
+      )
+    }, commit)
   }
 
   return (
@@ -131,7 +142,8 @@ export default function Achievements({
                       value={achievement.title}
                       placeholder="AWS Certified Developer"
                       name="title"
-                      onChange={(e) => updateAchievement(e, achievement.id)}
+                      onChange={(e) => updateAchievement(e, achievement.id, false)}
+                      onBlur={(e) => updateAchievement(e, achievement.id, true)}
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleAchievementsRefs(index * 3 + 0)
                       }
@@ -148,82 +160,22 @@ export default function Achievements({
                       value={achievement.year}
                       placeholder="2023"
                       name="year"
-                      onChange={(e) => updateAchievement(e, achievement.id)}
+                      onChange={(e) => updateAchievement(e, achievement.id, false)}
+                      onBlur={(e) => updateAchievement(e, achievement.id, true)}
                       onKeyDown={(e) =>
                         e.key === "Enter" && handleAchievementsRefs(index * 3 + 1)
                       }
                     />
                   </div>
-                </div>
-
-                {/* Description / Bullet Points */}
-                <div className="flex flex-col gap-2">
-                  <label className="font-semibold text-sm flex flex-row gap-2 mb-2 items-center">
-                    <button
-                      onClick={() => CurrentTab()}
-                      className={`px-4 py-2 rounded-lg transition-all ${currentTab
-                        ? "border-b-2 border-blue-500 text-blue-600 bg-gray-100"
-                        : "border-b-2 border-transparent"
-                        } bg-gray-100 cursor-pointer`}
-                    >
-                      Description
-                    </button>
-                    <button
-                      onClick={() => CurrentTab()}
-                      className={`px-4 py-2 rounded-lg transition-all flex flex-row items-center gap-1 ${!currentTab
-                        ? "border-b-2 bg-gray-100 border-blue-500 text-blue-600"
-                        : "border-b-2 border-transparent"
-                        } bg-gray-100 cursor-pointer`}
-                    >
-                      <CirclePlus className="h-4" />
-                      Add Bullet Points
-                    </button>
-                  </label>
-
-                  {!currentTab ? (
-                    <div className="border rounded py-2 flex flex-row justify-between px-2 gap-5">
-                      <Input
-                        value={bullet}
-                        onChange={(e) => setBullet(e.target.value)}
-                        id=""
-                        placeholder="Add bullet points"
-                        onKeyDown={(e) => e.key === "Enter" && addBulletPoints(achievement.id)}
-                      />
-                      <button
-                        onClick={() => addBulletPoints(achievement.id)}
-                        className="bg-primary text-primary-foreground px-3 py-1 rounded hover:cursor-pointer"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  ) : (
-                    <textarea
-                      ref={(el) => { (achievementsRefs.current[index * 3 + 2] = el) }}
-                      className="border rounded resize-none py-2 px-4 h-20 text-sm"
-                      value={achievement.description}
-                      placeholder="Details about the certification or achievement..."
-                      name="description"
-                      onChange={(e) => updateAchievement(e, achievement.id)}
-                    />
-                  )}
-
-                  <div className="flex gap-3 flex-wrap">
-                    {achievement.bulletPoints.length > 0 && !currentTab &&
-                      achievement.bulletPoints.map((point, idx) => (
-                        <div
-                          key={idx}
-                          className="border rounded px-4 py-1 flex items-center justify-center text-sm"
-                        >
-                          {point}
-                          <button
-                            onClick={() => deleteBulletPoint(achievement.id, idx)}
-                            className="ml-2 text-red-500 hover:text-red-700 hover:cursor-pointer"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                  </div>
+                  <ToggleMode
+                    add={addBulletPoints}
+                    update={updateAchievement}
+                    exp={achievement}
+                    deletePoints={deleteBulletPoint}
+                    updatePoints={updateBulletPoints}
+                    placeHolder="Describe Your Achievements..."
+                    ref={(el) => { achievementsRefs.current[index * 3 + 2] = el; }}
+                  />
                 </div>
               </div>
             </div>

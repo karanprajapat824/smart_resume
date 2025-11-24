@@ -51,7 +51,7 @@ export default function Languages({
                     level: trimmedLevel,
                 },
             ],
-        });
+        }, true);
 
         setLanguage("");
         setLevel("");
@@ -59,7 +59,7 @@ export default function Languages({
 
     function deleteLanguage(id: string) {
         const remaining = resumeData.languages.filter((l) => l.id !== id);
-        handleDataChange({ languages: remaining });
+        handleDataChange({ languages: remaining }, true);
     }
 
     return (

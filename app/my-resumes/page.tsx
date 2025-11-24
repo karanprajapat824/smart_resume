@@ -180,10 +180,7 @@ export default function ResumeDashboard() {
                             >
                                 <div></div>
 
-                                <div className="border p-4 rounded-full bg-muted/80 hover:scale-105 z-30 transition-transform cursor-pointer">
-                                    <ZoomIn
-                                    // onClick={() => handleZoomTemplate(template)}
-                                    />
+                                <div >
                                 </div>
                                 <div className="flex justify-around w-full gap-4">
                                     <Button

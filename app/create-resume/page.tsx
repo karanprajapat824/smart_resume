@@ -12,11 +12,11 @@ import { Button } from "@/components/Ui";
 import { CiImageOn } from "react-icons/ci";
 import { FaRegFilePdf } from "react-icons/fa";
 import PageLoader from "@/components/PageLoader";
-
+import { FcUndo, FcRedo } from "react-icons/fc";
 
 
 export default function CreateResumePage() {
-  const { API_URL, resumeData, handleDataChange, autoFill, clearForm, isDirty } = useUtility();
+  const { API_URL, resumeData, handleDataChange, autoFill, clearForm, isDirty, undo, redo } = useUtility();
   const { loggedIn, loading, setLoading, accessToken } = useAuth();
   const [clearFormModel, setClearFormModel] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState(false);
@@ -48,7 +48,7 @@ export default function CreateResumePage() {
     else if (template) {
       handleDataChange({
         template: template
-      });
+      }, true);
     }
   }, [loggedIn]);
 
@@ -60,7 +60,7 @@ export default function CreateResumePage() {
         saveResume().then((success) => {
           if (success) setIsSave(true);
         });
-      }, 5000);
+      }, 30000);
       return () => clearTimeout(timerId);
     }
   }, [resumeData]);
@@ -261,6 +261,7 @@ export default function CreateResumePage() {
         isSave={isSave}
         saveResume={saveResume}
         afterLoginRedirect="/create-resume"
+
       />
       <Modal
         isOpen={uploadError}
@@ -310,6 +311,26 @@ export default function CreateResumePage() {
                 >
                   Clear Form
                 </Button>
+                <div className="flex gap-3 items-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={<FcUndo className="h-6 w-6 rotate-[-20deg]" />}
+                    title="Undo"
+                    onClick={undo}
+                    className="overflow-visible"
+                  >
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={<FcRedo className="h-6 w-6 rotate-[20deg]" />}
+                    title="Redo"
+                    onClick={redo}
+                    className="overflow-visible"
+                  >
+                  </Button>
+                </div>
               </div>
               <h1 className="text-2xl font-bold text-foreground flex items-center justify-between">
                 Enter Your Information

@@ -11,7 +11,7 @@ export default function WorkExperience({
   openSections,
   setOpenSections
 }: ResumeSectionProps) {
-  const { resumeData, handleDataChange } = useUtility();
+  const { resumeData, handleDataChange} = useUtility();
   const workExperienceRefs = useRef<
     Array<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>
   >([]);
@@ -37,26 +37,27 @@ export default function WorkExperience({
           bulletPoints: [],
         },
       ],
-    });
+    },false);
   }
 
   function deleteWorkExperience(id: string) {
     const remaringWork = resumeData.workExperience.filter((exp) => exp.id !== id);
     handleDataChange({
       workExperience: remaringWork,
-    });
+    },true);
   }
 
   function updateWorkExperience(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    id: string
+    id: string,
+    commit : boolean
   ) {
     const { value, name } = e.target;
     handleDataChange({
       workExperience: resumeData.workExperience.map((exp) =>
         exp.id === id ? { ...exp, [name]: value } : exp
       ),
-    });
+    },commit);
   }
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function WorkExperience({
           ? { ...work, bulletPoints: [...work.bulletPoints, trimmed] }
           : work
       ),
-    });
+    },true);
   }
 
   function deleteBulletPoint(id: string, index: number) {
@@ -88,10 +89,10 @@ export default function WorkExperience({
           }
           : work
       ),
-    });
+    },true);
   }
 
-  function updateBulletPoints(id: string, index: number, point: string) {
+  function updateBulletPoints(id: string, index: number, point: string,commit : boolean) {
     handleDataChange({
       workExperience: resumeData.workExperience?.map((work) =>
         work.id === id ?
@@ -100,7 +101,7 @@ export default function WorkExperience({
             bulletPoints: work.bulletPoints?.map((p, i) => i === index ? point : p)
           } : work
       )
-    })
+    },commit)
   }
 
 
@@ -144,7 +145,15 @@ export default function WorkExperience({
                     onChange={(e) =>
                       updateWorkExperience(
                         e,
-                        exp.id
+                        exp.id,
+                        false
+                      )
+                    }
+                    onBlur={(e) =>
+                      updateWorkExperience(
+                        e,
+                        exp.id,
+                        true
                       )
                     }
                     onKeyDown={(e) =>
@@ -164,7 +173,15 @@ export default function WorkExperience({
                     onChange={(e) =>
                       updateWorkExperience(
                         e,
-                        exp.id
+                        exp.id,
+                        false
+                      )
+                    }
+                    onBlur={(e) =>
+                      updateWorkExperience(
+                        e,
+                        exp.id,
+                        true
                       )
                     }
                     onKeyDown={(e) =>
@@ -183,12 +200,14 @@ export default function WorkExperience({
                   ref={(el) => {
                     workExperienceRefs.current[index * 4 + 2] = el;
                   }}
-                  onChange={(e) =>
-                    updateWorkExperience(
-                      e,
-                      exp.id
-                    )
-                  }
+                  onChange={(e) =>updateWorkExperience(e,exp.id,false)}
+                  onBlur={(e) =>
+                      updateWorkExperience(
+                        e,
+                        exp.id,
+                        true
+                      )
+                    }
                   onKeyDown={(e) =>
                     e.key === "Enter" && handleWorkExperienceRefs(index * 4 + 2)
                   }

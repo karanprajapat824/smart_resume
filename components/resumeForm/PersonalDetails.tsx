@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import ResumeFormHeader from "@/components/ResumeFormHeader";
 import { ResumeSectionProps } from "../ResumeForm";
-import {Input} from "@/components/Ui";
+import { Input } from "@/components/Ui";
 import { useUtility, ResumeData } from "@/app/providers/UtilityProvider";
 
 export default function PersonalDetails({
@@ -67,7 +67,18 @@ export default function PersonalDetails({
                     ...resumeData.personalDetails,
                     [field.id]: e.target.value,
                   },
-                })
+                }, false)
+              }
+              onBlur={(e) =>
+                handleDataChange(
+                  {
+                    personalDetails: {
+                      ...resumeData.personalDetails,
+                      [field.id]: e.target.value,
+                    },
+                  },
+                  true
+                )
               }
               onKeyDown={(e) => handlePersonalDetailRefs(e, index)}
               ref={(el) => {
